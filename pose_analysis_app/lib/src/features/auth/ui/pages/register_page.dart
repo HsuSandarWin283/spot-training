@@ -28,14 +28,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isLoading = true);
-    
+
     try {
       await ref.read(authRepositoryProvider).createUserWithEmailAndPassword(
-            _emailController.text,
+            _emailController.text.trim(),
             _passwordController.text,
-            _displayNameController.text,
+            _displayNameController.text.trim(),
           );
       if (mounted) context.goToMain();
     } catch (e) {
@@ -47,6 +47,46 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  String? _validateDisplayName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Display name is required';
+    }
+    if (value.trim().length < 2) {
+      return 'Display name must be at least 2 characters';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is required';
+    }
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(value)) {
+      return 'Enter a valid email address';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!RegExp(r'[a-z]').hasMatch(value)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return 'Password must contain at least one number';
+    }
+    return null;
   }
 
   @override
@@ -70,14 +110,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 TextFormField(
                   controller: _displayNameController,
                   decoration: const InputDecoration(labelText: 'Display Name'),
-                  validator: (v) => v != null && v.isNotEmpty ? null : 'Required',
+                  validator: _validateDisplayName,
                 ),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
-                  validator: (v) => v != null && v.contains('@') ? null : 'Invalid email',
+                  validator: _validateEmail,
                 ),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
                   decoration: InputDecoration(
@@ -88,14 +130,25 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     ),
                   ),
                   obscureText: _obscurePassword,
-                  validator: (v) => v != null && v.length >= 6 ? null : 'Min 6 characters',
+                  validator: _validatePassword,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Min 8 characters, include uppercase, lowercase and number',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
                     onPressed: _isLoading ? null : _signUp,
-                    child: _isLoading ? const CircularProgressIndicator() : const Text('Sign Up'),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Sign Up'),
                   ),
                 ),
                 const SizedBox(height: 16),

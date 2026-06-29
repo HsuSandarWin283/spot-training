@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
+import 'package:ai_sports_training/src/core/services/local_storage_provider.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({super.key});
@@ -18,7 +19,34 @@ class MainPage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => ref.read(authRepositoryProvider).signOut(),
+            onPressed: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  title: const Text('Logout'),
+                  content: const Text('Are you sure you want to logout?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(true),
+                      child: const Text('Logout'),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed != true) return;
+              final localStorage = await ref.read(localStorageServiceProvider.future);
+              final rememberMe = localStorage.isRememberMe;
+              await ref.read(authRepositoryProvider).signOut();
+              if (!rememberMe) {
+                await localStorage.clearRememberEmail();
+                await localStorage.setRememberMe(false);
+              }
+              if (context.mounted) context.goToLogin();
+            },
           ),
         ],
       ),

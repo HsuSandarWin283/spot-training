@@ -9,10 +9,28 @@ import 'package:ai_sports_training/src/features/pose_detection/ui/pages/pose_det
 import 'package:ai_sports_training/src/features/training_plan/ui/pages/training_plan_page.dart';
 import 'package:ai_sports_training/src/features/profile/ui/pages/profile_page.dart';
 import 'package:ai_sports_training/src/features/settings/ui/pages/settings_page.dart';
+import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
 
 final _routerProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authStateProvider);
+
   return GoRouter(
     initialLocation: '/login',
+    redirect: (context, state) {
+      final isAuthenticated = authState.valueOrNull != null;
+      final isLoggingIn = state.matchedLocation == '/login';
+      final isRegistering = state.matchedLocation == '/register';
+
+      if (isAuthenticated && (isLoggingIn || isRegistering)) {
+        return '/main';
+      }
+
+      if (!isAuthenticated && !isLoggingIn && !isRegistering) {
+        return '/login';
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/login',
