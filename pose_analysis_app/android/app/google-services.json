@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "283193005219",
+    "project_id": "spot-training",
+    "storage_bucket": "spot-training.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283193005219:android:6ca97f831e2e15f7a09b16",
+        "android_client_info": {
+          "package_name": "com.aisports.ai_sports_training"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTR8wXfImqNH5h6b3VmyvAPnZLWrzHwGE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
