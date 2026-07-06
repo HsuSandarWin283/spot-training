@@ -1,84 +1,104 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
-import 'package:ai_sports_training/src/core/utils/app_router.dart';
-import 'package:ai_sports_training/src/core/services/local_storage_provider.dart';
+import 'package:ai_sports_training/src/core/theme/app_theme.dart';
+import 'package:ai_sports_training/src/features/dashboard/ui/pages/dashboard_screen.dart';
+import 'package:ai_sports_training/src/features/sports_selection/ui/pages/sports_selection_screen.dart';
+import 'package:ai_sports_training/src/features/pose_analysis/ui/pages/pose_analysis_screen.dart';
+import 'package:ai_sports_training/src/features/profile/ui/pages/profile_page.dart';
 
-class MainPage extends ConsumerWidget {
-  const MainPage({super.key});
+class MainPage extends StatefulWidget {
+  final int initialIndex;
+  const MainPage({super.key, this.initialIndex = 0});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
+
+  final List<Widget Function()> _screenBuilders = [
+    () => const DashboardScreen(),
+    () => const SportsSelectionScreen(),
+    () => const PoseAnalysisScreen(),
+    () => const ProfilePage(),
+  ];
+
+  void switchTab(int index) {
+    setState(() => _currentIndex = index);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.goToLogin(),
-        ),
-        title: const Text('AI Sports Training'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              final confirmed = await showDialog<bool>(
-                context: context,
-                builder: (dialogContext) => AlertDialog(
-                  title: const Text('Logout'),
-                  content: const Text('Are you sure you want to logout?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(dialogContext).pop(false),
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(dialogContext).pop(true),
-                      child: const Text('Logout'),
-                    ),
-                  ],
-                ),
-              );
-              if (confirmed != true) return;
-              final localStorage = await ref.read(localStorageServiceProvider.future);
-              final rememberMe = localStorage.isRememberMe;
-              await ref.read(authRepositoryProvider).signOut();
-              if (!rememberMe) {
-                await localStorage.clearRememberEmail();
-                await localStorage.setRememberMe(false);
-              }
-              if (context.mounted) context.goToLogin();
-            },
-          ),
-        ],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screenBuilders.map((b) => b()).toList(),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Home'),
-            onTap: () => context.goToHome(),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          border: Border(
+            top: BorderSide(color: AppColors.border, width: 0.5),
           ),
-          ListTile(
-            leading: const Icon(Icons.fitness_center),
-            title: const Text('Pose Detection'),
-            onTap: () => context.goToPoseDetection(),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(0, Icons.dashboard_rounded, 'Home'),
+                _buildNavItem(1, Icons.sports_soccer, 'Training'),
+                _buildNavItem(2, Icons.accessibility_new, 'Analysis'),
+                _buildNavItem(3, Icons.person_rounded, 'Profile'),
+              ],
+            ),
           ),
-          ListTile(
-            leading: const Icon(Icons.assignment),
-            title: const Text('Training Plan'),
-            onTap: () => context.goToTrainingPlan(),
-          ),
-          ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('Profile'),
-            onTap: () => context.goToProfile(),
-          ),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
-            onTap: () => context.goToSettings(),
-          ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, String label) {
+    final isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _currentIndex = index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: isSelected
+            ? BoxDecoration(
+                gradient: AppColors.primaryGradient,
+                borderRadius: BorderRadius.circular(12),
+              )
+            : null,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : AppColors.textMuted,
+              size: 22,
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

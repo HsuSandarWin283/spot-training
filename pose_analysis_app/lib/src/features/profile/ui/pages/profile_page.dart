@@ -1,108 +1,260 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
-import 'package:ai_sports_training/src/core/utils/app_router.dart';
-import 'package:ai_sports_training/src/core/services/local_storage_provider.dart';
+import 'package:ai_sports_training/src/core/theme/app_theme.dart';
+import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authAsync = ref.watch(authStateProvider);
-
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.goToMain(),
-        ),
-        title: const Text('Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              final confirmed = await showDialog<bool>(
-                context: context,
-                builder: (dialogContext) => AlertDialog(
-                  title: const Text('Logout'),
-                  content: const Text('Are you sure you want to logout?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(dialogContext).pop(false),
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(dialogContext).pop(true),
-                      child: const Text('Logout'),
-                    ),
-                  ],
-                ),
-              );
-              if (confirmed != true) return;
-              final localStorage = await ref.read(localStorageServiceProvider.future);
-              final rememberMe = localStorage.isRememberMe;
-              await ref.read(authRepositoryProvider).signOut();
-              if (!rememberMe) {
-                await localStorage.clearRememberEmail();
-                await localStorage.setRememberMe(false);
-              }
-              if (context.mounted) context.goToLogin();
-            },
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF0A0E21),
+                  Color(0xFF151A30),
+                ],
+              ),
+            ),
           ),
-        ],
-      ),
-      body: authAsync.when(
-        data: (user) {
-          if (user == null) {
-            return const Center(child: Text('Not authenticated'));
-          }
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+          SafeArea(
             child: Column(
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: user.photoUrl != null
-                      ? NetworkImage(user.photoUrl!)
-                      : null,
-                  child: user.photoUrl == null
-                      ? const Icon(Icons.person, size: 50)
-                      : null,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  user.displayName ?? 'No name',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                Text(
-                  user.email,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 24),
-                ListTile(
-                  leading: const Icon(Icons.edit),
-                  title: const Text('Edit Profile'),
-                  onTap: () {},
-                ),
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.fitness_center),
-                  title: const Text('My Workouts'),
-                  onTap: () {},
-                ),
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text('Settings'),
-                  onTap: () => context.goToSettings(),
+                const CustomAppBar(title: 'Profile', showBack: false),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: AppColors.primaryGradient,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withOpacity(0.4),
+                                blurRadius: 20,
+                                spreadRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 50,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Alex Johnson',
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'alex.johnson@email.com',
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Text(
+                            'Intermediate Level',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: GlassCard(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      '22.7',
+                                      style: TextStyle(
+                                        color: AppColors.textPrimary,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    const Text(
+                                      'BMI',
+                                      style: TextStyle(
+                                        color: AppColors.textMuted,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: GlassCard(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      '76%',
+                                      style: TextStyle(
+                                        color: AppColors.textPrimary,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    const Text(
+                                      'Fitness',
+                                      style: TextStyle(
+                                        color: AppColors.textMuted,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: GlassCard(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      '24',
+                                      style: TextStyle(
+                                        color: AppColors.textPrimary,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    const Text(
+                                      'Sessions',
+                                      style: TextStyle(
+                                        color: AppColors.textMuted,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        GlassCard(
+                          child: Column(
+                            children: [
+                              _buildMenuItem(
+                                Icons.person_outline,
+                                'Edit Profile',
+                                AppColors.primary,
+                              ),
+                              const Divider(color: AppColors.border),
+                              _buildMenuItem(
+                                Icons.fitness_center,
+                                'My Workouts',
+                                AppColors.secondary,
+                              ),
+                              const Divider(color: AppColors.border),
+                              _buildMenuItem(
+                                Icons.history,
+                                'Training History',
+                                AppColors.warning,
+                              ),
+                              const Divider(color: AppColors.border),
+                              _buildMenuItem(
+                                Icons.notifications_outlined,
+                                'Notifications',
+                                AppColors.accent,
+                              ),
+                              const Divider(color: AppColors.border),
+                              _buildMenuItem(
+                                Icons.settings_outlined,
+                                'Settings',
+                                AppColors.textMuted,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        GlassCard(
+                          child: _buildMenuItem(
+                            Icons.logout,
+                            'Logout',
+                            AppColors.error,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(IconData icon, String label, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 15,
+              ),
+            ),
+          ),
+          const Icon(Icons.chevron_right, color: AppColors.textMuted, size: 20),
+        ],
       ),
     );
   }

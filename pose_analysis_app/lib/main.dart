@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
@@ -21,20 +20,11 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       title: 'AI Sports Training',
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.darkTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.dark,
       routerConfig: AppRouter.router(ref),
       debugShowCheckedModeBanner: false,
-      localizationsDelegates: const [
-        DefaultMaterialLocalizations.delegate,
-        DefaultWidgetsLocalizations.delegate,
-        DefaultCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('en'),
-        Locale('es'),
-      ],
     );
   }
 }
