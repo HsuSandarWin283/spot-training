@@ -30,7 +30,7 @@ class SportsSelectionScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CustomAppBar(title: 'Select Your Sport', showBack: true),
+                const CustomAppBar(title: 'Select Your Sport', showBack: false),
                 const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),

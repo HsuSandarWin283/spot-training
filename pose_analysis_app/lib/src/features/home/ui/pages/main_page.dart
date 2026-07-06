@@ -22,13 +22,6 @@ class _MainPageState extends State<MainPage> {
     _currentIndex = widget.initialIndex;
   }
 
-  final List<Widget Function()> _screenBuilders = [
-    () => const DashboardScreen(),
-    () => const SportsSelectionScreen(),
-    () => const PoseAnalysisScreen(),
-    () => const ProfilePage(),
-  ];
-
   void switchTab(int index) {
     setState(() => _currentIndex = index);
   }
@@ -38,7 +31,15 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screenBuilders.map((b) => b()).toList(),
+        children: [
+          DashboardScreen(
+            onProfileTap: () => setState(() => _currentIndex = 3),
+            onAnalysisTap: () => setState(() => _currentIndex = 2),
+          ),
+          const SportsSelectionScreen(),
+          const PoseAnalysisScreen(),
+          const ProfilePage(),
+        ],
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(

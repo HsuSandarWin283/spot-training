@@ -1,23 +1,27 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
   late Animation<Offset> _slideAnimation;
+  bool _hasNavigated = false;
+  bool _showAuthButtons = false;
 
   @override
   void initState() {
@@ -52,6 +56,22 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _controller.forward();
+    _checkAuth();
+  }
+
+  void _checkAuth() {
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!mounted || _hasNavigated) return;
+
+      final firebaseUser = fb.FirebaseAuth.instance.currentUser;
+      if (firebaseUser != null) {
+        _hasNavigated = true;
+        context.go('/main');
+      } else {
+        _hasNavigated = true;
+        setState(() => _showAuthButtons = true);
+      }
+    });
   }
 
   @override
@@ -177,47 +197,56 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                             ),
                           ),
-                          SlideTransition(
-                            position: _slideAnimation,
-                            child: FadeTransition(
-                              opacity: _fadeAnimation,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 40),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Text(
-                                      'Master your sport with AI-powered pose analysis and personalized training plans.',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: AppColors.textMuted,
-                                        height: 1.5,
+                          if (_showAuthButtons)
+                            SlideTransition(
+                              position: _slideAnimation,
+                              child: FadeTransition(
+                                opacity: _fadeAnimation,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Text(
+                                        'Master your sport with AI-powered pose analysis and personalized training plans.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: AppColors.textMuted,
+                                          height: 1.5,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 24),
-                                    GradientButton(
-                                      text: 'Sign Up',
-                                      icon: Icons.person_add,
-                                      height: 50,
-                                      onPressed: () {
-                                        context.go('/register');
-                                      },
-                                    ),
-                                    const SizedBox(height: 12),
-                                    OutlineButton(
-                                      text: 'Login',
-                                      height: 50,
-                                      onPressed: () {
-                                        context.go('/login');
-                                      },
-                                    ),
-                                    const SizedBox(height: 24),
-                                  ],
+                                      const SizedBox(height: 24),
+                                      GradientButton(
+                                        text: 'Sign Up',
+                                        icon: Icons.person_add,
+                                        height: 50,
+                                        onPressed: () => context.go('/register'),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      OutlineButton(
+                                        text: 'Login',
+                                        height: 50,
+                                        onPressed: () => context.go('/login'),
+                                      ),
+                                      const SizedBox(height: 24),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                          if (!_showAuthButtons)
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 40),
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),

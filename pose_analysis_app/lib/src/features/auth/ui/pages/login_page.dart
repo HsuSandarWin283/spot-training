@@ -2,11 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
-import 'package:ai_sports_training/src/core/utils/app_router.dart';
-import 'package:ai_sports_training/src/core/services/local_storage_provider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -21,23 +20,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
-  bool _rememberMe = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSavedCredentials();
-  }
-
-  void _loadSavedCredentials() async {
-    final localStorage = await ref.read(localStorageServiceProvider.future);
-    if (mounted) {
-      setState(() {
-        _rememberMe = localStorage.isRememberMe;
-        _emailController.text = localStorage.getRememberEmail() ?? '';
-      });
-    }
-  }
 
   @override
   void dispose() {
@@ -52,26 +34,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() => _isLoading = true);
 
     try {
-      final localStorage = await ref.read(localStorageServiceProvider.future);
-
-      if (_rememberMe) {
-        await localStorage.saveRememberEmail(_emailController.text.trim());
-        await localStorage.setRememberMe(true);
-      } else {
-        await localStorage.clearRememberEmail();
-        await localStorage.setRememberMe(false);
-      }
-
       await ref.read(authRepositoryProvider).signInWithEmailAndPassword(
             _emailController.text.trim(),
             _passwordController.text,
           );
-
-      if (mounted) context.goToMain();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -80,37 +53,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Email is required';
-    }
+    if (value == null || value.isEmpty) return 'Email is required';
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(value)) {
-      return 'Enter a valid email address';
-    }
+    if (!emailRegex.hasMatch(value)) return 'Enter a valid email address';
     return null;
   }
 
   String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Password is required';
-    }
-    if (value.length < 8) {
-      return 'Password must be at least 8 characters';
-    }
-    if (!RegExp(r'[A-Z]').hasMatch(value)) {
-      return 'Password must contain at least one uppercase letter';
-    }
-    if (!RegExp(r'[a-z]').hasMatch(value)) {
-      return 'Password must contain at least one lowercase letter';
-    }
-    if (!RegExp(r'[0-9]').hasMatch(value)) {
-      return 'Password must contain at least one number';
-    }
+    if (value == null || value.isEmpty) return 'Password is required';
+    if (value.length < 8) return 'Password must be at least 8 characters';
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<dynamic>>(authStateProvider, (prev, next) {
+      next.whenData((user) {
+        if (user != null && mounted) {
+          context.go('/main');
+        }
+      });
+    });
+
     return Scaffold(
       body: Stack(
         children: [
@@ -119,10 +83,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF0A0E21),
-                  Color(0xFF151A30),
-                ],
+                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
               ),
             ),
           ),
@@ -216,49 +177,32 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         obscureText: _obscurePassword,
                         validator: _validatePassword,
                       ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: Checkbox(
-                              value: _rememberMe,
-                              onChanged: (value) {
-                                setState(() => _rememberMe = value ?? false);
-                              },
-                              activeColor: AppColors.primary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Remember me',
-                            style: TextStyle(
-                              color: AppColors.textMuted,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const Spacer(),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text(
-                              'Forgot Password?',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                       const SizedBox(height: 24),
                       GradientButton(
                         text: _isLoading ? 'Signing In...' : 'Sign In',
                         icon: _isLoading ? null : Icons.arrow_forward,
                         onPressed: _isLoading ? () {} : _signIn,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Don't have an account? ",
+                            style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                          ),
+                          GestureDetector(
+                            onTap: () => context.go('/register'),
+                            child: const Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

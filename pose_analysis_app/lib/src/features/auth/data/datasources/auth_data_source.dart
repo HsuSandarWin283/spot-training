@@ -1,78 +1,139 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ai_sports_training/src/features/auth/data/models/user_model.dart';
 
 abstract class AuthDataSource {
   Future<UserModel?> getCurrentUser();
   Future<UserModel> signIn(String email, String password);
-  Future<UserModel> signUp(String email, String password, String displayName);
+  Future<UserModel> signUp(String email, String password, String fullName);
   Future<void> signOut();
   Future<void> resetPassword(String email);
-  Stream<UserModel?> get userChanges;
+  Future<void> updateProfile({String? fullName, String? photoUrl});
+  Stream<UserModel?> get authStateChanges;
 }
 
 class FirebaseAuthDataSource implements AuthDataSource {
-  final FirebaseAuth firebaseAuth;
-  final FirebaseFirestore firestore;
+  final fb.FirebaseAuth _firebaseAuth;
+  final FirebaseFirestore _firestore;
 
   FirebaseAuthDataSource({
-    FirebaseAuth? firebaseAuth,
+    fb.FirebaseAuth? firebaseAuth,
     FirebaseFirestore? firestore,
-  })  : firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        firestore = firestore ?? FirebaseFirestore.instance;
+  })  : _firebaseAuth = firebaseAuth ?? fb.FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance;
+
+  CollectionReference get _users => _firestore.collection('users');
 
   @override
   Future<UserModel?> getCurrentUser() async {
-    final user = firebaseAuth.currentUser;
+    final user = _firebaseAuth.currentUser;
     if (user == null) return null;
-    final doc = await firestore.collection('users').doc(user.uid).get();
+    final doc = await _users.doc(user.uid).get();
+    if (!doc.exists) return null;
     return UserModel.fromFirestore(doc);
   }
 
   @override
   Future<UserModel> signIn(String email, String password) async {
-    final credential = await firebaseAuth.signInWithEmailAndPassword(
+    final credential = await _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
-    final user = credential.user!;
-    final doc = await firestore.collection('users').doc(user.uid).get();
+    final fbUser = credential.user!;
+    final doc = await _users.doc(fbUser.uid).get();
+    if (!doc.exists) {
+      final fallbackName = fbUser.displayName?.isNotEmpty == true
+          ? fbUser.displayName!
+          : email.split('@').first;
+      final userModel = UserModel(
+        uid: fbUser.uid,
+        email: email,
+        fullName: fallbackName,
+        photoUrl: fbUser.photoURL,
+        createdAt: DateTime.now(),
+      );
+      await _users.doc(fbUser.uid).set(userModel.toFirestore());
+      return userModel;
+    }
     return UserModel.fromFirestore(doc);
   }
 
   @override
-  Future<UserModel> signUp(String email, String password, String displayName) async {
-    final credential = await firebaseAuth.createUserWithEmailAndPassword(
+  Future<UserModel> signUp(String email, String password, String fullName) async {
+    final credential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
-    final user = credential.user!;
+    final fbUser = credential.user!;
+    await fbUser.updateDisplayName(fullName);
     final userModel = UserModel(
-      id: user.uid,
+      uid: fbUser.uid,
       email: email,
-      displayName: displayName,
-      photoUrl: user.photoURL,
+      fullName: fullName,
+      photoUrl: fbUser.photoURL,
+      createdAt: DateTime.now(),
     );
-    await firestore.collection('users').doc(user.uid).set(userModel.toFirestore());
+    await _users.doc(fbUser.uid).set(userModel.toFirestore());
     return userModel;
   }
 
   @override
   Future<void> signOut() async {
-    await firebaseAuth.signOut();
+    await _firebaseAuth.signOut();
   }
 
   @override
   Future<void> resetPassword(String email) async {
-    await firebaseAuth.sendPasswordResetEmail(email: email);
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
   @override
-  Stream<UserModel?> get userChanges {
-    return firebaseAuth.authStateChanges().asyncMap((firebaseUser) async {
-      if (firebaseUser == null) return null;
-      final doc = await firestore.collection('users').doc(firebaseUser.uid).get();
-      return UserModel.fromFirestore(doc);
+  Future<void> updateProfile({String? fullName, String? photoUrl}) async {
+    final fbUser = _firebaseAuth.currentUser;
+    if (fbUser == null) return;
+
+    final updates = <String, dynamic>{};
+    if (fullName != null) {
+      await fbUser.updateDisplayName(fullName);
+      updates['fullName'] = fullName;
+    }
+    if (photoUrl != null) {
+      await fbUser.updatePhotoURL(photoUrl);
+      updates['photoUrl'] = photoUrl;
+    }
+    if (updates.isNotEmpty) {
+      await _users.doc(fbUser.uid).update(updates);
+    }
+  }
+
+  @override
+  Stream<UserModel?> get authStateChanges {
+    return _firebaseAuth.authStateChanges().asyncMap((fbUser) async {
+      if (fbUser == null) return null;
+      final doc = await _users.doc(fbUser.uid).get();
+      if (!doc.exists) {
+        final fallbackName = fbUser.displayName?.isNotEmpty == true
+            ? fbUser.displayName!
+            : (fbUser.email ?? '').split('@').first;
+        final userModel = UserModel(
+          uid: fbUser.uid,
+          email: fbUser.email ?? '',
+          fullName: fallbackName,
+          photoUrl: fbUser.photoURL,
+          createdAt: DateTime.now(),
+        );
+        await _users.doc(fbUser.uid).set(userModel.toFirestore());
+        return userModel;
+      }
+      final model = UserModel.fromFirestore(doc);
+      if (model.fullName.isEmpty) {
+        final fallbackName = fbUser.displayName?.isNotEmpty == true
+            ? fbUser.displayName!
+            : (fbUser.email ?? '').split('@').first;
+        await _users.doc(fbUser.uid).update({'fullName': fallbackName});
+        return model.copyWith(fullName: fallbackName);
+      }
+      return model;
     });
   }
 }

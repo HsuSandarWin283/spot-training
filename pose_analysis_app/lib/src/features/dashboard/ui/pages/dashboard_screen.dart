@@ -2,14 +2,21 @@
 
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+class DashboardScreen extends ConsumerWidget {
+  final VoidCallback? onProfileTap;
+  final VoidCallback? onAnalysisTap;
+  const DashboardScreen({super.key, this.onProfileTap, this.onAnalysisTap});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
+    final greeting = _getGreeting();
+
     return Scaffold(
       body: Stack(
         children: [
@@ -18,10 +25,7 @@ class DashboardScreen extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF0A0E21),
-                  Color(0xFF151A30),
-                ],
+                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
               ),
             ),
           ),
@@ -35,17 +39,17 @@ class DashboardScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Good Morning! 👋',
-                            style: TextStyle(
+                          Text(
+                            '$greeting! 👋',
+                            style: const TextStyle(
                               color: AppColors.textMuted,
                               fontSize: 14,
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
-                            'Alex Johnson',
-                            style: TextStyle(
+                          Text(
+                            user?.fullName ?? 'Athlete',
+                            style: const TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -54,18 +58,31 @@ class DashboardScreen extends StatelessWidget {
                         ],
                       ),
                       const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.card,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.border),
-                        ),
-                        child: const Icon(
-                          Icons.notifications_outlined,
-                          color: AppColors.textPrimary,
-                          size: 22,
-                        ),
+                      GestureDetector(
+                        onTap: onProfileTap,
+                        child: user?.photoUrl != null
+                            ? CircleAvatar(
+                                radius: 20,
+                                backgroundImage: NetworkImage(user!.photoUrl!),
+                              )
+                            : Container(
+                                width: 40,
+                                height: 40,
+                                decoration: const BoxDecoration(
+                                  gradient: AppColors.primaryGradient,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    (user?.fullName.isNotEmpty == true ? user!.fullName[0] : 'A').toUpperCase(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
                       ),
                     ],
                   ),
@@ -79,7 +96,7 @@ class DashboardScreen extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Expanded(
+                            const Expanded(
                               child: StatCard(
                                 title: 'BMI',
                                 value: '22.7',
@@ -88,7 +105,7 @@ class DashboardScreen extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            Expanded(
+                            const Expanded(
                               child: StatCard(
                                 title: 'Fitness Score',
                                 value: '76%',
@@ -106,8 +123,7 @@ class DashboardScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
                                     'This Week',
@@ -118,10 +134,7 @@ class DashboardScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: AppColors.success.withOpacity(0.15),
                                       borderRadius: BorderRadius.circular(6),
@@ -153,7 +166,7 @@ class DashboardScreen extends StatelessWidget {
                                 'Pose\nAnalysis',
                                 Icons.accessibility_new,
                                 AppColors.primary,
-                                () => context.goToPoseAnalysis(),
+                                onAnalysisTap ?? () {},
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -184,26 +197,11 @@ class DashboardScreen extends StatelessWidget {
                         GlassCard(
                           child: Column(
                             children: [
-                              _buildHistoryItem(
-                                'Squat Analysis',
-                                '87% accuracy',
-                                '2 hours ago',
-                                AppColors.primary,
-                              ),
+                              _buildHistoryItem('Squat Analysis', '87% accuracy', '2 hours ago', AppColors.primary),
                               const Divider(color: AppColors.border),
-                              _buildHistoryItem(
-                                'Lunge Analysis',
-                                '82% accuracy',
-                                'Yesterday',
-                                AppColors.secondary,
-                              ),
+                              _buildHistoryItem('Lunge Analysis', '82% accuracy', 'Yesterday', AppColors.secondary),
                               const Divider(color: AppColors.border),
-                              _buildHistoryItem(
-                                'Deadlift Analysis',
-                                '91% accuracy',
-                                '2 days ago',
-                                AppColors.success,
-                              ),
+                              _buildHistoryItem('Deadlift Analysis', '91% accuracy', '2 days ago', AppColors.success),
                             ],
                           ),
                         ),
@@ -211,7 +209,7 @@ class DashboardScreen extends StatelessWidget {
                         const SectionHeader(title: 'Recommended Plans'),
                         const SizedBox(height: 12),
                         GlassCard(
-                            onTap: () => context.goToAIRecommendation(),
+                          onTap: () => context.goToAIRecommendation(),
                           child: Row(
                             children: [
                               Container(
@@ -221,11 +219,7 @@ class DashboardScreen extends StatelessWidget {
                                   gradient: AppColors.primaryGradient,
                                   borderRadius: BorderRadius.circular(14),
                                 ),
-                                child: const Icon(
-                                  Icons.auto_awesome,
-                                  color: Colors.white,
-                                  size: 28,
-                                ),
+                                child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
                               ),
                               const SizedBox(width: 16),
                               const Expanded(
@@ -243,18 +237,12 @@ class DashboardScreen extends StatelessWidget {
                                     SizedBox(height: 4),
                                     Text(
                                       'Get personalized training recommendations',
-                                      style: TextStyle(
-                                        color: AppColors.textMuted,
-                                        fontSize: 12,
-                                      ),
+                                      style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                                     ),
                                   ],
                                 ),
                               ),
-                              const Icon(
-                                Icons.chevron_right,
-                                color: AppColors.textMuted,
-                              ),
+                              const Icon(Icons.chevron_right, color: AppColors.textMuted),
                             ],
                           ),
                         ),
@@ -264,26 +252,11 @@ class DashboardScreen extends StatelessWidget {
                         GlassCard(
                           child: Column(
                             children: [
-                              _buildHistoryItem(
-                                'Football Training',
-                                '60 min session',
-                                '3 days ago',
-                                AppColors.primary,
-                              ),
+                              _buildHistoryItem('Football Training', '60 min session', '3 days ago', AppColors.primary),
                               const Divider(color: AppColors.border),
-                              _buildHistoryItem(
-                                'Cardio Workout',
-                                '45 min session',
-                                '4 days ago',
-                                AppColors.warning,
-                              ),
+                              _buildHistoryItem('Cardio Workout', '45 min session', '4 days ago', AppColors.warning),
                               const Divider(color: AppColors.border),
-                              _buildHistoryItem(
-                                'Strength Training',
-                                '50 min session',
-                                '5 days ago',
-                                AppColors.accent,
-                              ),
+                              _buildHistoryItem('Strength Training', '50 min session', '5 days ago', AppColors.accent),
                             ],
                           ),
                         ),
@@ -298,6 +271,13 @@ class DashboardScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
   }
 
   List<Widget> _buildWeeklyBars() {
@@ -322,9 +302,7 @@ class DashboardScreen extends StatelessWidget {
                   heightFactor: values[index],
                   child: Container(
                     decoration: BoxDecoration(
-                      gradient: values[index] > 0
-                          ? AppColors.primaryGradient
-                          : null,
+                      gradient: values[index] > 0 ? AppColors.primaryGradient : null,
                       color: values[index] == 0 ? AppColors.border : null,
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -335,12 +313,9 @@ class DashboardScreen extends StatelessWidget {
               Text(
                 days[index],
                 style: TextStyle(
-                  color: index == 5
-                      ? AppColors.primary
-                      : AppColors.textMuted,
+                  color: index == DateTime.now().weekday - 1 ? AppColors.primary : AppColors.textMuted,
                   fontSize: 11,
-                  fontWeight:
-                      index == 5 ? FontWeight.w600 : FontWeight.normal,
+                  fontWeight: index == DateTime.now().weekday - 1 ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
             ],
@@ -350,13 +325,7 @@ class DashboardScreen extends StatelessWidget {
     ];
   }
 
-  Widget _buildActionCard(
-    BuildContext context,
-    String label,
-    IconData icon,
-    Color color,
-    VoidCallback onTap,
-  ) {
+  Widget _buildActionCard(BuildContext context, String label, IconData icon, Color color, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -364,10 +333,7 @@ class DashboardScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: color.withOpacity(0.3),
-            width: 1.5,
-          ),
+          border: Border.all(color: color.withOpacity(0.3), width: 1.5),
         ),
         child: Column(
           children: [
@@ -376,11 +342,7 @@ class DashboardScreen extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -388,12 +350,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHistoryItem(
-    String title,
-    String subtitle,
-    String time,
-    Color color,
-  ) {
+  Widget _buildHistoryItem(String title, String subtitle, String time, Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -401,42 +358,20 @@ class DashboardScreen extends StatelessWidget {
           Container(
             width: 4,
             height: 40,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(2),
-            ),
+            decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2)),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Text(title, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 12,
-                  ),
-                ),
+                Text(subtitle, style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
               ],
             ),
           ),
-          Text(
-            time,
-            style: const TextStyle(
-              color: AppColors.textMuted,
-              fontSize: 11,
-            ),
-          ),
+          Text(time, style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
         ],
       ),
     );

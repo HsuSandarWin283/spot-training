@@ -1,34 +1,58 @@
 import 'package:ai_sports_training/src/features/auth/domain/entities/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:json_annotation/json_annotation.dart';
 
-part 'user_model.g.dart';
-
-@JsonSerializable()
 class UserModel {
-  final String id;
+  final String uid;
   final String email;
-  final String? displayName;
+  final String fullName;
   final String? photoUrl;
+  final DateTime createdAt;
 
   UserModel({
-    required this.id,
+    required this.uid,
     required this.email,
-    this.displayName,
+    required this.fullName,
     this.photoUrl,
+    required this.createdAt,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return UserModel(
-      id: doc.id,
+      uid: doc.id,
       email: data['email'] ?? '',
-      displayName: data['displayName'],
+      fullName: data['fullName'] ?? '',
       photoUrl: data['photoUrl'],
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
-  Map<String, dynamic> toFirestore() => _$UserModelToJson(this);
 
-  User toDomain() => User(id: id, email: email, displayName: displayName, photoUrl: photoUrl);
+  Map<String, dynamic> toFirestore() => {
+        'uid': uid,
+        'email': email,
+        'fullName': fullName,
+        'photoUrl': photoUrl,
+        'createdAt': Timestamp.fromDate(createdAt),
+      };
+
+  User toDomain() => User(
+        uid: uid,
+        email: email,
+        fullName: fullName,
+        photoUrl: photoUrl,
+        createdAt: createdAt,
+      );
+
+  UserModel copyWith({
+    String? fullName,
+    String? photoUrl,
+  }) {
+    return UserModel(
+      uid: uid,
+      email: email,
+      fullName: fullName ?? this.fullName,
+      photoUrl: photoUrl ?? this.photoUrl,
+      createdAt: createdAt,
+    );
+  }
 }

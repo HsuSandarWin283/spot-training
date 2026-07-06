@@ -20,8 +20,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<User> createUserWithEmailAndPassword(String email, String password, String displayName) async {
-    final result = await dataSource.signUp(email, password, displayName);
+  Future<User> createUserWithEmailAndPassword(String email, String password, String fullName) async {
+    final result = await dataSource.signUp(email, password, fullName);
     return result.toDomain();
   }
 
@@ -32,5 +32,9 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> sendPasswordResetEmail(String email) => dataSource.resetPassword(email);
 
   @override
-  Stream<User?> get userChanges => dataSource.userChanges.map((model) => model?.toDomain());
+  Future<void> updateProfile({String? fullName, String? photoUrl}) =>
+      dataSource.updateProfile(fullName: fullName, photoUrl: photoUrl);
+
+  @override
+  Stream<User?> get authStateChanges => dataSource.authStateChanges.map((model) => model?.toDomain());
 }

@@ -26,7 +26,7 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
           SafeArea(
             child: Column(
               children: [
-                const CustomAppBar(title: 'Pose Analysis'),
+                const CustomAppBar(title: 'Pose Analysis', showBack: false),
                 Expanded(
                   child: Stack(
                     children: [

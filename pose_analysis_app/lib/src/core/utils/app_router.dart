@@ -11,13 +11,35 @@ import 'package:ai_sports_training/src/features/injury_prevention/ui/pages/injur
 import 'package:ai_sports_training/src/features/auth/ui/pages/login_page.dart';
 import 'package:ai_sports_training/src/features/auth/ui/pages/register_page.dart';
 import 'package:ai_sports_training/src/features/home/ui/pages/main_page.dart';
+import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final _routerProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authStateProvider);
+
   return GoRouter(
     initialLocation: '/',
     navigatorKey: _rootNavigatorKey,
+    redirect: (context, state) {
+      final isAuthenticated = authState.valueOrNull != null;
+      final isOnAuthRoute = state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register';
+      final isOnSplash = state.matchedLocation == '/' ||
+          state.matchedLocation == '/splash';
+
+      if (isOnSplash) return null;
+
+      if (!isAuthenticated && !isOnAuthRoute) {
+        return '/login';
+      }
+
+      if (isAuthenticated && isOnAuthRoute) {
+        return '/main';
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/',
@@ -91,7 +113,7 @@ extension GoRouterExtension on BuildContext {
   void goToSportDetail(String sportId) => push('/sport-detail/$sportId');
   void goToAIRecommendation() => push('/ai-recommendation');
   void goToWeeklyPlan() => push('/weekly-plan');
-  void goToPoseAnalysis() => go('/main');
+  void goToPoseAnalysis() => go('/main', extra: 2);
   void goToPoseFeedback() => push('/pose-feedback');
   void goToTrainingDetails() => push('/training-details');
   void goToInjuryPrevention() => push('/injury-prevention');

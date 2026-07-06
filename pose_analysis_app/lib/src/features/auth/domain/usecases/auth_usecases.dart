@@ -30,7 +30,7 @@ class SignUpWithEmailAndPassword implements UseCase<User, SignUpParams> {
     return repository.createUserWithEmailAndPassword(
       params.email,
       params.password,
-      params.displayName,
+      params.fullName,
     );
   }
 }
@@ -38,12 +38,12 @@ class SignUpWithEmailAndPassword implements UseCase<User, SignUpParams> {
 class SignUpParams {
   final String email;
   final String password;
-  final String displayName;
+  final String fullName;
 
   SignUpParams({
     required this.email,
     required this.password,
-    required this.displayName,
+    required this.fullName,
   });
 }
 
@@ -73,14 +73,4 @@ class ResetPasswordParams {
   final String email;
 
   ResetPasswordParams(this.email);
-}
-
-class GetUserChanges {
-  final AuthRepository repository;
-
-  GetUserChanges(this.repository);
-
-  Stream<User?> call() {
-    return repository.userChanges;
-  }
 }
