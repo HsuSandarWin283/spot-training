@@ -1,0 +1,23 @@
+{
+    "name": "AI Sports Training Admin",
+    "short_name": "Admin",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0A0E21",
+    "theme_color": "#6C63FF",
+    "description": "Admin Panel for AI Sports Training Pose Analysis System",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
