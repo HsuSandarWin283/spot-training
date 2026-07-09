@@ -1,16 +1,20 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/constants/app_constants.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
+import 'package:ai_sports_training/src/features/sport_detail/providers/sport_detail_providers.dart';
 
-class SportsSelectionScreen extends StatelessWidget {
+class SportsSelectionScreen extends ConsumerWidget {
   const SportsSelectionScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sportsAsync = ref.watch(sportsListProvider);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -19,10 +23,7 @@ class SportsSelectionScreen extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF0A0E21),
-                  Color(0xFF151A30),
-                ],
+                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
               ),
             ),
           ),
@@ -44,25 +45,49 @@ class SportsSelectionScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.85,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                    ),
-                    itemCount: AppConstants.sports.length,
-                    itemBuilder: (context, index) {
-                      final sport = AppConstants.sports[index];
-                      return _SportCard(
-                        sport: sport,
-                        onTap: () {
-                          context.goToSportDetail(sport.id);
+                  child: sportsAsync.when(
+                    data: (sports) {
+                      if (sports.isEmpty) {
+                        return _buildEmptyState();
+                      }
+                      return GridView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.85,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
+                        itemCount: sports.length,
+                        itemBuilder: (context, index) {
+                          final sport = sports[index];
+                          final sportId = sport['id'] as String;
+                          final name = sport['name'] as String? ?? '';
+                          final description =
+                              sport['description'] as String? ?? '';
+                          final imageUrl = sport['imageUrl'] as String? ?? '';
+
+                          final fallback = _findFallback(sportId);
+
+                          return _SportCard(
+                            name: name,
+                            description: description,
+                            imageUrl: imageUrl,
+                            icon: fallback?['icon'] ?? '🏅',
+                            colorValue: fallback?['color'] ?? 0xFF6C63FF,
+                            onTap: () {
+                              context.goToSportDetail(sportId);
+                            },
+                          );
                         },
                       );
                     },
+                    loading: () => const Center(
+                      child:
+                          CircularProgressIndicator(color: AppColors.primary),
+                    ),
+                    error: (error, _) => _buildErrorState(error),
                   ),
                 ),
               ],
@@ -72,13 +97,112 @@ class SportsSelectionScreen extends StatelessWidget {
       ),
     );
   }
+
+  Map<String, dynamic>? _findFallback(String sportId) {
+    for (final s in AppConstants.sports) {
+      if (s.id == sportId) {
+        return {'icon': s.icon, 'color': s.color};
+      }
+    }
+    return null;
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.textMuted.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.sports_soccer_outlined,
+              size: 48,
+              color: AppColors.textMuted,
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'No Sports Available',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Sports will appear here once added.',
+            style: TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(Object error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.error.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.error_outline,
+              size: 48,
+              color: AppColors.error,
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Failed to Load Sports',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error.toString(),
+            style: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 13,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _SportCard extends StatefulWidget {
-  final SportData sport;
+  final String name;
+  final String description;
+  final String imageUrl;
+  final String icon;
+  final int colorValue;
   final VoidCallback onTap;
 
-  const _SportCard({required this.sport, required this.onTap});
+  const _SportCard({
+    required this.name,
+    required this.description,
+    required this.imageUrl,
+    required this.icon,
+    required this.colorValue,
+    required this.onTap,
+  });
 
   @override
   State<_SportCard> createState() => _SportCardState();
@@ -109,7 +233,7 @@ class _SportCardState extends State<_SportCard>
 
   @override
   Widget build(BuildContext context) {
-    final sportColor = Color(widget.sport.color);
+    final sportColor = Color(widget.colorValue);
 
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
@@ -139,26 +263,26 @@ class _SportCardState extends State<_SportCard>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: sportColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Center(
-                  child: Text(
-                    widget.sport.icon,
-                    style: const TextStyle(fontSize: 40),
+              if (widget.imageUrl.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    widget.imageUrl,
+                    width: 72,
+                    height: 72,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) =>
+                        _buildIconFallback(sportColor),
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
+                )
+              else
+                _buildIconFallback(sportColor),
+              const SizedBox(height: 14),
               Text(
-                widget.sport.name,
+                widget.name,
                 style: const TextStyle(
                   color: AppColors.textPrimary,
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -166,7 +290,7 @@ class _SportCardState extends State<_SportCard>
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Text(
-                  widget.sport.description,
+                  widget.description,
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -179,6 +303,20 @@ class _SportCardState extends State<_SportCard>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildIconFallback(Color sportColor) {
+    return Container(
+      width: 72,
+      height: 72,
+      decoration: BoxDecoration(
+        color: sportColor.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Center(
+        child: Text(widget.icon, style: const TextStyle(fontSize: 36)),
       ),
     );
   }
