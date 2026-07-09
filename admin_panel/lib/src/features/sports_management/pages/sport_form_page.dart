@@ -3,10 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:admin_panel/src/core/theme/admin_theme.dart';
 import 'package:admin_panel/src/core/services/sport_service.dart';
+import 'package:admin_panel/src/core/models/sport_detail_models.dart';
 import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/sports_management/providers/sports_provider.dart';
 import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart';
 import 'package:admin_panel/src/features/auth/providers/admin_auth_provider.dart';
+import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_providers.dart';
+
+class _DetailEntry {
+  final TextEditingController titleController;
+  final TextEditingController descriptionController;
+
+  _DetailEntry({String title = '', String description = ''})
+      : titleController = TextEditingController(text: title),
+        descriptionController = TextEditingController(text: description);
+
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+  }
+}
 
 class SportFormPage extends ConsumerStatefulWidget {
   final SportModel? sport;
@@ -25,11 +41,27 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
   bool _isLoading = false;
   String? _existingThumbnailUrl;
 
+  final Map<SportDetailType, List<_DetailEntry>> _detailEntries = {
+    SportDetailType.rules: [],
+    SportDetailType.trainingMethods: [],
+    SportDetailType.injuryPreventions: [],
+    SportDetailType.fitnessRequirements: [],
+  };
+
+  final Map<SportDetailType, bool> _sectionExpanded = {
+    SportDetailType.rules: true,
+    SportDetailType.trainingMethods: true,
+    SportDetailType.injuryPreventions: true,
+    SportDetailType.fitnessRequirements: true,
+  };
+
   final List<String> _difficultyLevels = [
     'Beginner',
     'Intermediate',
     'Advanced',
   ];
+
+  bool get _isEditing => widget.sport != null;
 
   @override
   void initState() {
@@ -39,20 +71,60 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
         TextEditingController(text: widget.sport?.description ?? '');
     _difficultyLevel = widget.sport?.difficultyLevel ?? 'Beginner';
     _existingThumbnailUrl = widget.sport?.thumbnailUrl;
+
+    if (_isEditing) {
+      _loadExistingDetails();
+    }
+  }
+
+  Future<void> _loadExistingDetails() async {
+    final sportId = widget.sport!.id;
+    final service = ref.read(sportDetailServiceProvider);
+
+    for (final type in SportDetailType.values) {
+      try {
+        final items = await service.getItems(sportId, type).first;
+        if (mounted) {
+          setState(() {
+            _detailEntries[type] = items
+                .map((item) => _DetailEntry(
+                      title: item.title,
+                      description: item.description,
+                    ))
+                .toList();
+          });
+        }
+      } catch (_) {}
+    }
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
+    for (final entries in _detailEntries.values) {
+      for (final entry in entries) {
+        entry.dispose();
+      }
+    }
     super.dispose();
   }
 
-  bool get _isEditing => widget.sport != null;
+  void _addDetailEntry(SportDetailType type) {
+    setState(() {
+      _detailEntries[type]!.add(_DetailEntry());
+    });
+  }
+
+  void _removeDetailEntry(SportDetailType type, int index) {
+    setState(() {
+      _detailEntries[type]![index].dispose();
+      _detailEntries[type]!.removeAt(index);
+    });
+  }
 
   Future<void> _pickThumbnail() async {
     try {
-      // Use a simple approach: show a dialog to enter image URL for web
       final result = await showDialog<Map<String, String>>(
         context: context,
         builder: (ctx) {
@@ -111,22 +183,64 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
     }
   }
 
+  String? _validateDetails() {
+    for (final type in SportDetailType.values) {
+      final entries = _detailEntries[type]!;
+      if (entries.isEmpty) {
+        return '${type.label} requires at least one item.';
+      }
+      for (int i = 0; i < entries.length; i++) {
+        if (entries[i].titleController.text.trim().isEmpty) {
+          return '${type.label} - Item ${i + 1}: Title is required.';
+        }
+        if (entries[i].descriptionController.text.trim().isEmpty) {
+          return '${type.label} - Item ${i + 1}: Description is required.';
+        }
+      }
+    }
+    return null;
+  }
+
   Future<void> _saveSport() async {
     if (!_formKey.currentState!.validate()) return;
+
+    final detailError = _validateDetails();
+    if (detailError != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(detailError),
+            backgroundColor: AdminColors.error,
+          ),
+        );
+      }
+      return;
+    }
 
     setState(() => _isLoading = true);
 
     try {
+      final detailService = ref.read(sportDetailServiceProvider);
+      String sportId;
+
       if (_isEditing) {
+        sportId = widget.sport!.id;
         await ref.read(sportServiceProvider).updateSport(
-              id: widget.sport!.id,
+              id: sportId,
               name: _nameController.text.trim(),
               description: _descriptionController.text.trim(),
               difficultyLevel: _difficultyLevel,
               thumbnailUrl: _existingThumbnailUrl ?? '',
             );
+
+        for (final type in SportDetailType.values) {
+          final existing = await detailService.getItems(sportId, type).first;
+          for (final old in existing) {
+            await detailService.deleteItem(old.id, type);
+          }
+        }
       } else {
-        await ref.read(sportServiceProvider).addSport(
+        sportId = await ref.read(sportServiceProvider).addSport(
               name: _nameController.text.trim(),
               description: _descriptionController.text.trim(),
               difficultyLevel: _difficultyLevel,
@@ -134,13 +248,30 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
             );
       }
 
+      for (final type in SportDetailType.values) {
+        final entries = _detailEntries[type]!;
+        for (final entry in entries) {
+          final title = entry.titleController.text.trim();
+          final desc = entry.descriptionController.text.trim();
+          if (title.isNotEmpty && desc.isNotEmpty) {
+            await detailService.addItem(
+              sportId: sportId,
+              title: title,
+              description: desc,
+              type: type,
+            );
+          }
+        }
+      }
+
       ref.invalidate(sportsListProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-                _isEditing ? 'Sport updated successfully' : 'Sport added successfully'),
+            content: Text(_isEditing
+                ? 'Sport updated successfully'
+                : 'Sport added successfully'),
             backgroundColor: AdminColors.success,
           ),
         );
@@ -190,152 +321,40 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
           const SizedBox(height: 32),
           Center(
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 600),
+              constraints: const BoxConstraints(maxWidth: 700),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AdminCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Sport Information',
-                            style: TextStyle(
-                              color: AdminColors.textPrimary,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          TextFormField(
-                            controller: _nameController,
-                            decoration: const InputDecoration(
-                              labelText: 'Sport Name',
-                              prefixIcon: Icon(Icons.sports,
-                                  color: AdminColors.textMuted),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Sport name is required';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _descriptionController,
-                            decoration: const InputDecoration(
-                              labelText: 'Description',
-                              prefixIcon: Icon(Icons.description_outlined,
-                                  color: AdminColors.textMuted),
-                              alignLabelWithHint: true,
-                            ),
-                            maxLines: 3,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Description is required';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          DropdownButtonFormField<String>(
-                            value: _difficultyLevel,
-                            decoration: const InputDecoration(
-                              labelText: 'Difficulty Level',
-                              prefixIcon: Icon(Icons.signal_cellular_alt,
-                                  color: AdminColors.textMuted),
-                            ),
-                            items: _difficultyLevels.map((level) {
-                              return DropdownMenuItem(
-                                value: level,
-                                child: Text(level),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() => _difficultyLevel = value);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
+                    _buildSportInfoCard(),
+                    const SizedBox(height: 16),
+                    _buildThumbnailCard(),
+                    const SizedBox(height: 16),
+                    _buildDetailSection(
+                      SportDetailType.rules,
+                      Icons.gavel,
+                      AdminColors.primaryGradient,
                     ),
                     const SizedBox(height: 16),
-                    AdminCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Thumbnail Image',
-                            style: TextStyle(
-                              color: AdminColors.textPrimary,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          if (_existingThumbnailUrl != null &&
-                              _existingThumbnailUrl!.isNotEmpty) ...[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                _existingThumbnailUrl!,
-                                height: 200,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Container(
-                                  height: 200,
-                                  decoration: BoxDecoration(
-                                    color: AdminColors.surface,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                        color: AdminColors.border),
-                                  ),
-                                  child: const Center(
-                                    child: Icon(Icons.image,
-                                        size: 48,
-                                        color: AdminColors.textMuted),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton.icon(
-                                onPressed: () {
-                                  setState(() {
-                                    _existingThumbnailUrl = null;
-                                  });
-                                },
-                                icon: const Icon(Icons.close,
-                                    size: 16, color: AdminColors.error),
-                                label: const Text('Remove',
-                                    style:
-                                        TextStyle(color: AdminColors.error)),
-                              ),
-                            ),
-                          ],
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              onPressed: _pickThumbnail,
-                              icon: const Icon(Icons.upload_outlined),
-                              label: Text(
-                                (_existingThumbnailUrl?.isNotEmpty ?? false)
-                                    ? 'Change Image'
-                                    : 'Upload Thumbnail',
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    _buildDetailSection(
+                      SportDetailType.trainingMethods,
+                      Icons.fitness_center,
+                      AdminColors.successGradient,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
+                    _buildDetailSection(
+                      SportDetailType.injuryPreventions,
+                      Icons.health_and_safety,
+                      AdminColors.warningGradient,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildDetailSection(
+                      SportDetailType.fitnessRequirements,
+                      Icons.directions_run,
+                      AdminColors.errorGradient,
+                    ),
+                    const SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
                       child: GradientButton(
@@ -349,6 +368,326 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
                 ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSportInfoCard() {
+    return AdminCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Sport Information',
+            style: TextStyle(
+              color: AdminColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 24),
+          TextFormField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              labelText: 'Sport Name',
+              prefixIcon:
+                  Icon(Icons.sports, color: AdminColors.textMuted),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Sport name is required';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _descriptionController,
+            decoration: const InputDecoration(
+              labelText: 'Description',
+              prefixIcon: Icon(Icons.description_outlined,
+                  color: AdminColors.textMuted),
+              alignLabelWithHint: true,
+            ),
+            maxLines: 3,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Description is required';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<String>(
+            value: _difficultyLevel,
+            decoration: const InputDecoration(
+              labelText: 'Difficulty Level',
+              prefixIcon: Icon(Icons.signal_cellular_alt,
+                  color: AdminColors.textMuted),
+            ),
+            items: _difficultyLevels.map((level) {
+              return DropdownMenuItem(
+                value: level,
+                child: Text(level),
+              );
+            }).toList(),
+            onChanged: (value) {
+              if (value != null) {
+                setState(() => _difficultyLevel = value);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThumbnailCard() {
+    return AdminCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Thumbnail Image',
+            style: TextStyle(
+              color: AdminColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (_existingThumbnailUrl != null &&
+              _existingThumbnailUrl!.isNotEmpty) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                _existingThumbnailUrl!,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: AdminColors.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AdminColors.border),
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.image,
+                        size: 48, color: AdminColors.textMuted),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _existingThumbnailUrl = null;
+                  });
+                },
+                icon: const Icon(Icons.close,
+                    size: 16, color: AdminColors.error),
+                label: const Text('Remove',
+                    style: TextStyle(color: AdminColors.error)),
+              ),
+            ),
+          ],
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _pickThumbnail,
+              icon: const Icon(Icons.upload_outlined),
+              label: Text(
+                (_existingThumbnailUrl?.isNotEmpty ?? false)
+                    ? 'Change Image'
+                    : 'Upload Thumbnail',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailSection(
+    SportDetailType type,
+    IconData icon,
+    LinearGradient gradient,
+  ) {
+    final entries = _detailEntries[type]!;
+    final expanded = _sectionExpanded[type]!;
+
+    return AdminCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () {
+              setState(() {
+                _sectionExpanded[type] = !expanded;
+              });
+            },
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: gradient,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(icon, color: Colors.white, size: 18),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          type.label,
+                          style: const TextStyle(
+                            color: AdminColors.textPrimary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          '${entries.length} item${entries.length != 1 ? 's' : ''}',
+                          style: const TextStyle(
+                            color: AdminColors.textMuted,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    expanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: AdminColors.textMuted,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (expanded) ...[
+            const Divider(color: AdminColors.border, height: 1),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: Column(
+                children: [
+                  if (entries.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
+                        'At least one ${type.singularLabel.toLowerCase()} is required.',
+                        style: const TextStyle(
+                          color: AdminColors.error,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ...entries.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    return _buildDetailEntryRow(type, index, item);
+                  }),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _addDetailEntry(type),
+                      icon: const Icon(Icons.add, size: 18),
+                      label: Text('Add ${type.singularLabel}'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailEntryRow(
+      SportDetailType type, int index, _DetailEntry entry) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AdminColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AdminColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                '${type.singularLabel} ${index + 1}',
+                style: const TextStyle(
+                  color: AdminColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.delete_outline,
+                    color: AdminColors.error, size: 18),
+                onPressed: () => _removeDetailEntry(type, index),
+                tooltip: 'Remove',
+                constraints: const BoxConstraints(
+                  minWidth: 32,
+                  minHeight: 32,
+                ),
+                padding: EdgeInsets.zero,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: entry.titleController,
+            decoration: const InputDecoration(
+              labelText: 'Title',
+              isDense: true,
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Title is required.';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: entry.descriptionController,
+            decoration: const InputDecoration(
+              labelText: 'Description',
+              isDense: true,
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+            maxLines: 2,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Description is required.';
+              }
+              return null;
+            },
           ),
         ],
       ),

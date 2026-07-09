@@ -7,8 +7,19 @@ import 'package:admin_panel/src/features/auth/providers/admin_auth_provider.dart
 import 'package:admin_panel/src/features/dashboard/pages/admin_dashboard_page.dart';
 import 'package:admin_panel/src/features/sports_management/pages/sports_list_page.dart';
 import 'package:admin_panel/src/features/sports_management/pages/sport_form_page.dart';
+import 'package:admin_panel/src/features/sport_detail/pages/sport_detail_page.dart';
+import 'package:admin_panel/src/features/sport_detail/pages/sport_detail_form_page.dart';
+import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_providers.dart';
 
-enum AdminView { dashboard, sports, addSport, editSport }
+enum AdminView {
+  dashboard,
+  sports,
+  addSport,
+  editSport,
+  sportDetail,
+  addSportDetail,
+  editSportDetail,
+}
 
 final adminViewProvider = StateProvider<AdminView>((ref) => AdminView.dashboard);
 final editingSportProvider = StateProvider<SportModel?>((ref) => null);
@@ -47,6 +58,16 @@ class AdminShellPage extends ConsumerWidget {
       case AdminView.editSport:
         final sport = ref.watch(editingSportProvider);
         return SportFormPage(sport: sport);
+      case AdminView.sportDetail:
+        return const SportDetailPage();
+      case AdminView.addSportDetail:
+        return const SportDetailFormPage();
+      case AdminView.editSportDetail:
+        final item = ref.watch(selectedSportDetailItemProvider);
+        return SportDetailFormPage(
+          detailType: null,
+          item: item,
+        );
     }
   }
 
@@ -166,7 +187,27 @@ class AdminShellPage extends ConsumerWidget {
                   icon: const Icon(Icons.logout,
                       color: AdminColors.textMuted, size: 18),
                   onPressed: () async {
-                    await ref.read(sportServiceProvider).signOut();
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Confirm Logout'),
+                        content: const Text('Are you sure you want to sign out?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(true),
+                            child: const Text('Sign Out',
+                                style: TextStyle(color: AdminColors.error)),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirm == true) {
+                      await ref.read(sportServiceProvider).signOut();
+                    }
                   },
                   tooltip: 'Sign Out',
                 ),

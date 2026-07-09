@@ -7,6 +7,7 @@ import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/sports_management/providers/sports_provider.dart';
 import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart';
 import 'package:admin_panel/src/features/auth/providers/admin_auth_provider.dart';
+import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_providers.dart';
 
 class SportsListPage extends ConsumerWidget {
   const SportsListPage({super.key});
@@ -175,6 +176,19 @@ class SportsListPage extends ConsumerWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      IconButton(
+                        icon: const Icon(Icons.manage_search,
+                            color: AdminColors.secondary, size: 20),
+                        onPressed: () {
+                          ref.read(selectedSportIdProvider.notifier).state =
+                              sport.id;
+                          ref.read(selectedSportNameProvider.notifier).state =
+                              sport.name;
+                          ref.read(adminViewProvider.notifier).state =
+                              AdminView.sportDetail;
+                        },
+                        tooltip: 'Manage Details',
+                      ),
                       IconButton(
                         icon: const Icon(Icons.edit_outlined,
                             color: AdminColors.primary, size: 20),
