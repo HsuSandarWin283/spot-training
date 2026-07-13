@@ -1,8 +1,10 @@
 // ignore_for_file: deprecated_member_use
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:admin_panel/src/core/theme/admin_theme.dart';
 import 'package:admin_panel/src/core/services/sport_service.dart';
+import 'package:admin_panel/src/core/services/image_upload_service.dart';
 import 'package:admin_panel/src/core/models/sport_detail_models.dart';
 import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/sports_management/providers/sports_provider.dart';
@@ -40,6 +42,8 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
   String _difficultyLevel = 'Beginner';
   bool _isLoading = false;
   String? _existingThumbnailUrl;
+  Uint8List? _selectedImageBytes;
+  String? _selectedFileName;
 
   final Map<SportDetailType, List<_DetailEntry>> _detailEntries = {
     SportDetailType.rules: [],
@@ -125,50 +129,13 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
 
   Future<void> _pickThumbnail() async {
     try {
-      final result = await showDialog<Map<String, String>>(
-        context: context,
-        builder: (ctx) {
-          final urlController = TextEditingController();
-          return AlertDialog(
-            title: const Text('Add Thumbnail Image'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Enter an image URL for the sport thumbnail:',
-                  style: TextStyle(color: AdminColors.textSecondary),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: urlController,
-                  decoration: const InputDecoration(
-                    hintText: 'https://example.com/image.jpg',
-                    labelText: 'Image URL',
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  if (urlController.text.isNotEmpty) {
-                    Navigator.of(ctx).pop({'url': urlController.text});
-                  }
-                },
-                child: const Text('Add'),
-              ),
-            ],
-          );
-        },
-      );
-
-      if (result != null && result['url'] != null) {
+      final service = ImageUploadService();
+      final result = await service.pickImageBytes();
+      if (result != null) {
         setState(() {
-          _existingThumbnailUrl = result['url'];
+          _selectedImageBytes = result['bytes'] as Uint8List;
+          _selectedFileName = result['name'] as String;
+          _existingThumbnailUrl = null;
         });
       }
     } catch (e) {
@@ -207,12 +174,14 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
     final detailError = _validateDetails();
     if (detailError != null) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(detailError),
-            backgroundColor: AdminColors.error,
-          ),
-        );
+        try {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(detailError),
+              backgroundColor: AdminColors.error,
+            ),
+          );
+        } catch (_) {}
       }
       return;
     }
@@ -223,6 +192,31 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
       final detailService = ref.read(sportDetailServiceProvider);
       String sportId;
 
+      String thumbnailUrl = _existingThumbnailUrl ?? '';
+      if (_selectedImageBytes != null) {
+        final uploadService = ImageUploadService();
+        try {
+          thumbnailUrl = await uploadService.uploadImage(
+            bytes: _selectedImageBytes!,
+            fileName: _selectedFileName ?? 'thumbnail.jpg',
+            storagePath:
+                'sports/thumbnails/${DateTime.now().millisecondsSinceEpoch}',
+          );
+        } catch (uploadError) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Image upload failed: $uploadError\nSaving sport without new image.',
+                ),
+                backgroundColor: AdminColors.warning,
+                duration: const Duration(seconds: 4),
+              ),
+            );
+          }
+        }
+      }
+
       if (_isEditing) {
         sportId = widget.sport!.id;
         await ref.read(sportServiceProvider).updateSport(
@@ -230,7 +224,7 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
               name: _nameController.text.trim(),
               description: _descriptionController.text.trim(),
               difficultyLevel: _difficultyLevel,
-              thumbnailUrl: _existingThumbnailUrl ?? '',
+              thumbnailUrl: thumbnailUrl,
             );
 
         for (final type in SportDetailType.values) {
@@ -244,7 +238,7 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
               name: _nameController.text.trim(),
               description: _descriptionController.text.trim(),
               difficultyLevel: _difficultyLevel,
-              thumbnailUrl: _existingThumbnailUrl ?? '',
+              thumbnailUrl: thumbnailUrl,
             );
       }
 
@@ -267,27 +261,23 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
       ref.invalidate(sportsListProvider);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_isEditing
-                ? 'Sport updated successfully'
-                : 'Sport added successfully'),
-            backgroundColor: AdminColors.success,
-          ),
-        );
         ref.read(adminViewProvider.notifier).state = AdminView.sports;
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AdminColors.error,
-          ),
-        );
+        try {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: $e'),
+              backgroundColor: AdminColors.error,
+            ),
+          );
+        } catch (_) {}
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -458,7 +448,33 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
             ),
           ),
           const SizedBox(height: 16),
-          if (_existingThumbnailUrl != null &&
+          if (_selectedImageBytes != null) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.memory(
+                _selectedImageBytes!,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _selectedImageBytes = null;
+                    _selectedFileName = null;
+                  });
+                },
+                icon: const Icon(Icons.close,
+                    size: 16, color: AdminColors.error),
+                label: const Text('Remove',
+                    style: TextStyle(color: AdminColors.error)),
+              ),
+            ),
+          ] else if (_existingThumbnailUrl != null &&
               _existingThumbnailUrl!.isNotEmpty) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -504,7 +520,7 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
               onPressed: _pickThumbnail,
               icon: const Icon(Icons.upload_outlined),
               label: Text(
-                (_existingThumbnailUrl?.isNotEmpty ?? false)
+                (_existingThumbnailUrl?.isNotEmpty ?? false) || _selectedImageBytes != null
                     ? 'Change Image'
                     : 'Upload Thumbnail',
               ),

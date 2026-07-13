@@ -1,1 +1,0 @@
- D:\\spot-training\\admin_panel\\build\\web\\manifest.json:  D:\\spot-training\\admin_panel\\web\\index.html D:\\spot-training\\admin_panel\\web\\manifest.json

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:admin_panel/src/core/services/image_upload_service.dart';
 
 class SportModel {
   final String id;
@@ -68,7 +68,6 @@ class SportModel {
 
 class SportService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   CollectionReference get _sportsCollection => _firestore.collection('sports');
@@ -145,9 +144,7 @@ class SportService {
       final data = doc.data() as Map<String, dynamic>;
       final thumbnailUrl = data['thumbnailUrl'] as String?;
       if (thumbnailUrl != null && thumbnailUrl.isNotEmpty) {
-        try {
-          await _storage.refFromURL(thumbnailUrl).delete();
-        } catch (_) {}
+        await ImageUploadService().deleteImage(thumbnailUrl);
       }
       await _sportsCollection.doc(id).delete();
     }

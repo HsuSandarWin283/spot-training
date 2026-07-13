@@ -10,6 +10,9 @@ import 'package:admin_panel/src/features/sports_management/pages/sport_form_page
 import 'package:admin_panel/src/features/sport_detail/pages/sport_detail_page.dart';
 import 'package:admin_panel/src/features/sport_detail/pages/sport_detail_form_page.dart';
 import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_providers.dart';
+import 'package:admin_panel/src/features/exercise_step_images/pages/exercise_step_images_page.dart';
+import 'package:admin_panel/src/features/exercise_step_images/pages/exercise_step_image_form_page.dart';
+import 'package:admin_panel/src/features/exercise_step_images/providers/exercise_step_image_providers.dart';
 
 enum AdminView {
   dashboard,
@@ -19,6 +22,9 @@ enum AdminView {
   sportDetail,
   addSportDetail,
   editSportDetail,
+  exerciseStepImages,
+  addExerciseStepImage,
+  editExerciseStepImage,
 }
 
 final adminViewProvider = StateProvider<AdminView>((ref) => AdminView.dashboard);
@@ -68,6 +74,13 @@ class AdminShellPage extends ConsumerWidget {
           detailType: null,
           item: item,
         );
+      case AdminView.exerciseStepImages:
+        return const ExerciseStepImagesPage();
+      case AdminView.addExerciseStepImage:
+        return const ExerciseStepImageFormPage();
+      case AdminView.editExerciseStepImage:
+        final post = ref.watch(selectedExerciseStepImagePostProvider);
+        return ExerciseStepImageFormPage(post: post);
     }
   }
 
@@ -136,6 +149,13 @@ class AdminShellPage extends ConsumerWidget {
             icon: Icons.sports_soccer,
             label: 'Sports Management',
             isSelected: currentView == AdminView.sports,
+          ),
+          _buildNavItem(
+            ref: ref,
+            view: AdminView.exerciseStepImages,
+            icon: Icons.photo_library_outlined,
+            label: 'Exercise Step Images',
+            isSelected: currentView == AdminView.exerciseStepImages,
           ),
           const Spacer(),
           Container(
