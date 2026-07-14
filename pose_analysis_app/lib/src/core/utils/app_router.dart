@@ -11,6 +11,7 @@ import 'package:ai_sports_training/src/features/injury_prevention/ui/pages/injur
 import 'package:ai_sports_training/src/features/auth/ui/pages/login_page.dart';
 import 'package:ai_sports_training/src/features/auth/ui/pages/register_page.dart';
 import 'package:ai_sports_training/src/features/home/ui/pages/main_page.dart';
+import 'package:ai_sports_training/src/features/exercise_step_poses/ui/pages/exercise_step_pose_detail_screen.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -96,6 +97,13 @@ final _routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const InjuryPreventionScreen(),
       ),
+      GoRoute(
+        path: '/exercise-step-pose/:postId',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => ExerciseStepPoseDetailScreen(
+          postId: state.pathParameters['postId']!,
+        ),
+      ),
     ],
   );
 });
@@ -117,4 +125,6 @@ extension GoRouterExtension on BuildContext {
   void goToPoseFeedback() => push('/pose-feedback');
   void goToTrainingDetails() => push('/training-details');
   void goToInjuryPrevention() => push('/injury-prevention');
+  void goToExerciseStepPoseDetail(String postId) =>
+      push('/exercise-step-pose/$postId');
 }
