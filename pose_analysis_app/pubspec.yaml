@@ -15,7 +15,6 @@ dependencies:
   firebase_core: 2.30.0
   firebase_auth: 4.15.0
   cloud_firestore: ^4.17.0
-  firebase_storage: 11.6.0
   google_fonts: ^8.1.0
   flutter_svg: ^2.0.10
   cached_network_image: ^3.3.1

@@ -12,6 +12,148 @@
   <title>AI Sports Training - Admin Panel</title>
 </head>
 <body>
+  <script>
+    window._poseReady = false;
+    window._poseInitError = null;
+    window._poseInitializing = false;
+
+    function calcAngle(a, b, c) {
+      var ba = [a[0] - b[0], a[1] - b[1]];
+      var bc = [c[0] - b[0], c[1] - b[1]];
+      var dot = ba[0] * bc[0] + ba[1] * bc[1];
+      var magBA = Math.sqrt(ba[0] * ba[0] + ba[1] * ba[1]);
+      var magBC = Math.sqrt(bc[0] * bc[0] + bc[1] * bc[1]);
+      if (magBA === 0 || magBC === 0) return 0;
+      var cos = dot / (magBA * magBC);
+      cos = Math.max(-1, Math.min(1, cos));
+      return Math.round(Math.acos(cos) * 180 / Math.PI);
+    }
+
+    function computeAngles(lm) {
+      var angles = {};
+      if (lm.leftShoulder && lm.leftElbow && lm.leftHip)
+        angles.leftElbowAngle = calcAngle(lm.leftShoulder, lm.leftElbow, lm.leftHip);
+      if (lm.rightShoulder && lm.rightElbow && lm.rightHip)
+        angles.rightElbowAngle = calcAngle(lm.rightShoulder, lm.rightElbow, lm.rightHip);
+      if (lm.leftHip && lm.leftKnee && lm.leftAnkle)
+        angles.leftKneeAngle = calcAngle(lm.leftHip, lm.leftKnee, lm.leftAnkle);
+      if (lm.rightHip && lm.rightKnee && lm.rightAnkle)
+        angles.rightKneeAngle = calcAngle(lm.rightHip, lm.rightKnee, lm.rightAnkle);
+      if (lm.leftShoulder && lm.rightShoulder && lm.leftHip && lm.rightHip) {
+        var sc = [(lm.leftShoulder[0]+lm.rightShoulder[0])/2, (lm.leftShoulder[1]+lm.rightShoulder[1])/2];
+        var hc = [(lm.leftHip[0]+lm.rightHip[0])/2, (lm.leftHip[1]+lm.rightHip[1])/2];
+        angles.bodyTilt = calcAngle([hc[0], hc[1]-100], hc, sc);
+      }
+      return angles;
+    }
+
+    window._poseResult = null;
+    window._poseDone = false;
+    window._poseErrorMsg = null;
+
+    window.detectPoseBase64 = function(base64Image) {
+      window._poseDone = false;
+      window._poseResult = null;
+      window._poseErrorMsg = null;
+
+      if (!window._poseReady) {
+        window._poseErrorMsg = window._poseInitError || 'Pose detection still loading...';
+        window._poseDone = true;
+        return;
+      }
+
+      (async function() {
+        try {
+          var img = new Image();
+          img.src = 'data:image/jpeg;base64,' + base64Image;
+          await new Promise(function(resolve, reject) {
+            var timer = setTimeout(function() { reject(new Error('Image load timeout')); }, 15000);
+            img.onload = function() { clearTimeout(timer); resolve(); };
+            img.onerror = function() { clearTimeout(timer); reject(new Error('Failed to load image')); };
+          });
+
+          var canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          canvas.getContext('2d').drawImage(img, 0, 0);
+
+          var result = window._poseLandmarker.detect(canvas);
+
+          if (!result.landmarks || result.landmarks.length === 0) {
+            window._poseErrorMsg = 'No pose detected. Upload a clear full-body image.';
+            window._poseDone = true;
+            return;
+          }
+
+          var landmarks = result.landmarks[0];
+          var nameMap = {
+            11:'leftShoulder', 12:'rightShoulder',
+            13:'leftElbow', 14:'rightElbow',
+            15:'leftWrist', 16:'rightWrist',
+            23:'leftHip', 24:'rightHip',
+            25:'leftKnee', 26:'rightKnee',
+            27:'leftAnkle', 28:'rightAnkle'
+          };
+
+          var extracted = {};
+          var keys = Object.keys(nameMap);
+          for (var i = 0; i < keys.length; i++) {
+            var idx = parseInt(keys[i]);
+            var name = nameMap[keys[i]];
+            var lm = landmarks[idx];
+            if (lm) {
+              extracted[name] = [Math.round(lm.x*1000)/10, Math.round(lm.y*1000)/10];
+            }
+          }
+
+          var required = ['leftShoulder','rightShoulder','leftHip','rightHip','leftKnee','rightKnee'];
+          var missing = [];
+          for (var j = 0; j < required.length; j++) {
+            if (!extracted[required[j]]) missing.push(required[j]);
+          }
+          if (missing.length > 0) {
+            window._poseErrorMsg = 'Missing: ' + missing.join(', ') + '. Upload a clearer image.';
+            window._poseDone = true;
+            return;
+          }
+
+          var angles = computeAngles(extracted);
+          window._poseResult = JSON.stringify({ success: true, landmarks: extracted, angles: angles });
+          window._poseDone = true;
+        } catch (e) {
+          window._poseErrorMsg = 'Error: ' + (e.message || e.toString());
+          window._poseDone = true;
+        }
+      })();
+    };
+
+    (async function() {
+      try {
+        var vision = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/vision_bundle.mjs');
+        var PoseLandmarker = vision.PoseLandmarker;
+        var FilesetResolver = vision.FilesetResolver;
+
+        var filesetResolver = await FilesetResolver.forVisionTasks(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/wasm'
+        );
+
+        window._poseLandmarker = await PoseLandmarker.createFromOptions(filesetResolver, {
+          baseOptions: {
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/1/pose_landmarker_heavy.task',
+            delegate: 'GPU'
+          },
+          runningMode: 'IMAGE',
+          numPoses: 1
+        });
+
+        window._poseReady = true;
+        console.log('MediaPipe Pose Detection ready');
+      } catch (e) {
+        window._poseInitError = 'Failed to init: ' + (e.message || e.toString());
+        console.error('Pose init failed:', e);
+      }
+    })();
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

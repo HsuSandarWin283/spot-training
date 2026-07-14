@@ -6,6 +6,7 @@ import 'package:admin_panel/src/core/theme/admin_theme.dart';
 import 'package:admin_panel/src/core/models/exercise_step_image_model.dart';
 import 'package:admin_panel/src/core/services/image_upload_service.dart';
 import 'package:admin_panel/src/core/services/exercise_step_image_service.dart';
+import 'package:admin_panel/src/core/services/pose_processing_service.dart';
 import 'package:admin_panel/src/core/services/sport_service.dart';
 import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/exercise_step_images/providers/exercise_step_image_providers.dart';
@@ -14,11 +15,17 @@ import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart
 
 const _kOthers = '__others__';
 
+enum _PoseStatus { idle, processing, success, failed }
+
 class _ItemEntry {
   final TextEditingController descriptionController;
   String? existingImageUrl;
   Uint8List? imageBytes;
   String? fileName;
+  Map<String, List<double>>? poseLandmarks;
+  Map<String, double>? poseAngles;
+  _PoseStatus poseStatus = _PoseStatus.idle;
+  String? poseError;
 
   _ItemEntry({String? imageUrl, String description = ''})
       : existingImageUrl = imageUrl,
@@ -27,6 +34,12 @@ class _ItemEntry {
   bool get hasImage =>
       imageBytes != null ||
       (existingImageUrl != null && existingImageUrl!.isNotEmpty);
+
+  bool get hasPoseData =>
+      poseLandmarks != null &&
+      poseLandmarks!.isNotEmpty &&
+      poseAngles != null &&
+      poseAngles!.isNotEmpty;
 
   void dispose() {
     descriptionController.dispose();
@@ -52,6 +65,7 @@ class _ExerciseStepImageFormPageState
   String? _selectedType;
   final List<_ItemEntry> _itemEntries = [];
   bool _itemsLoaded = false;
+  final PoseProcessingService _poseService = PoseProcessingService();
 
   bool get _isEditing => widget.post != null;
 
@@ -85,10 +99,16 @@ class _ExerciseStepImageFormPageState
       setState(() {
         _itemEntries.clear();
         for (final item in items) {
-          _itemEntries.add(_ItemEntry(
+          final entry = _ItemEntry(
             imageUrl: item.imageUrl,
             description: item.description,
-          ));
+          );
+          if (item.poseLandmarks.isNotEmpty) {
+            entry.poseLandmarks = item.poseLandmarks;
+            entry.poseAngles = item.poseAngles;
+            entry.poseStatus = _PoseStatus.success;
+          }
+          _itemEntries.add(entry);
         }
         if (_itemEntries.isEmpty) {
           _itemEntries.add(_ItemEntry());
@@ -133,11 +153,17 @@ class _ExerciseStepImageFormPageState
       final service = ImageUploadService();
       final result = await service.pickImageBytes();
       if (result != null) {
+        final bytes = result['bytes'] as Uint8List;
         setState(() {
-          _itemEntries[index].imageBytes = result['bytes'] as Uint8List;
+          _itemEntries[index].imageBytes = bytes;
           _itemEntries[index].fileName = result['name'] as String;
           _itemEntries[index].existingImageUrl = null;
+          _itemEntries[index].poseLandmarks = null;
+          _itemEntries[index].poseAngles = null;
+          _itemEntries[index].poseStatus = _PoseStatus.idle;
+          _itemEntries[index].poseError = null;
         });
+        _processPoseForItem(index);
       }
     } catch (e) {
       if (mounted) {
@@ -148,6 +174,46 @@ class _ExerciseStepImageFormPageState
           ),
         );
       }
+    }
+  }
+
+  Future<void> _processPoseForItem(int index) async {
+    final entry = _itemEntries[index];
+    if (entry.imageBytes == null) return;
+
+    setState(() {
+      entry.poseStatus = _PoseStatus.processing;
+      entry.poseError = null;
+    });
+
+    try {
+      final result = await _poseService.processImage(entry.imageBytes!);
+
+      if (!PoseProcessingService.validateLandmarks(result.landmarks)) {
+        setState(() {
+          entry.poseStatus = _PoseStatus.failed;
+          entry.poseError =
+              'Image must contain a full body with visible landmarks. Please upload a clearer full-body reference pose image.';
+        });
+        return;
+      }
+
+      setState(() {
+        entry.poseLandmarks = result.landmarks;
+        entry.poseAngles = result.angles;
+        entry.poseStatus = _PoseStatus.success;
+        entry.poseError = null;
+      });
+    } on PoseProcessingException catch (e) {
+      setState(() {
+        entry.poseStatus = _PoseStatus.failed;
+        entry.poseError = e.message;
+      });
+    } catch (e) {
+      setState(() {
+        entry.poseStatus = _PoseStatus.failed;
+        entry.poseError = 'Failed to process pose: $e';
+      });
     }
   }
 
@@ -192,6 +258,59 @@ class _ExerciseStepImageFormPageState
       }
     }
 
+    for (int i = 0; i < _itemEntries.length; i++) {
+      final entry = _itemEntries[i];
+      if (!entry.hasImage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Item ${i + 1}: Image is required.'),
+            backgroundColor: AdminColors.error,
+          ),
+        );
+        return;
+      }
+    }
+
+    final failedItems = _itemEntries
+        .where((e) =>
+            e.hasImage &&
+            e.imageBytes != null &&
+            e.poseStatus == _PoseStatus.failed)
+        .length;
+    final pendingItems = _itemEntries
+        .where((e) =>
+            e.hasImage &&
+            e.imageBytes != null &&
+            e.poseStatus == _PoseStatus.processing)
+        .length;
+
+    if (failedItems > 0 || pendingItems > 0) {
+      final proceed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Pose Detection Incomplete'),
+          content: Text(
+            '${failedItems > 0 ? "$failedItems image(s) failed pose detection. " : ''}'
+            '${pendingItems > 0 ? "$pendingItems image(s) still processing." : ''}'
+            '\n\nImages will be saved without pose data. '
+            'You can re-upload later to add pose detection.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Save Anyway',
+                  style: TextStyle(color: AdminColors.primary)),
+            ),
+          ],
+        ),
+      );
+      if (proceed != true) return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
@@ -205,6 +324,8 @@ class _ExerciseStepImageFormPageState
                   imageBytes: e.imageBytes,
                   fileName: e.fileName,
                   description: e.descriptionController.text.trim(),
+                  poseLandmarks: e.poseLandmarks,
+                  poseAngles: e.poseAngles,
                 ))
             .toList();
 
@@ -224,6 +345,8 @@ class _ExerciseStepImageFormPageState
                   imageBytes: e.imageBytes,
                   fileName: e.fileName,
                   description: e.descriptionController.text.trim(),
+                  poseLandmarks: e.poseLandmarks,
+                  poseAngles: e.poseAngles,
                 ))
             .toList();
 
@@ -294,7 +417,7 @@ class _ExerciseStepImageFormPageState
                     Text(
                       _isEditing
                           ? widget.post!.title
-                          : 'Add exercise step images',
+                          : 'Add exercise step images with pose detection',
                       style: const TextStyle(
                         color: AdminColors.textSecondary,
                         fontSize: 14,
@@ -314,10 +437,7 @@ class _ExerciseStepImageFormPageState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (!_isEditing)
-                      _buildTypeSection(sportsAsync, typesAsync),
-                    if (_isEditing)
-                      _buildTypeSection(sportsAsync, typesAsync),
+                    _buildTypeSection(sportsAsync, typesAsync),
                     if (_selectedType == _kOthers) ...[
                       const SizedBox(height: 16),
                       AdminCard(
@@ -498,12 +618,22 @@ class _ExerciseStepImageFormPageState
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
-            '* At least one image + description is required',
-            style: TextStyle(
-              color: AdminColors.warning,
-              fontSize: 12,
-            ),
+          const Row(
+            children: [
+              Icon(Icons.info_outline,
+                  color: AdminColors.warning, size: 14),
+              SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  '* Each image is processed with ML Kit Pose Detection. '
+                  'Pose must be detected successfully before saving.',
+                  style: TextStyle(
+                    color: AdminColors.warning,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           if (_itemEntries.isEmpty)
@@ -540,7 +670,17 @@ class _ExerciseStepImageFormPageState
       decoration: BoxDecoration(
         color: AdminColors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AdminColors.border),
+        border: Border.all(
+          color: entry.poseStatus == _PoseStatus.success
+              ? AdminColors.success.withOpacity(0.5)
+              : entry.poseStatus == _PoseStatus.failed
+                  ? AdminColors.error.withOpacity(0.5)
+                  : AdminColors.border,
+          width: entry.poseStatus == _PoseStatus.success ||
+                  entry.poseStatus == _PoseStatus.failed
+              ? 2
+              : 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -556,6 +696,8 @@ class _ExerciseStepImageFormPageState
                 ),
               ),
               const Spacer(),
+              _buildPoseStatusBadge(entry),
+              const SizedBox(width: 8),
               IconButton(
                 icon: const Icon(Icons.delete_outline,
                     color: AdminColors.error, size: 18),
@@ -573,10 +715,12 @@ class _ExerciseStepImageFormPageState
           ),
           const SizedBox(height: 8),
           GestureDetector(
-            onTap: () => _pickItemImage(index),
+            onTap: entry.poseStatus == _PoseStatus.processing
+                ? null
+                : () => _pickItemImage(index),
             child: Container(
               width: double.infinity,
-              height: 160,
+              height: 200,
               decoration: BoxDecoration(
                 color: AdminColors.background,
                 borderRadius: BorderRadius.circular(12),
@@ -589,13 +733,60 @@ class _ExerciseStepImageFormPageState
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: () => _pickItemImage(index),
-              icon: const Icon(Icons.upload_outlined, size: 16),
+              onPressed: entry.poseStatus == _PoseStatus.processing
+                  ? null
+                  : () => _pickItemImage(index),
+              icon: entry.poseStatus == _PoseStatus.processing
+                  ? const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AdminColors.primary),
+                      ),
+                    )
+                  : const Icon(Icons.upload_outlined, size: 16),
               label: Text(
                 entry.hasImage ? 'Change Image' : 'Select Image',
               ),
             ),
           ),
+          if (entry.poseStatus == _PoseStatus.failed && entry.poseError != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AdminColors.error.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border:
+                      Border.all(color: AdminColors.error.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.error_outline,
+                        color: AdminColors.error, size: 16),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        entry.poseError!,
+                        style: const TextStyle(
+                          color: AdminColors.error,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          if (entry.poseStatus == _PoseStatus.success &&
+              entry.poseLandmarks != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: _buildPoseDataPreview(entry),
+            ),
           const SizedBox(height: 12),
           TextFormField(
             controller: entry.descriptionController,
@@ -618,6 +809,175 @@ class _ExerciseStepImageFormPageState
     );
   }
 
+  Widget _buildPoseStatusBadge(_ItemEntry entry) {
+    switch (entry.poseStatus) {
+      case _PoseStatus.idle:
+        return const SizedBox.shrink();
+      case _PoseStatus.processing:
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            color: AdminColors.info.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 10,
+                height: 10,
+                child: CircularProgressIndicator(
+                  strokeWidth: 1.5,
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(AdminColors.info),
+                ),
+              ),
+              SizedBox(width: 4),
+              Text(
+                'Processing...',
+                style: TextStyle(
+                  color: AdminColors.info,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        );
+      case _PoseStatus.success:
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            color: AdminColors.success.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.check_circle, size: 12, color: AdminColors.success),
+              SizedBox(width: 4),
+              Text(
+                'Pose Detected',
+                style: TextStyle(
+                  color: AdminColors.success,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        );
+      case _PoseStatus.failed:
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            color: AdminColors.error.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.cancel, size: 12, color: AdminColors.error),
+              SizedBox(width: 4),
+              Text(
+                'Failed',
+                style: TextStyle(
+                  color: AdminColors.error,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        );
+    }
+  }
+
+  Widget _buildPoseDataPreview(_ItemEntry entry) {
+    final landmarks = entry.poseLandmarks!;
+    final angles = entry.poseAngles ?? {};
+
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AdminColors.success.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AdminColors.success.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.accessibility_new,
+                  size: 14, color: AdminColors.success),
+              SizedBox(width: 6),
+              Text(
+                'Extracted Pose Data',
+                style: TextStyle(
+                  color: AdminColors.success,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: [
+              ...landmarks.entries.take(6).map((e) {
+                final coords = e.value;
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AdminColors.background,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    '${e.key}: [${coords[0].toStringAsFixed(0)}, ${coords[1].toStringAsFixed(0)}]',
+                    style: const TextStyle(
+                      color: AdminColors.textMuted,
+                      fontSize: 10,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
+          if (angles.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              children: angles.entries.map((e) {
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AdminColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    '${e.key}: ${e.value.toStringAsFixed(1)}°',
+                    style: const TextStyle(
+                      color: AdminColors.primary,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildItemPreview(int index, _ItemEntry entry) {
     if (entry.imageBytes != null) {
       return ClipRRect(
@@ -626,6 +986,26 @@ class _ExerciseStepImageFormPageState
           fit: StackFit.expand,
           children: [
             Image.memory(entry.imageBytes!, fit: BoxFit.cover),
+            if (entry.poseStatus == _PoseStatus.processing)
+              Container(
+                color: Colors.black.withOpacity(0.4),
+                child: const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Detecting pose...',
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             Positioned(
               top: 8,
               right: 8,
@@ -680,16 +1060,24 @@ class _ExerciseStepImageFormPageState
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.add_photo_alternate_outlined,
+            Icons.accessibility_new,
             size: 40,
             color: AdminColors.textMuted.withOpacity(0.5),
           ),
           const SizedBox(height: 8),
           Text(
-            'Tap to select an image',
+            'Tap to select a full-body pose image',
             style: TextStyle(
               color: AdminColors.textMuted.withOpacity(0.7),
               fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'ML Kit will detect body landmarks automatically',
+            style: TextStyle(
+              color: AdminColors.textMuted.withOpacity(0.5),
+              fontSize: 11,
             ),
           ),
         ],

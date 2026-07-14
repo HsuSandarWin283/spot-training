@@ -5,21 +5,45 @@ class ExerciseStepImageItem {
   final String imageUrl;
   final String description;
   final int stepOrder;
+  final Map<String, List<double>> poseLandmarks;
+  final Map<String, double> poseAngles;
 
   ExerciseStepImageItem({
     required this.id,
     required this.imageUrl,
     required this.description,
     required this.stepOrder,
+    this.poseLandmarks = const {},
+    this.poseAngles = const {},
   });
 
   factory ExerciseStepImageItem.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
+    final rawLandmarks = Map<String, dynamic>.from(data['poseLandmarks'] ?? {});
+    final landmarks = <String, List<double>>{};
+    for (final entry in rawLandmarks.entries) {
+      if (entry.value is List) {
+        landmarks[entry.key] =
+            (entry.value as List).map((e) => (e as num).toDouble()).toList();
+      }
+    }
+
+    final rawAngles = Map<String, dynamic>.from(data['poseAngles'] ?? {});
+    final angles = <String, double>{};
+    for (final entry in rawAngles.entries) {
+      if (entry.value is num) {
+        angles[entry.key] = (entry.value as num).toDouble();
+      }
+    }
+
     return ExerciseStepImageItem(
       id: doc.id,
       imageUrl: data['imageUrl'] ?? '',
       description: data['description'] ?? '',
       stepOrder: data['stepOrder'] ?? 0,
+      poseLandmarks: landmarks,
+      poseAngles: angles,
     );
   }
 }

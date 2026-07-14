@@ -65,6 +65,8 @@ class ExerciseStepImageService {
         'imageUrl': imageUrl,
         'description': pending.description,
         'stepOrder': i + 1,
+        'poseLandmarks': pending.poseLandmarks ?? {},
+        'poseAngles': pending.poseAngles ?? {},
       });
     }
 
@@ -98,6 +100,8 @@ class ExerciseStepImageService {
         'imageUrl': imageUrl,
         'description': pending.description,
         'stepOrder': i + 1,
+        'poseLandmarks': pending.poseLandmarks ?? {},
+        'poseAngles': pending.poseAngles ?? {},
       });
     }
 
@@ -137,11 +141,15 @@ class PendingExerciseStepItem {
   final Uint8List? imageBytes;
   final String? fileName;
   final String description;
+  final Map<String, List<double>>? poseLandmarks;
+  final Map<String, double>? poseAngles;
 
   PendingExerciseStepItem({
     this.existingImageUrl,
     this.imageBytes,
     this.fileName,
     required this.description,
+    this.poseLandmarks,
+    this.poseAngles,
   });
 }
