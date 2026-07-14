@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:admin_panel/src/core/services/image_upload_service.dart';
@@ -150,20 +151,43 @@ class SportService {
     }
   }
 
-  Future<Map<String, int>> getDashboardStats() async {
-    final sportsSnapshot = await _sportsCollection.get();
-    final usersSnapshot = await _firestore.collection('users').get();
+  Stream<Map<String, int>> getDashboardStats() {
+    final controller = StreamController<Map<String, int>>();
 
-    int totalPoses = 0;
-    for (final sportDoc in sportsSnapshot.docs) {
-      final posesSnapshot = await sportDoc.reference.collection('poses').get();
-      totalPoses += posesSnapshot.size;
+    Future<void> computeAndEmit() async {
+      final sportsSnapshot = await _sportsCollection.get();
+      final usersSnapshot = await _firestore.collection('users').get();
+      final exerciseStepSnapshot =
+          await _firestore.collection('exercise_step_image_posts').get();
+
+      int totalPoses = 0;
+      for (final sportDoc in sportsSnapshot.docs) {
+        final posesSnapshot = await sportDoc.reference.collection('poses').get();
+        totalPoses += posesSnapshot.size;
+      }
+
+      if (!controller.isClosed) {
+        controller.add({
+          'totalSports': sportsSnapshot.size,
+          'totalPoses': totalPoses,
+          'totalExerciseStepImages': exerciseStepSnapshot.size,
+          'totalUsers': usersSnapshot.size,
+        });
+      }
     }
 
-    return {
-      'totalSports': sportsSnapshot.size,
-      'totalPoses': totalPoses,
-      'totalUsers': usersSnapshot.size,
+    final subs = <StreamSubscription>[
+      _sportsCollection.snapshots().listen((_) => computeAndEmit()),
+      _firestore.collection('users').snapshots().listen((_) => computeAndEmit()),
+      _firestore.collection('exercise_step_image_posts').snapshots().listen((_) => computeAndEmit()),
+    ];
+
+    controller.onCancel = () {
+      for (final sub in subs) {
+        sub.cancel();
+      }
     };
+
+    return controller.stream;
   }
 }

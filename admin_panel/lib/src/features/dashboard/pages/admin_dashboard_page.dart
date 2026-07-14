@@ -6,8 +6,9 @@ import 'package:admin_panel/src/core/theme/admin_theme.dart';
 import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/auth/providers/admin_auth_provider.dart';
 import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart';
+import 'package:admin_panel/src/features/exercise_step_images/providers/exercise_step_image_providers.dart';
 
-final dashboardStatsProvider = FutureProvider<Map<String, int>>((ref) {
+final dashboardStatsProvider = StreamProvider<Map<String, int>>((ref) {
   return ref.watch(sportServiceProvider).getDashboardStats();
 });
 
@@ -96,9 +97,9 @@ class AdminDashboardPage extends ConsumerWidget {
               gradient: AdminColors.successGradient,
             ),
             StatCard(
-              title: 'Reference Images',
-              value: '${stats['totalPoses'] ?? 0}',
-              icon: Icons.image,
+              title: 'Exercise Step Poses',
+              value: '${stats['totalExerciseStepImages'] ?? 0}',
+              icon: Icons.photo_library_outlined,
               gradient: AdminColors.warningGradient,
             ),
             StatCard(
@@ -134,6 +135,28 @@ class AdminDashboardPage extends ConsumerWidget {
           color: AdminColors.secondary,
           onTap: () {
             ref.read(adminViewProvider.notifier).state = AdminView.sports;
+          },
+        ),
+        _QuickActionCard(
+          icon: Icons.photo_library_outlined,
+          title: 'Exercise Step Images',
+          subtitle: 'Manage step image posts',
+          color: AdminColors.warning,
+          onTap: () {
+            ref.read(adminViewProvider.notifier).state =
+                AdminView.exerciseStepImages;
+          },
+        ),
+        _QuickActionCard(
+          icon: Icons.add_photo_alternate_outlined,
+          title: 'Create Step Image',
+          subtitle: 'Add new exercise step images',
+          color: AdminColors.success,
+          onTap: () {
+            ref.read(selectedExerciseStepImagePostProvider.notifier).state =
+                null;
+            ref.read(adminViewProvider.notifier).state =
+                AdminView.addExerciseStepImage;
           },
         ),
       ],
