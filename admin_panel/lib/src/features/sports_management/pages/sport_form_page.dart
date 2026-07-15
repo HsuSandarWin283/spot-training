@@ -440,7 +440,7 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Thumbnail Image',
+            'Photo',
             style: TextStyle(
               color: AdminColors.textPrimary,
               fontSize: 18,
@@ -522,7 +522,7 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
               label: Text(
                 (_existingThumbnailUrl?.isNotEmpty ?? false) || _selectedImageBytes != null
                     ? 'Change Image'
-                    : 'Upload Thumbnail',
+                    : 'Upload Image',
               ),
             ),
           ),

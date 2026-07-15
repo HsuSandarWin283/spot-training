@@ -12,8 +12,8 @@ final sportsListProvider =
 });
 
 final sportInfoProvider =
-    FutureProvider.family<Map<String, dynamic>?, String>((ref, sportId) {
-  return ref.watch(sportDetailServiceProvider).getSport(sportId);
+    StreamProvider.family<Map<String, dynamic>?, String>((ref, sportId) {
+  return ref.watch(sportDetailServiceProvider).watchSport(sportId);
 });
 
 final sportDetailListProvider =

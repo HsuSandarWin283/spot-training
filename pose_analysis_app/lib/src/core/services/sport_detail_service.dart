@@ -22,6 +22,17 @@ class SportDetailService {
     return null;
   }
 
+  Stream<Map<String, dynamic>?> watchSport(String sportId) {
+    return _firestore.collection('sports').doc(sportId).snapshots().map(
+      (doc) {
+        if (doc.exists) {
+          return {'id': doc.id, ...doc.data()!};
+        }
+        return null;
+      },
+    );
+  }
+
   Stream<List<SportDetailItem>> getItems(String sportId, SportDetailType type) {
     return _firestore
         .collection(type.collectionName)

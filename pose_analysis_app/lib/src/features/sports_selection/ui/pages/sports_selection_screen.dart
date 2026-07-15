@@ -66,7 +66,7 @@ class SportsSelectionScreen extends ConsumerWidget {
                           final name = sport['name'] as String? ?? '';
                           final description =
                               sport['description'] as String? ?? '';
-                          final imageUrl = sport['imageUrl'] as String? ?? '';
+                          final imageUrl = sport['thumbnailUrl'] as String? ?? '';
 
                           final fallback = _findFallback(sportId);
 

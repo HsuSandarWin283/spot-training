@@ -93,13 +93,13 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
         final name = sportData?['name'] ?? _fallbackSport.name;
         final description =
             sportData?['description'] ?? _fallbackSport.description;
-        final imageUrl = sportData?['imageUrl'] ?? '';
+        final thumbnailUrl = sportData?['thumbnailUrl'] ?? '';
         final icon = _fallbackSport.icon;
 
         return _buildHeaderContent(
           name: name,
           description: description,
-          imageUrl: imageUrl,
+          imageUrl: thumbnailUrl,
           icon: icon,
           sportColor: sportColor,
         );
