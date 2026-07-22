@@ -22,3 +22,9 @@ final currentUserProvider = Provider<User?>((ref) {
     data: (user) => user,
   );
 });
+
+final userProfileStreamProvider = StreamProvider<User?>((ref) {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return Stream.value(null);
+  return ref.read(authRepositoryProvider).watchCurrentUser(user.uid);
+});

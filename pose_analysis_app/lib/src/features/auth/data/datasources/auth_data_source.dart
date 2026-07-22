@@ -8,7 +8,8 @@ abstract class AuthDataSource {
   Future<UserModel> signUp(String email, String password, String fullName);
   Future<void> signOut();
   Future<void> resetPassword(String email);
-  Future<void> updateProfile({String? fullName, String? photoUrl});
+  Future<void> updateProfile({String? fullName, String? email, String? photoUrl, String? phone, String? bio});
+  Stream<UserModel?> watchCurrentUser(String uid);
   Stream<UserModel?> get authStateChanges;
 }
 
@@ -88,7 +89,7 @@ class FirebaseAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<void> updateProfile({String? fullName, String? photoUrl}) async {
+  Future<void> updateProfile({String? fullName, String? email, String? photoUrl, String? phone, String? bio}) async {
     final fbUser = _firebaseAuth.currentUser;
     if (fbUser == null) return;
 
@@ -97,13 +98,31 @@ class FirebaseAuthDataSource implements AuthDataSource {
       await fbUser.updateDisplayName(fullName);
       updates['fullName'] = fullName;
     }
+    if (email != null && email.isNotEmpty && email != fbUser.email) {
+      await fbUser.verifyBeforeUpdateEmail(email);
+      updates['email'] = email;
+    }
     if (photoUrl != null) {
       await fbUser.updatePhotoURL(photoUrl);
       updates['photoUrl'] = photoUrl;
     }
+    if (phone != null) {
+      updates['phone'] = phone;
+    }
+    if (bio != null) {
+      updates['bio'] = bio;
+    }
     if (updates.isNotEmpty) {
       await _users.doc(fbUser.uid).update(updates);
     }
+  }
+
+  @override
+  Stream<UserModel?> watchCurrentUser(String uid) {
+    return _users.doc(uid).snapshots().map((doc) {
+      if (!doc.exists) return null;
+      return UserModel.fromFirestore(doc);
+    });
   }
 
   @override

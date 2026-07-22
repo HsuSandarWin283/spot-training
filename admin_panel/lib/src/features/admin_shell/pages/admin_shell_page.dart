@@ -13,6 +13,8 @@ import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_pro
 import 'package:admin_panel/src/features/exercise_step_images/pages/exercise_step_images_page.dart';
 import 'package:admin_panel/src/features/exercise_step_images/pages/exercise_step_image_form_page.dart';
 import 'package:admin_panel/src/features/exercise_step_images/providers/exercise_step_image_providers.dart';
+import 'package:admin_panel/src/features/user_management/pages/user_management_page.dart';
+import 'package:admin_panel/src/features/auth/pages/admin_profile_page.dart';
 
 enum AdminView {
   dashboard,
@@ -25,6 +27,8 @@ enum AdminView {
   exerciseStepImages,
   addExerciseStepImage,
   editExerciseStepImage,
+  users,
+  adminProfile,
 }
 
 final adminViewProvider = StateProvider<AdminView>((ref) => AdminView.dashboard);
@@ -81,6 +85,10 @@ class AdminShellPage extends ConsumerWidget {
       case AdminView.editExerciseStepImage:
         final post = ref.watch(selectedExerciseStepImagePostProvider);
         return ExerciseStepImageFormPage(post: post);
+      case AdminView.users:
+        return const UserManagementPage();
+      case AdminView.adminProfile:
+        return const AdminProfilePage();
     }
   }
 
@@ -157,6 +165,13 @@ class AdminShellPage extends ConsumerWidget {
             label: 'Exercise Step Images',
             isSelected: currentView == AdminView.exerciseStepImages,
           ),
+          _buildNavItem(
+            ref: ref,
+            view: AdminView.users,
+            icon: Icons.people,
+            label: 'Users',
+            isSelected: currentView == AdminView.users,
+          ),
           const Spacer(),
           Container(
             padding: const EdgeInsets.all(16),
@@ -166,6 +181,11 @@ class AdminShellPage extends ConsumerWidget {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AdminColors.border),
             ),
+            child: InkWell(
+              onTap: () {
+                ref.read(adminViewProvider.notifier).state = AdminView.adminProfile;
+              },
+              borderRadius: BorderRadius.circular(12),
             child: Row(
               children: [
                 CircleAvatar(
@@ -232,6 +252,7 @@ class AdminShellPage extends ConsumerWidget {
                   tooltip: 'Sign Out',
                 ),
               ],
+            ),
             ),
           ),
         ],

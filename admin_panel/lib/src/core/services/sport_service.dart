@@ -88,6 +88,30 @@ class SportService {
 
   User? get currentUser => _auth.currentUser;
 
+  Future<void> updateAdminProfile({
+    String? displayName,
+    String? email,
+    String? photoUrl,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    if (displayName != null) {
+      await user.updateDisplayName(displayName);
+    }
+    if (email != null && email.isNotEmpty && email != user.email) {
+      await user.verifyBeforeUpdateEmail(email);
+    }
+    if (photoUrl != null) {
+      await user.updatePhotoURL(photoUrl);
+    }
+  }
+
+  Future<void> changePassword(String newPassword) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    await user.updatePassword(newPassword);
+  }
+
   Stream<List<SportModel>> getSports() {
     return _sportsCollection
         .orderBy('createdAt', descending: true)

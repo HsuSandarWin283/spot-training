@@ -32,8 +32,12 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> sendPasswordResetEmail(String email) => dataSource.resetPassword(email);
 
   @override
-  Future<void> updateProfile({String? fullName, String? photoUrl}) =>
-      dataSource.updateProfile(fullName: fullName, photoUrl: photoUrl);
+  Future<void> updateProfile({String? fullName, String? email, String? photoUrl, String? phone, String? bio}) =>
+      dataSource.updateProfile(fullName: fullName, email: email, photoUrl: photoUrl, phone: phone, bio: bio);
+
+  @override
+  Stream<User?> watchCurrentUser(String uid) =>
+      dataSource.watchCurrentUser(uid).map((model) => model?.toDomain());
 
   @override
   Stream<User?> get authStateChanges => dataSource.authStateChanges.map((model) => model?.toDomain());
