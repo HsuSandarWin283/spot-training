@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
+import 'package:ai_sports_training/src/core/services/cloud_tts_service.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/models/exercise_step_image_post.dart';
@@ -826,11 +827,50 @@ class _PoseCameraViewState extends State<PoseCameraView> {
   bool _isProcessing = false;
   bool _isInitialized = false;
   String _error = '';
+  final CloudTtsService _cloudTts = CloudTtsService();
+  String _lastFeedback = '';
 
   @override
   void initState() {
     super.initState();
+    _initTts();
     _initCamera();
+  }
+
+  Future<void> _initTts() async {
+    try {
+      await _cloudTts.init();
+      debugPrint('PoseCameraView: Cloud TTS ready');
+    } catch (e) {
+      debugPrint('PoseCameraView: TTS init error: $e');
+    }
+  }
+
+  Future<void> _speakMyanmar(String english) async {
+    final text = _toMyanmar(english);
+    if (text == _lastFeedback || _cloudTts.isPlaying) return;
+    _lastFeedback = text;
+    await _cloudTts.speak(text: text, languageCode: 'my-MM');
+  }
+
+  String _toMyanmar(String english) {
+    const map = {
+      'Raise your left arm': 'ဘယ်ဘက်လက်ကို အပေါ်ဘက် မြှောက်ပါ',
+      'Lower your left arm': 'ဘယ်ဘက်လက်ကို အောက်ချပါ',
+      'Raise your right arm': 'ညာဘက်လက်ကို အပေါ်ဘက် မြှောက်ပါ',
+      'Lower your right arm': 'ညာဘက်လက်ကို အောက်ချပါ',
+      'Straighten your left leg': 'ဘယ်ဘက်ဒူးကို ဆန့်တန်းပါ',
+      'Bend your left knee': 'ဘယ်ဘက်ဒူးကို ကွေးပါ',
+      'Straighten your right leg': 'ညာဘက်ဒူးကို ဆန့်တန်းပါ',
+      'Bend your right knee': 'ညာဘက်ဒူးကို ကွေးပါ',
+      'Straighten your back': 'ကျောကို တည့်တည့်ထားပါ',
+      'Match the reference pose': 'ပုံတူကူးပါ',
+      'Step back to show full body': 'ခြေလှမ်းနောက်ဆုတ်ပါ',
+      'No person detected': 'လူတစ်ယောက် မတွေ့ပါ။ ကင်မရာရှေ့ ရပ်ပါ',
+      'Excellent alignment!': 'အလွန်ကောင်းပါသည်',
+      'Step Complete!': 'ဆင့်ပြီးပါပြီ။ နောက်တစ်ဆင့်သို့ ဆက်သွားနိုင်ပါပြီ',
+    };
+    return map[english] ?? english;
   }
 
   Future<void> _initCamera() async {
@@ -904,6 +944,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
 
           if (detectedCount < 8) {
             widget.onResult(0, 'Step back to show full body');
+            _speakMyanmar('Step back to show full body');
             _isProcessing = false;
             return;
           }
@@ -911,8 +952,15 @@ class _PoseCameraViewState extends State<PoseCameraView> {
           final angles = _calculateAnglesFromPose(pose);
           final result = _compareWithReference(angles);
           widget.onResult(result.$1, result.$2);
+
+          if (result.$1 >= 80) {
+            _speakMyanmar('Excellent alignment!');
+          } else if (result.$1 >= 0 && result.$2.isNotEmpty) {
+            _speakMyanmar(result.$2);
+          }
         } else if (mounted) {
           widget.onResult(0, 'No person detected');
+          _speakMyanmar('Match the reference pose');
         }
       } catch (_) {}
 
@@ -1061,6 +1109,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
 
   @override
   void dispose() {
+    _cloudTts.stop();
     _cameraController?.stopImageStream();
     _cameraController?.dispose();
     _poseDetector?.close();

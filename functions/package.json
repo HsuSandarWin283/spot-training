@@ -1,0 +1,16 @@
+{
+  "name": "spot-training-functions",
+  "description": "Cloud Functions for Spot Training",
+  "version": "1.0.0",
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^5.0.0",
+    "cors": "^2.8.5",
+    "@google-cloud/text-to-speech": "^5.0.0"
+  },
+  "private": true
+}

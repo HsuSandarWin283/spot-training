@@ -13,6 +13,7 @@ import 'package:ai_sports_training/src/features/auth/ui/pages/register_page.dart
 import 'package:ai_sports_training/src/features/home/ui/pages/main_page.dart';
 import 'package:ai_sports_training/src/features/exercise_step_poses/ui/pages/exercise_step_pose_detail_screen.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
+import 'package:ai_sports_training/src/features/exercise_flow/ui/pages/exercise_categories_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -104,6 +105,11 @@ final _routerProvider = Provider<GoRouter>((ref) {
           postId: state.pathParameters['postId']!,
         ),
       ),
+      GoRoute(
+        path: '/exercise-categories',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ExerciseCategoriesScreen(),
+      ),
     ],
   );
 });
@@ -127,4 +133,5 @@ extension GoRouterExtension on BuildContext {
   void goToInjuryPrevention() => push('/injury-prevention');
   void goToExerciseStepPoseDetail(String postId) =>
       push('/exercise-step-pose/$postId');
+  void goToExerciseCategories() => push('/exercise-categories');
 }
