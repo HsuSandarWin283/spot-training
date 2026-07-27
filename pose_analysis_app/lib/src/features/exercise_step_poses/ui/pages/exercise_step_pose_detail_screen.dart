@@ -434,7 +434,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                 setState(() {
                   _accuracy = accuracy;
                   _feedback = feedback;
-                  if (accuracy >= 80) {
+                  if (accuracy >= 90) {
                     _onItemMatched();
                   }
                 });
@@ -684,7 +684,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
   }
 
   Widget _buildAccuracyBar() {
-    final color = _accuracy >= 80
+    final color = _accuracy >= 90
         ? AppColors.success
         : _accuracy >= 40
             ? AppColors.warning
@@ -1041,7 +1041,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
           final result = _compareWithReference(angles);
           widget.onResult(result.$1, result.$2);
 
-          if (result.$1 >= 80) {
+          if (result.$1 >= 90) {
             _speakMyanmar('Excellent alignment!');
           } else if (result.$1 >= 0 && result.$2.isNotEmpty) {
             _speakMyanmar(result.$2);
@@ -1182,7 +1182,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
     final accuracy = max(0.0, 100 - (avgDiff / 45 * 100));
 
     String feedback;
-    if (accuracy >= 80) {
+    if (accuracy >= 90) {
       feedback = 'Excellent form!';
     } else if (accuracy >= 60) {
       feedback = 'Good, adjust slightly';

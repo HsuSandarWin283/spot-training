@@ -17,7 +17,7 @@ class PoseAnalysisResult {
 }
 
 class PoseAnalysisService {
-  static const double _successThreshold = 80;
+  static const double _successThreshold = 90;
 
   PoseAnalysisResult analyze({
     required Pose pose,

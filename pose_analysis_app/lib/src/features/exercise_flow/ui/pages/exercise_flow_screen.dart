@@ -531,7 +531,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
   }
 
   Widget _buildAccuracyBar(ExerciseStepState stepState) {
-    final color = stepState.accuracy >= 80
+    final color = stepState.accuracy >= 90
         ? AppColors.success
         : stepState.accuracy >= 50
             ? AppColors.warning

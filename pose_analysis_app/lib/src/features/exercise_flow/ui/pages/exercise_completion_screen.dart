@@ -231,7 +231,7 @@ class _ExerciseCompletionScreenState
           ),
           const SizedBox(height: 12),
           ...widget.stepResults.map((result) {
-            final color = result.accuracy >= 80
+            final color = result.accuracy >= 90
                 ? AppColors.success
                 : result.accuracy >= 50
                     ? AppColors.warning
