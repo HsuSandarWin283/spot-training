@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -307,20 +308,46 @@ class PosePracticeScreen extends StatefulWidget {
 }
 
 class _PosePracticeScreenState extends State<PosePracticeScreen> {
-  int _currentStep = 0;
+  int _currentStepIndex = 0;
+  int _currentItemIndexInStep = 0;
   double _accuracy = 0;
   bool _stepComplete = false;
   bool _allDone = false;
   String _feedback = '';
   bool _cameraPermissionGranted = false;
   bool _permissionChecked = false;
+  bool _autoAdvancing = false;
+  Timer? _autoAdvanceTimer;
 
-  ExerciseStepImageItem get _currentItem => widget.items[_currentStep];
+  late List<List<ExerciseStepImageItem>> _steps;
+
+  List<ExerciseStepImageItem> get _currentStepItems => _steps[_currentStepIndex];
+  ExerciseStepImageItem get _currentItem => _currentStepItems[_currentItemIndexInStep];
+  bool get _isLastItemInStep => _currentItemIndexInStep >= _currentStepItems.length - 1;
+  bool get _isLastStep => _currentStepIndex >= _steps.length - 1;
 
   @override
   void initState() {
     super.initState();
+    _groupItemsByStep();
     _requestCameraPermission();
+  }
+
+  void _groupItemsByStep() {
+    final sorted = List<ExerciseStepImageItem>.from(widget.items)
+      ..sort((a, b) {
+        final stepCmp = a.stepNumber.compareTo(b.stepNumber);
+        if (stepCmp != 0) return stepCmp;
+        return a.stepOrder.compareTo(b.stepOrder);
+      });
+
+    final map = <int, List<ExerciseStepImageItem>>{};
+    for (final item in sorted) {
+      map.putIfAbsent(item.stepNumber, () => []).add(item);
+    }
+
+    final entries = map.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
+    _steps = entries.map((e) => e.value).toList();
   }
 
   Future<void> _requestCameraPermission() async {
@@ -340,16 +367,39 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
     });
   }
 
-  void _onNextStep() {
-    if (_currentStep < widget.items.length - 1) {
+  void _onItemMatched() {
+    if (_isLastItemInStep) {
+      setState(() => _stepComplete = true);
+    } else {
       setState(() {
-        _currentStep++;
+        _autoAdvancing = true;
+        _stepComplete = true;
+      });
+      _autoAdvanceTimer = Timer(const Duration(seconds: 5), () {
+        if (mounted) {
+          setState(() {
+            _currentItemIndexInStep++;
+            _accuracy = 0;
+            _feedback = '';
+            _stepComplete = false;
+            _autoAdvancing = false;
+          });
+        }
+      });
+    }
+  }
+
+  void _onNextStep() {
+    if (_isLastStep) {
+      setState(() => _allDone = true);
+    } else {
+      setState(() {
+        _currentStepIndex++;
+        _currentItemIndexInStep = 0;
         _accuracy = 0;
         _stepComplete = false;
         _feedback = '';
       });
-    } else {
-      setState(() => _allDone = true);
     }
   }
 
@@ -377,7 +427,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
       body: Stack(
         children: [
           PoseCameraView(
-            key: ValueKey(_currentStep),
+            key: ValueKey('$_currentStepIndex-$_currentItemIndexInStep'),
             stepAngles: _currentItem.poseAngles,
             onResult: (accuracy, feedback) {
               if (mounted && !_stepComplete) {
@@ -385,7 +435,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                   _accuracy = accuracy;
                   _feedback = feedback;
                   if (accuracy >= 80) {
-                    _stepComplete = true;
+                    _onItemMatched();
                   }
                 });
               }
@@ -425,7 +475,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Step ${_currentItem.stepOrder}',
+                          'Step ${_currentStepItems.first.stepNumber}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -452,7 +502,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '${_currentStep + 1}/${widget.items.length}',
+                      '${_currentItemIndexInStep + 1}/${_currentStepItems.length}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,
@@ -526,11 +576,40 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                   children: [
                     _buildAccuracyBar(),
                     const SizedBox(height: 12),
-                    if (_stepComplete)
+                    if (_stepComplete && _autoAdvancing)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: AppColors.success.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.success,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Auto-advancing in 5s...',
+                              style: TextStyle(
+                                color: AppColors.success,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else if (_stepComplete)
                       GradientButton(
-                        text: _currentStep < widget.items.length - 1
-                            ? 'Next Step'
-                            : 'Finish',
+                        text: _isLastStep ? 'Finish' : 'Next Step',
                         icon: Icons.arrow_forward,
                         onPressed: _onNextStep,
                       )
@@ -542,10 +621,10 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                           color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 16,
                               height: 16,
                               child: CircularProgressIndicator(
@@ -553,13 +632,13 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                                 color: AppColors.primary,
                               ),
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(
-                              'Match the reference pose...',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 13,
-                              ),
+                              _isLastItemInStep
+                                  ? 'Match the pose to complete step...'
+                                  : 'Match the pose to continue...',
+                              style: const TextStyle(
+                                  color: Colors.white70, fontSize: 13),
                             ),
                           ],
                         ),
@@ -580,14 +659,16 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                   color: AppColors.success.withOpacity(0.9),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_circle, color: Colors.white, size: 18),
-                    SizedBox(width: 6),
+                    const Icon(Icons.check_circle, color: Colors.white, size: 18),
+                    const SizedBox(width: 6),
                     Text(
-                      'Step Complete!',
-                      style: TextStyle(
+                      _autoAdvancing
+                          ? 'Image Complete! Next in 5s...'
+                          : (_isLastStep ? 'All Steps Complete!' : 'Step Complete!'),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -728,6 +809,12 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    _autoAdvanceTimer?.cancel();
+    super.dispose();
+  }
+
   Widget _buildCompletionScreen() {
     return Scaffold(
       body: Stack(
@@ -771,7 +858,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'You completed all ${widget.items.length} steps.',
+                      'You completed all ${_steps.length} steps (${widget.items.length} images).',
                       style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 16,
@@ -788,7 +875,8 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                       text: 'Practice Again',
                       onPressed: () {
                         setState(() {
-                          _currentStep = 0;
+                          _currentStepIndex = 0;
+                          _currentItemIndexInStep = 0;
                           _accuracy = 0;
                           _stepComplete = false;
                           _allDone = false;

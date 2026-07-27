@@ -1,22 +1,22 @@
 class CloudinaryConfig {
   static const String cloudName = String.fromEnvironment(
     'CLOUDINARY_CLOUD_NAME',
-    defaultValue: 'YOUR_CLOUD_NAME',
+    defaultValue: 'rq4qrlcq',
   );
 
   static const String uploadPreset = String.fromEnvironment(
     'CLOUDINARY_UPLOAD_PRESET',
-    defaultValue: 'YOUR_UPLOAD_PRESET',
+    defaultValue: 'sport-training',
   );
 
   static const String apiKey = String.fromEnvironment(
     'CLOUDINARY_API_KEY',
-    defaultValue: '',
+    defaultValue: '472954165138697',
   );
 
   static const String apiSecret = String.fromEnvironment(
     'CLOUDINARY_API_SECRET',
-    defaultValue: '',
+    defaultValue: 'gb0VSlxIPfUq1EhF8YmMqNkDGmQ',
   );
 
   static bool get isSigned => apiKey.isNotEmpty && apiSecret.isNotEmpty;

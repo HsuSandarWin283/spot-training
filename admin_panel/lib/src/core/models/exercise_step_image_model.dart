@@ -5,6 +5,7 @@ class ExerciseStepImageItem {
   final String imageUrl;
   final String description;
   final int stepOrder;
+  final int stepNumber;
   final Map<String, List<double>> poseLandmarks;
   final Map<String, double> poseAngles;
 
@@ -13,6 +14,7 @@ class ExerciseStepImageItem {
     required this.imageUrl,
     required this.description,
     required this.stepOrder,
+    this.stepNumber = 1,
     this.poseLandmarks = const {},
     this.poseAngles = const {},
   });
@@ -42,6 +44,7 @@ class ExerciseStepImageItem {
       imageUrl: data['imageUrl'] ?? '',
       description: data['description'] ?? '',
       stepOrder: data['stepOrder'] ?? 0,
+      stepNumber: data['stepNumber'] ?? 1,
       poseLandmarks: landmarks,
       poseAngles: angles,
     );
@@ -52,6 +55,7 @@ class ExerciseStepImageItem {
       'imageUrl': imageUrl,
       'description': description,
       'stepOrder': stepOrder,
+      'stepNumber': stepNumber,
       'poseLandmarks': poseLandmarks,
       'poseAngles': poseAngles,
     };

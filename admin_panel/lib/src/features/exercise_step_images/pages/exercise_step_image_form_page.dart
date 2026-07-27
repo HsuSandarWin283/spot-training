@@ -26,8 +26,9 @@ class _ItemEntry {
   Map<String, double>? poseAngles;
   _PoseStatus poseStatus = _PoseStatus.idle;
   String? poseError;
+  int stepNumber;
 
-  _ItemEntry({String? imageUrl, String description = ''})
+  _ItemEntry({String? imageUrl, String description = '', this.stepNumber = 1})
       : existingImageUrl = imageUrl,
         descriptionController = TextEditingController(text: description);
 
@@ -102,6 +103,7 @@ class _ExerciseStepImageFormPageState
           final entry = _ItemEntry(
             imageUrl: item.imageUrl,
             description: item.description,
+            stepNumber: item.stepNumber,
           );
           if (item.poseLandmarks.isNotEmpty) {
             entry.poseLandmarks = item.poseLandmarks;
@@ -324,6 +326,7 @@ class _ExerciseStepImageFormPageState
                   imageBytes: e.imageBytes,
                   fileName: e.fileName,
                   description: e.descriptionController.text.trim(),
+                  stepNumber: e.stepNumber,
                   poseLandmarks: e.poseLandmarks,
                   poseAngles: e.poseAngles,
                 ))
@@ -345,6 +348,7 @@ class _ExerciseStepImageFormPageState
                   imageBytes: e.imageBytes,
                   fileName: e.fileName,
                   description: e.descriptionController.text.trim(),
+                  stepNumber: e.stepNumber,
                   poseLandmarks: e.poseLandmarks,
                   poseAngles: e.poseAngles,
                 ))
@@ -592,6 +596,10 @@ class _ExerciseStepImageFormPageState
   }
 
   Widget _buildItemsSection() {
+    final maxStep = _itemEntries.isEmpty
+        ? 1
+        : _itemEntries.map((e) => e.stepNumber).reduce((a, b) => a > b ? a : b);
+
     return AdminCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -609,7 +617,7 @@ class _ExerciseStepImageFormPageState
                 ),
               ),
               Text(
-                '${_itemEntries.length} item${_itemEntries.length != 1 ? 's' : ''}',
+                '${_itemEntries.length} image${_itemEntries.length != 1 ? 's' : ''} · $maxStep step${maxStep != 1 ? 's' : ''}',
                 style: const TextStyle(
                   color: AdminColors.textMuted,
                   fontSize: 13,
@@ -625,8 +633,9 @@ class _ExerciseStepImageFormPageState
               SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  '* Each image is processed with ML Kit Pose Detection. '
-                  'Pose must be detected successfully before saving.',
+                  '* Assign each image to a Step. Images in the same step are practiced together. '
+                  'During practice: matching first image auto-advances to next within the step. '
+                  'Last image in step shows success button to proceed.',
                   style: TextStyle(
                     color: AdminColors.warning,
                     fontSize: 12,
@@ -650,13 +659,28 @@ class _ExerciseStepImageFormPageState
             return _buildItemEntryRow(index, item);
           }),
           const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _addItemEntry,
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add Image'),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _addItemEntry,
+                  icon: const Icon(Icons.add, size: 18),
+                  label: const Text('Add Image'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _itemEntries.add(_ItemEntry(stepNumber: maxStep + 1));
+                    });
+                  },
+                  icon: const Icon(Icons.add_circle_outline, size: 18),
+                  label: const Text('Add New Step'),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -664,6 +688,10 @@ class _ExerciseStepImageFormPageState
   }
 
   Widget _buildItemEntryRow(int index, _ItemEntry entry) {
+    final maxStep = _itemEntries.isEmpty
+        ? 1
+        : _itemEntries.map((e) => e.stepNumber).reduce((a, b) => a > b ? a : b);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -693,6 +721,50 @@ class _ExerciseStepImageFormPageState
                   color: AdminColors.textSecondary,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AdminColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Step',
+                      style: TextStyle(
+                        color: AdminColors.textMuted,
+                        fontSize: 11,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        value: entry.stepNumber,
+                        isDense: true,
+                        dropdownColor: AdminColors.surface,
+                        style: const TextStyle(
+                          color: AdminColors.primary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        items: List.generate(maxStep < 1 ? 1 : maxStep, (i) {
+                          return DropdownMenuItem(
+                            value: i + 1,
+                            child: Text('${i + 1}'),
+                          );
+                        }),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() => entry.stepNumber = value);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const Spacer(),
