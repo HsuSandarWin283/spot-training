@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ai_sports_training/src/features/splash/ui/pages/splash_screen.dart';
 import 'package:ai_sports_training/src/features/sport_detail/ui/pages/sport_detail_screen.dart';
 import 'package:ai_sports_training/src/features/ai_recommendation/ui/pages/ai_recommendation_screen.dart';
@@ -14,6 +15,8 @@ import 'package:ai_sports_training/src/features/home/ui/pages/main_page.dart';
 import 'package:ai_sports_training/src/features/exercise_step_poses/ui/pages/exercise_step_pose_detail_screen.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/ui/pages/exercise_categories_screen.dart';
+import 'package:ai_sports_training/src/features/fitness_assessment/ui/pages/fitness_assessment_screen.dart';
+import 'package:ai_sports_training/src/features/language_selection/ui/pages/language_selection_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -29,20 +32,22 @@ final _routerProvider = Provider<GoRouter>((ref) {
           state.matchedLocation == '/register';
       final isOnSplash = state.matchedLocation == '/' ||
           state.matchedLocation == '/splash';
+      final isOnAssessment = state.matchedLocation == '/fitness-assessment';
 
       if (isOnSplash) return null;
+      if (isOnAssessment) return null;
 
       if (!isAuthenticated && !isOnAuthRoute) {
         return '/login';
       }
 
-      if (isAuthenticated && isOnAuthRoute) {
-        return '/main';
-      }
-
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/language',
+        builder: (context, state) => const LanguageSelectionScreen(),
+      ),
       GoRoute(
         path: '/',
         builder: (context, state) => const SplashScreen(),
@@ -110,6 +115,11 @@ final _routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ExerciseCategoriesScreen(),
       ),
+      GoRoute(
+        path: '/fitness-assessment',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const FitnessAssessmentScreen(),
+      ),
     ],
   );
 });
@@ -134,4 +144,5 @@ extension GoRouterExtension on BuildContext {
   void goToExerciseStepPoseDetail(String postId) =>
       push('/exercise-step-pose/$postId');
   void goToExerciseCategories() => push('/exercise-categories');
+  void goToFitnessAssessment() => push('/fitness-assessment');
 }

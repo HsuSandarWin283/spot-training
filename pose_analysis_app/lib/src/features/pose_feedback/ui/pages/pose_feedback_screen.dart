@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
 
 class PoseFeedbackScreen extends StatelessWidget {
@@ -28,7 +29,7 @@ class PoseFeedbackScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                const CustomAppBar(title: 'Pose Feedback'),
+                CustomAppBar(title: AppLocalizations.of(context)!.poseFeedback),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -40,7 +41,7 @@ class PoseFeedbackScreen extends StatelessWidget {
                           children: [
                             Expanded(
                               child: _buildPoseComparison(
-                                'Your Pose',
+                                AppLocalizations.of(context)!.yourPose,
                                 AppColors.primary,
                                 Icons.person,
                               ),
@@ -48,7 +49,7 @@ class PoseFeedbackScreen extends StatelessWidget {
                             const SizedBox(width: 12),
                             Expanded(
                               child: _buildPoseComparison(
-                                'Ideal Pose',
+                                AppLocalizations.of(context)!.idealPose,
                                 AppColors.secondary,
                                 Icons.accessibility_new,
                               ),
@@ -59,9 +60,9 @@ class PoseFeedbackScreen extends StatelessWidget {
                         GlassCard(
                           child: Column(
                             children: [
-                              const Text(
-                                'Accuracy',
-                                style: TextStyle(
+                              Text(
+                                AppLocalizations.of(context)!.accuracy,
+                                style: const TextStyle(
                                   color: AppColors.textMuted,
                                   fontSize: 14,
                                 ),
@@ -85,9 +86,9 @@ class PoseFeedbackScreen extends StatelessWidget {
                                   color: AppColors.success.withOpacity(0.15),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Text(
-                                  'Good Form',
-                                  style: TextStyle(
+                                child: Text(
+                                  AppLocalizations.of(context)!.goodForm,
+                                  style: const TextStyle(
                                     color: AppColors.success,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -98,37 +99,37 @@ class PoseFeedbackScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const SectionHeader(title: 'Strengths'),
+                        SectionHeader(title: AppLocalizations.of(context)!.strengths),
                         const SizedBox(height: 12),
                         _buildFeedbackItem(
                           '✅',
-                          'Good back alignment during the movement',
+                          AppLocalizations.of(context)!.feedbackBackAlignment,
                           AppColors.success,
                         ),
                         const SizedBox(height: 8),
                         _buildFeedbackItem(
                           '✅',
-                          'Proper knee tracking over toes',
+                          AppLocalizations.of(context)!.feedbackKneeTracking,
                           AppColors.success,
                         ),
                         const SizedBox(height: 8),
                         _buildFeedbackItem(
                           '✅',
-                          'Consistent tempo throughout',
+                          AppLocalizations.of(context)!.feedbackTempo,
                           AppColors.success,
                         ),
                         const SizedBox(height: 20),
-                        const SectionHeader(title: 'Areas to Improve'),
+                        SectionHeader(title: AppLocalizations.of(context)!.areasToImprove),
                         const SizedBox(height: 12),
                         _buildFeedbackItem(
                           '⚠️',
-                          'Arm position could be more stable',
+                          AppLocalizations.of(context)!.feedbackArmStability,
                           AppColors.warning,
                         ),
                         const SizedBox(height: 8),
                         _buildFeedbackItem(
                           '⚠️',
-                          'Slightly forward lean at bottom',
+                          AppLocalizations.of(context)!.feedbackForwardLean,
                           AppColors.warning,
                         ),
                         const SizedBox(height: 20),
@@ -136,9 +137,9 @@ class PoseFeedbackScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                '💡 Improvement Suggestions',
-                                style: TextStyle(
+                              Text(
+                                '💡 ${AppLocalizations.of(context)!.improvementSuggestions}',
+                                style: const TextStyle(
                                   color: AppColors.textPrimary,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -146,22 +147,22 @@ class PoseFeedbackScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 12),
                               _buildSuggestion(
-                                'Keep your chest up throughout the movement',
+                                AppLocalizations.of(context)!.suggestionChestUp,
                               ),
                               const SizedBox(height: 8),
                               _buildSuggestion(
-                                'Focus on driving through your heels',
+                                AppLocalizations.of(context)!.suggestionHeels,
                               ),
                               const SizedBox(height: 8),
                               _buildSuggestion(
-                                'Practice with a mirror to check form',
+                                AppLocalizations.of(context)!.suggestionMirror,
                               ),
                             ],
                           ),
                         ),
                         const SizedBox(height: 20),
                         GradientButton(
-                          text: 'Try Again',
+                          text: AppLocalizations.of(context)!.tryAgain,
                           icon: Icons.replay,
                           onPressed: () {
                             context.goToPoseAnalysis();
@@ -169,7 +170,7 @@ class PoseFeedbackScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         OutlineButton(
-                          text: 'Back to Dashboard',
+                          text: AppLocalizations.of(context)!.backToDashboard,
                           onPressed: () {
                             context.goToMain();
                           },

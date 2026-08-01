@@ -6,6 +6,7 @@ import 'package:admin_panel/src/core/models/sport_detail_models.dart';
 import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_providers.dart';
 import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart';
+import 'package:admin_panel/src/core/l10n/app_localizations.dart';
 
 class SportDetailFormPage extends ConsumerStatefulWidget {
   final SportDetailType? detailType;
@@ -60,8 +61,8 @@ class _SportDetailFormPageState extends ConsumerState<SportDetailFormPage> {
     if (sportId.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sport is required.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.sportIsRequired),
             backgroundColor: AdminColors.error,
           ),
         );
@@ -182,9 +183,9 @@ class _SportDetailFormPageState extends ConsumerState<SportDetailFormPage> {
                       if (!_isEditing) ...[
                         DropdownButtonFormField<SportDetailType>(
                           value: _selectedType,
-                          decoration: const InputDecoration(
-                            labelText: 'Category',
-                            prefixIcon: Icon(Icons.category,
+                          decoration: InputDecoration(
+                            labelText: AppLocalizations.of(context)!.category,
+                            prefixIcon: const Icon(Icons.category,
                                 color: AdminColors.textMuted),
                           ),
                           items: SportDetailType.values.map((type) {
@@ -203,9 +204,9 @@ class _SportDetailFormPageState extends ConsumerState<SportDetailFormPage> {
                       ],
                       TextFormField(
                         controller: _titleController,
-                        decoration: const InputDecoration(
-                          labelText: 'Title',
-                          prefixIcon: Icon(Icons.title,
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.title,
+                          prefixIcon: const Icon(Icons.title,
                               color: AdminColors.textMuted),
                         ),
                         validator: (value) {
@@ -218,9 +219,9 @@ class _SportDetailFormPageState extends ConsumerState<SportDetailFormPage> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _descriptionController,
-                        decoration: const InputDecoration(
-                          labelText: 'Description',
-                          prefixIcon: Icon(Icons.description_outlined,
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.descriptionLabel,
+                          prefixIcon: const Icon(Icons.description_outlined,
                               color: AdminColors.textMuted),
                           alignLabelWithHint: true,
                         ),

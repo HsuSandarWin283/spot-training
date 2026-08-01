@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/constants/app_constants.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
 import 'package:ai_sports_training/src/features/sport_detail/providers/sport_detail_providers.dart';
@@ -31,12 +32,12 @@ class SportsSelectionScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CustomAppBar(title: 'Select Your Sport', showBack: false),
+                CustomAppBar(title: AppLocalizations.of(context)!.selectYourSport, showBack: false),
                 const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'Choose a sport to start your personalized training journey.',
+                    AppLocalizations.of(context)!.chooseSportDescription,
                     style: TextStyle(
                       color: AppColors.textSecondary.withOpacity(0.8),
                       fontSize: 14,
@@ -48,7 +49,7 @@ class SportsSelectionScreen extends ConsumerWidget {
                   child: sportsAsync.when(
                     data: (sports) {
                       if (sports.isEmpty) {
-                        return _buildEmptyState();
+                        return _buildEmptyState(context);
                       }
                       return GridView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -87,7 +88,7 @@ class SportsSelectionScreen extends ConsumerWidget {
                       child:
                           CircularProgressIndicator(color: AppColors.primary),
                     ),
-                    error: (error, _) => _buildErrorState(error),
+                    error: (error, _) => _buildErrorState(context, error),
                   ),
                 ),
               ],
@@ -107,7 +108,7 @@ class SportsSelectionScreen extends ConsumerWidget {
     return null;
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -125,8 +126,8 @@ class SportsSelectionScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'No Sports Available',
+          Text(
+            AppLocalizations.of(context)!.noSportsAvailable,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
@@ -134,8 +135,8 @@ class SportsSelectionScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Sports will appear here once added.',
+          Text(
+            AppLocalizations.of(context)!.sportsWillAppear,
             style: TextStyle(
               color: AppColors.textMuted,
               fontSize: 14,
@@ -146,7 +147,7 @@ class SportsSelectionScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorState(Object error) {
+  Widget _buildErrorState(BuildContext context, Object error) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -164,8 +165,8 @@ class SportsSelectionScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Failed to Load Sports',
+          Text(
+            AppLocalizations.of(context)!.failedToLoadSports,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,

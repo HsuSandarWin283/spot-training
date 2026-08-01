@@ -1,3 +1,4 @@
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
@@ -26,7 +27,7 @@ class AIRecommendationScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                const CustomAppBar(title: 'AI Recommendation'),
+                CustomAppBar(title: AppLocalizations.of(context)!.aiRecommendation),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -51,30 +52,30 @@ class AIRecommendationScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 16),
-                              const Expanded(
+                              Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Alex Johnson',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: AppColors.textPrimary,
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    SizedBox(height: 4),
+                                    const SizedBox(height: 4),
                                     Text(
                                       '22 years old  |  175 cm  |  72 kg',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: AppColors.textMuted,
                                         fontSize: 13,
                                       ),
                                     ),
-                                    SizedBox(height: 4),
+                                    const SizedBox(height: 4),
                                     Text(
-                                      'Fitness Level: Intermediate',
-                                      style: TextStyle(
+                                      AppLocalizations.of(context)!.fitnessLevelIntermediate,
+                                      style: const TextStyle(
                                         color: AppColors.secondary,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
@@ -99,7 +100,7 @@ class AIRecommendationScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const SectionHeader(title: 'Analysis'),
+                        SectionHeader(title: AppLocalizations.of(context)!.analysisLabel),
                         const SizedBox(height: 12),
                         Row(
                           children: [
@@ -126,20 +127,20 @@ class AIRecommendationScreen extends StatelessWidget {
                                               ),
                                             ),
                                           ),
-                                          const Column(
+                                          Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Text(
                                                 '22.7',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   color: AppColors.textPrimary,
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
                                               Text(
-                                                'BMI',
-                                                style: TextStyle(
+                                                AppLocalizations.of(context)!.bmi,
+                                                style: const TextStyle(
                                                   color: AppColors.textMuted,
                                                   fontSize: 10,
                                                 ),
@@ -159,9 +160,9 @@ class AIRecommendationScreen extends StatelessWidget {
                                         color: AppColors.success.withValues(alpha: 0.15),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: const Text(
-                                        'Normal',
-                                        style: TextStyle(
+                                      child: Text(
+                                        AppLocalizations.of(context)!.normal,
+                                        style: const TextStyle(
                                           color: AppColors.success,
                                           fontSize: 11,
                                           fontWeight: FontWeight.w600,
@@ -196,20 +197,20 @@ class AIRecommendationScreen extends StatelessWidget {
                                               ),
                                             ),
                                           ),
-                                          const Column(
+                                          Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Text(
                                                 '76%',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   color: AppColors.textPrimary,
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
                                               Text(
-                                                'Score',
-                                                style: TextStyle(
+                                                AppLocalizations.of(context)!.score,
+                                                style: const TextStyle(
                                                   color: AppColors.textMuted,
                                                   fontSize: 10,
                                                 ),
@@ -245,31 +246,31 @@ class AIRecommendationScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 24),
-                        const SectionHeader(title: 'Personalized Training Plan'),
+                        SectionHeader(title: AppLocalizations.of(context)!.personalizedTrainingPlan),
                         const SizedBox(height: 12),
                         _buildPlanCard(
-                          'Weekly Workout Plan',
-                          '5 sessions per week, 45 min each',
+                          AppLocalizations.of(context)!.weeklyWorkoutPlan,
+                          AppLocalizations.of(context)!.sessionsPerWeek,
                           Icons.calendar_today,
                           AppColors.primary,
                         ),
                         const SizedBox(height: 12),
                         _buildPlanCard(
-                          'Exercise Recommendations',
-                          'Based on your fitness level',
+                          AppLocalizations.of(context)!.exerciseRecommendations,
+                          AppLocalizations.of(context)!.basedOnFitnessLevel,
                           Icons.fitness_center,
                           AppColors.secondary,
                         ),
                         const SizedBox(height: 12),
                         _buildPlanCard(
-                          'Nutrition Guide',
-                          'Customized meal plans for performance',
+                          AppLocalizations.of(context)!.nutritionGuide,
+                          AppLocalizations.of(context)!.customizedMealPlans,
                           Icons.restaurant,
                           AppColors.warning,
                         ),
                         const SizedBox(height: 20),
                         GradientButton(
-                          text: 'Start Training Plan',
+                          text: AppLocalizations.of(context)!.startTrainingPlan,
                           icon: Icons.play_arrow,
                           onPressed: () {
                             context.goToWeeklyPlan();

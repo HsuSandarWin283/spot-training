@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/constants/app_constants.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 
 class WeeklyPlanScreen extends StatelessWidget {
   const WeeklyPlanScreen({super.key});
@@ -28,7 +29,7 @@ class WeeklyPlanScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                const CustomAppBar(title: 'Weekly Plan'),
+                CustomAppBar(title: AppLocalizations.of(context)!.weeklyPlan),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -52,12 +53,12 @@ class WeeklyPlanScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 16),
-                              const Expanded(
+                              Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Week 1 of 4',
+                                      AppLocalizations.of(context)!.weekOf(4, 1),
                                       style: TextStyle(
                                         color: AppColors.textPrimary,
                                         fontSize: 16,
@@ -66,7 +67,7 @@ class WeeklyPlanScreen extends StatelessWidget {
                                     ),
                                     SizedBox(height: 4),
                                     Text(
-                                      '5 of 7 sessions completed',
+                                      AppLocalizations.of(context)!.sessionsCompleted(5),
                                       style: TextStyle(
                                         color: AppColors.textMuted,
                                         fontSize: 12,
@@ -203,7 +204,7 @@ class _WeeklyDayCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          'TODAY',
+                          AppLocalizations.of(context)!.today,
                           style: TextStyle(
                             color: dayColor,
                             fontSize: 9,
@@ -250,8 +251,8 @@ class _WeeklyDayCard extends StatelessWidget {
                 gradient: AppColors.primaryGradient,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                'Start',
+              child: Text(
+                AppLocalizations.of(context)!.start,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,

@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/data/models/exercise.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/data/models/session_result.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/data/providers/exercise_flow_providers.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
+import 'package:ai_sports_training/src/features/fitness_assessment/data/models/exercise_history.dart' as fh;
+import 'package:ai_sports_training/src/features/fitness_assessment/data/providers/fitness_assessment_providers.dart';
 
 class ExerciseCompletionScreen extends ConsumerStatefulWidget {
   final Exercise exercise;
@@ -66,6 +69,22 @@ class _ExerciseCompletionScreenState
     );
 
     await ref.read(exerciseFlowServiceProvider).saveSessionResult(result);
+
+    final history = fh.ExerciseHistory(
+      id: '',
+      userId: user.uid,
+      exerciseId: widget.exercise.id,
+      exerciseName: widget.exercise.name,
+      categoryId: widget.exercise.categoryId,
+      categoryName: '',
+      accuracy: widget.overallAccuracy,
+      durationSeconds: widget.totalDuration.inSeconds,
+      estimatedCalories: widget.estimatedCalories,
+      stepCount: widget.exercise.steps.length,
+      completedAt: DateTime.now(),
+    );
+
+    await ref.read(fitnessAssessmentServiceProvider).saveExerciseHistory(history);
   }
 
   @override
@@ -112,8 +131,8 @@ class _ExerciseCompletionScreenState
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      'Exercise Completed!',
+                    Text(
+                      AppLocalizations.of(context)!.exerciseCompleted,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 28,
@@ -129,12 +148,12 @@ class _ExerciseCompletionScreenState
                       ),
                     ),
                     const SizedBox(height: 32),
-                    _buildStatsRow(timeStr),
+                    _buildStatsRow(context, timeStr),
                     const SizedBox(height: 20),
                     _buildStepResults(),
                     const SizedBox(height: 32),
                     GradientButton(
-                      text: 'Done',
+                      text: AppLocalizations.of(context)!.done,
                       icon: Icons.check,
                       onPressed: () {
                         Navigator.of(context).pop();
@@ -143,7 +162,7 @@ class _ExerciseCompletionScreenState
                     ),
                     const SizedBox(height: 12),
                     OutlineButton(
-                      text: 'Practice Again',
+                      text: AppLocalizations.of(context)!.practiceAgain,
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
@@ -158,26 +177,26 @@ class _ExerciseCompletionScreenState
     );
   }
 
-  Widget _buildStatsRow(String timeStr) {
+  Widget _buildStatsRow(BuildContext context, String timeStr) {
     return Row(
       children: [
         _buildStatCard(
           '${widget.overallAccuracy.toStringAsFixed(0)}%',
-          'Accuracy',
+          AppLocalizations.of(context)!.accuracy,
           AppColors.success,
           Icons.speed,
         ),
         const SizedBox(width: 12),
         _buildStatCard(
           timeStr,
-          'Duration',
+          AppLocalizations.of(context)!.duration,
           AppColors.primary,
           Icons.timer,
         ),
         const SizedBox(width: 12),
         _buildStatCard(
           '${widget.estimatedCalories}',
-          'Calories',
+          AppLocalizations.of(context)!.calories,
           AppColors.warning,
           Icons.local_fire_department,
         ),
@@ -221,8 +240,8 @@ class _ExerciseCompletionScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Step Results',
+          Text(
+            AppLocalizations.of(context)!.stepResults,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 16,

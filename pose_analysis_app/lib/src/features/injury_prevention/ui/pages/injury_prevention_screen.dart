@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/constants/app_constants.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 
 class InjuryPreventionScreen extends StatelessWidget {
@@ -28,7 +29,7 @@ class InjuryPreventionScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                const CustomAppBar(title: 'Injury Prevention'),
+                CustomAppBar(title: AppLocalizations.of(context)!.injuryPreventionLabel),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -51,7 +52,7 @@ class InjuryPreventionScreen extends StatelessWidget {
                               color: AppColors.glassBorder,
                             ),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -61,7 +62,7 @@ class InjuryPreventionScreen extends StatelessWidget {
                                 ),
                                 SizedBox(height: 12),
                                 Text(
-                                  'Stretching & Warm Up',
+                                  AppLocalizations.of(context)!.stretchingWarmUp,
                                   style: TextStyle(
                                     color: AppColors.textPrimary,
                                     fontSize: 20,
@@ -70,7 +71,7 @@ class InjuryPreventionScreen extends StatelessWidget {
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  'Prevent injuries with proper preparation',
+                                  AppLocalizations.of(context)!.preventInjuriesDescription,
                                   style: TextStyle(
                                     color: AppColors.textMuted,
                                     fontSize: 13,
@@ -81,7 +82,7 @@ class InjuryPreventionScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        const SectionHeader(title: 'Warm Up Exercises'),
+                        SectionHeader(title: AppLocalizations.of(context)!.warmUpExercises),
                         const SizedBox(height: 12),
                         ...AppConstants.injuryTips.asMap().entries.map((entry) {
                           final tip = entry.value;
@@ -158,7 +159,7 @@ class InjuryPreventionScreen extends StatelessWidget {
                         }),
                         const SizedBox(height: 20),
                         GradientButton(
-                          text: 'Start Warm Up',
+                          text: AppLocalizations.of(context)!.startWarmUp,
                           icon: Icons.play_arrow,
                           onPressed: () {},
                         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/features/training_plan/domain/entities/training_plan.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 
 final trainingPlansProvider = FutureProvider.autoDispose<List<TrainingPlan>>((ref) async {
   return [
@@ -41,7 +42,7 @@ class TrainingPlanPage extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.goToMain(),
         ),
-        title: const Text('Training Plans'),
+        title: Text(AppLocalizations.of(context)!.trainingPlans),
       ),
       body: plansAsync.when(
         data: (plans) => ListView.builder(
@@ -52,7 +53,7 @@ class TrainingPlanPage extends ConsumerWidget {
               margin: const EdgeInsets.all(8),
               child: ListTile(
                 title: Text(plan.name),
-                subtitle: Text('${plan.durationWeeks} weeks'),
+                subtitle: Text(AppLocalizations.of(context)!.weeksCount(plan.durationWeeks)),
                 trailing: const Icon(Icons.arrow_forward),
                 onTap: () {},
               ),

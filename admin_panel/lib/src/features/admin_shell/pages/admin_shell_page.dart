@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:admin_panel/src/core/theme/admin_theme.dart';
 import 'package:admin_panel/src/core/services/sport_service.dart';
+import 'package:admin_panel/src/core/l10n/app_localizations.dart';
+import 'package:admin_panel/src/core/services/locale_provider.dart';
 import 'package:admin_panel/src/features/auth/providers/admin_auth_provider.dart';
 import 'package:admin_panel/src/features/dashboard/pages/admin_dashboard_page.dart';
 import 'package:admin_panel/src/features/sports_management/pages/sports_list_page.dart';
@@ -148,30 +150,31 @@ class AdminShellPage extends ConsumerWidget {
             ref: ref,
             view: AdminView.dashboard,
             icon: Icons.dashboard_rounded,
-            label: 'Dashboard',
+            label: AppLocalizations.of(context)!.dashboard,
             isSelected: currentView == AdminView.dashboard,
           ),
           _buildNavItem(
             ref: ref,
             view: AdminView.sports,
             icon: Icons.sports_soccer,
-            label: 'Sports Management',
+            label: AppLocalizations.of(context)!.sportsManagement,
             isSelected: currentView == AdminView.sports,
           ),
           _buildNavItem(
             ref: ref,
             view: AdminView.exerciseStepImages,
             icon: Icons.photo_library_outlined,
-            label: 'Exercise Step Images',
+            label: AppLocalizations.of(context)!.exerciseStepImages,
             isSelected: currentView == AdminView.exerciseStepImages,
           ),
           _buildNavItem(
             ref: ref,
             view: AdminView.users,
             icon: Icons.people,
-            label: 'Users',
+            label: AppLocalizations.of(context)!.users,
             isSelected: currentView == AdminView.users,
           ),
+          _buildLanguageItem(context, ref),
           const Spacer(),
           Container(
             padding: const EdgeInsets.all(16),
@@ -203,9 +206,9 @@ class AdminShellPage extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'Admin',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.admin,
+                        style: const TextStyle(
                           color: AdminColors.textPrimary,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -230,17 +233,17 @@ class AdminShellPage extends ConsumerWidget {
                     final confirm = await showDialog<bool>(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        title: const Text('Confirm Logout'),
-                        content: const Text('Are you sure you want to sign out?'),
+                        title: Text(AppLocalizations.of(context)!.confirmLogout),
+                        content: Text(AppLocalizations.of(context)!.areYouSureSignOut),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(ctx).pop(false),
-                            child: const Text('Cancel'),
+                            child: Text(AppLocalizations.of(context)!.cancel),
                           ),
                           TextButton(
                             onPressed: () => Navigator.of(ctx).pop(true),
-                            child: const Text('Sign Out',
-                                style: TextStyle(color: AdminColors.error)),
+                            child: Text(AppLocalizations.of(context)!.signOut,
+                                style: const TextStyle(color: AdminColors.error)),
                           ),
                         ],
                       ),
@@ -249,7 +252,7 @@ class AdminShellPage extends ConsumerWidget {
                       await ref.read(sportServiceProvider).signOut();
                     }
                   },
-                  tooltip: 'Sign Out',
+                  tooltip: AppLocalizations.of(context)!.signOut,
                 ),
               ],
             ),
@@ -302,6 +305,79 @@ class AdminShellPage extends ConsumerWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageItem(BuildContext context, WidgetRef ref) {
+    final currentLocale = ref.watch(localeProvider);
+    final langLabel = currentLocale.languageCode == 'my' ? 'မြန်မာ' : 'English';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _showLanguageDialog(context, ref),
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.language,
+                  color: AdminColors.textMuted,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  langLabel,
+                  style: const TextStyle(
+                    color: AdminColors.textSecondary,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context, WidgetRef ref) {
+    final currentLocale = ref.read(localeProvider);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Language'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<Locale>(
+              title: const Text('English'),
+              value: const Locale('en'),
+              groupValue: currentLocale,
+              onChanged: (locale) {
+                if (locale != null) {
+                  ref.read(localeProvider.notifier).setLocale(locale);
+                }
+                Navigator.of(ctx).pop();
+              },
+            ),
+            RadioListTile<Locale>(
+              title: const Text('မြန်မာ'),
+              value: const Locale('my'),
+              groupValue: currentLocale,
+              onChanged: (locale) {
+                if (locale != null) {
+                  ref.read(localeProvider.notifier).setLocale(locale);
+                }
+                Navigator.of(ctx).pop();
+              },
+            ),
+          ],
         ),
       ),
     );

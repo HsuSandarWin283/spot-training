@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/features/dashboard/ui/pages/dashboard_screen.dart';
 import 'package:ai_sports_training/src/features/sports_selection/ui/pages/sports_selection_screen.dart';
 import 'package:ai_sports_training/src/features/exercise_step_poses/ui/pages/exercise_step_poses_screen.dart';
@@ -50,10 +51,10 @@ class _MainPageState extends State<MainPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(0, Icons.dashboard_rounded, 'Home'),
-                _buildNavItem(1, Icons.sports_soccer, 'Training'),
-                _buildNavItem(2, Icons.photo_library_outlined, 'Poses'),
-                _buildNavItem(3, Icons.person_rounded, 'Profile'),
+                _buildNavItem(0, Icons.dashboard_rounded, AppLocalizations.of(context)!.home),
+                _buildNavItem(1, Icons.sports_soccer, AppLocalizations.of(context)!.training),
+                _buildNavItem(2, Icons.photo_library_outlined, AppLocalizations.of(context)!.poses),
+                _buildNavItem(3, Icons.person_rounded, AppLocalizations.of(context)!.profile),
               ],
             ),
           ),

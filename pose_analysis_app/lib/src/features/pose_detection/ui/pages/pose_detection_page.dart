@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/features/pose_detection/domain/entities/pose_detection_result.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 
 class PoseDetectionPage extends ConsumerStatefulWidget {
   const PoseDetectionPage({super.key});
@@ -21,7 +22,7 @@ class _PoseDetectionPageState extends ConsumerState<PoseDetectionPage> {
       setState(() {
         _result = PoseDetectionResult(
           exerciseId: 'squat',
-          exerciseName: 'Squat',
+          exerciseName: AppLocalizations.of(context)!.squat,
           accuracy: 92.3,
           repCount: 15,
           timestamp: DateTime.now(),
@@ -40,7 +41,7 @@ class _PoseDetectionPageState extends ConsumerState<PoseDetectionPage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.goToMain(),
         ),
-        title: const Text('Pose Detection'),
+        title: Text(AppLocalizations.of(context)!.poseDetection),
       ),
       body: Column(
         children: [
@@ -56,8 +57,8 @@ class _PoseDetectionPageState extends ConsumerState<PoseDetectionPage> {
                               _result!.exerciseName,
                               style: Theme.of(context).textTheme.headlineMedium,
                             ),
-                            Text('Accuracy: ${_result!.accuracy}%'),
-                            Text('Reps: ${_result!.repCount}'),
+                            Text(AppLocalizations.of(context)!.accuracyValue(_result!.accuracy)),
+                            Text(AppLocalizations.of(context)!.repsValue(_result!.repCount)),
                           ],
                         )
                       : const Icon(Icons.camera_alt, size: 100),
@@ -68,7 +69,7 @@ class _PoseDetectionPageState extends ConsumerState<PoseDetectionPage> {
             child: FilledButton.icon(
               onPressed: _isDetecting ? null : _startDetection,
               icon: const Icon(Icons.play_arrow),
-              label: Text(_isDetecting ? 'Detecting...' : 'Start Detection'),
+              label: Text(_isDetecting ? AppLocalizations.of(context)!.detecting : AppLocalizations.of(context)!.startDetection),
             ),
           ),
         ],

@@ -6,6 +6,7 @@ import 'package:admin_panel/src/core/models/exercise_step_image_model.dart';
 import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/exercise_step_images/providers/exercise_step_image_providers.dart';
 import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart';
+import 'package:admin_panel/src/core/l10n/app_localizations.dart';
 
 class ExerciseStepImagesPage extends ConsumerWidget {
   const ExerciseStepImagesPage({super.key});
@@ -21,22 +22,22 @@ class ExerciseStepImagesPage extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Exercise Step Images',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.exerciseStepImages,
+                      style: const TextStyle(
                         color: AdminColors.textPrimary,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      'Manage exercise step image posts',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.exerciseStepImagesDescription,
+                      style: const TextStyle(
                         color: AdminColors.textSecondary,
                         fontSize: 14,
                       ),
@@ -45,7 +46,7 @@ class ExerciseStepImagesPage extends ConsumerWidget {
                 ),
               ),
               GradientButton(
-                text: 'Create Post',
+                text: AppLocalizations.of(context)!.createPost,
                 icon: Icons.add,
                 onPressed: () {
                   ref.read(selectedExerciseStepImagePostProvider.notifier).state =
@@ -60,13 +61,13 @@ class ExerciseStepImagesPage extends ConsumerWidget {
           postsAsync.when(
             data: (posts) {
               if (posts.isEmpty) {
-                return const EmptyState(
+                return EmptyState(
                   icon: Icons.photo_library_outlined,
-                  title: 'No Posts Yet',
-                  subtitle: 'Create your first exercise step image post',
+                  title: AppLocalizations.of(context)!.noPostsYet,
+                  subtitle: AppLocalizations.of(context)!.createFirstPost,
                 );
               }
-              return _buildPostsTable(ref, posts);
+              return _buildPostsTable(context, ref, posts);
             },
             loading: () => const Center(
               child: Padding(
@@ -86,7 +87,7 @@ class ExerciseStepImagesPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildPostsTable(WidgetRef ref, List<ExerciseStepImagePost> posts) {
+  Widget _buildPostsTable(BuildContext context, WidgetRef ref, List<ExerciseStepImagePost> posts) {
     return AdminCard(
       padding: EdgeInsets.zero,
       child: LayoutBuilder(
@@ -97,12 +98,12 @@ class ExerciseStepImagesPage extends ConsumerWidget {
               constraints: BoxConstraints(minWidth: constraints.maxWidth),
               child: SingleChildScrollView(
                 child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('Title')),
-                    DataColumn(label: Text('Type')),
-                    DataColumn(label: Text('Items')),
-                    DataColumn(label: Text('Created')),
-                    DataColumn(label: Text('Actions')),
+                  columns: [
+                    DataColumn(label: Text(AppLocalizations.of(context)!.title)),
+                    DataColumn(label: Text(AppLocalizations.of(context)!.type)),
+                    DataColumn(label: Text(AppLocalizations.of(context)!.items)),
+                    DataColumn(label: Text(AppLocalizations.of(context)!.created)),
+                    DataColumn(label: Text(AppLocalizations.of(context)!.actions)),
                   ],
                   rows: posts.map((post) {
                     return DataRow(
@@ -186,7 +187,7 @@ class ExerciseStepImagesPage extends ConsumerWidget {
                                     color: AdminColors.error, size: 20),
                                 onPressed: () =>
                                     _confirmDelete(context, ref, post),
-                                tooltip: 'Delete',
+                                tooltip: AppLocalizations.of(context)!.delete,
                               ),
                             ],
                           ),
@@ -208,13 +209,13 @@ class ExerciseStepImagesPage extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Post'),
+        title: Text(AppLocalizations.of(context)!.deletePost),
         content: Text(
             'Are you sure you want to delete "${post.title}" (${post.type}) with ${post.itemCount} image(s)? This cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -226,8 +227,8 @@ class ExerciseStepImagesPage extends ConsumerWidget {
                 ref.invalidate(exerciseStepImageTypesProvider);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Post deleted successfully'),
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context)!.postDeletedSuccessfully),
                       backgroundColor: AdminColors.success,
                     ),
                   );
@@ -243,8 +244,8 @@ class ExerciseStepImagesPage extends ConsumerWidget {
                 }
               }
             },
-            child: const Text('Delete',
-                style: TextStyle(color: AdminColors.error)),
+            child: Text(AppLocalizations.of(context)!.delete,
+                style: const TextStyle(color: AdminColors.error)),
           ),
         ],
       ),

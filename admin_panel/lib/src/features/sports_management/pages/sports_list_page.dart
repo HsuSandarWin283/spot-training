@@ -8,6 +8,7 @@ import 'package:admin_panel/src/features/sports_management/providers/sports_prov
 import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart';
 import 'package:admin_panel/src/features/auth/providers/admin_auth_provider.dart';
 import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_providers.dart';
+import 'package:admin_panel/src/core/l10n/app_localizations.dart';
 
 class SportsListPage extends ConsumerWidget {
   const SportsListPage({super.key});
@@ -23,22 +24,22 @@ class SportsListPage extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Sports Management',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.sportsManagement,
+                      style: const TextStyle(
                         color: AdminColors.textPrimary,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      'Manage all sports and their training data',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.sportsManagementDescription,
+                      style: const TextStyle(
                         color: AdminColors.textSecondary,
                         fontSize: 14,
                       ),
@@ -47,7 +48,7 @@ class SportsListPage extends ConsumerWidget {
                 ),
               ),
               GradientButton(
-                text: 'Add Sport',
+                text: AppLocalizations.of(context)!.addSport,
                 icon: Icons.add,
                 onPressed: () {
                   ref.read(adminViewProvider.notifier).state = AdminView.addSport;
@@ -59,10 +60,10 @@ class SportsListPage extends ConsumerWidget {
           sportsAsync.when(
             data: (sports) {
               if (sports.isEmpty) {
-                return const EmptyState(
+                return EmptyState(
                   icon: Icons.sports_soccer_outlined,
-                  title: 'No Sports Yet',
-                  subtitle: 'Add your first sport to get started',
+                  title: AppLocalizations.of(context)!.noSportsYet,
+                  subtitle: AppLocalizations.of(context)!.addFirstSport,
                 );
               }
               return _buildSportsTable(context, ref, sports);
@@ -92,12 +93,12 @@ class SportsListPage extends ConsumerWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
-          columns: const [
-            DataColumn(label: Text('Sport')),
-            DataColumn(label: Text('Description')),
-            DataColumn(label: Text('Difficulty')),
-            DataColumn(label: Text('Created')),
-            DataColumn(label: Text('Actions')),
+          columns: [
+            DataColumn(label: Text(AppLocalizations.of(context)!.sport)),
+            DataColumn(label: Text(AppLocalizations.of(context)!.description)),
+            DataColumn(label: Text(AppLocalizations.of(context)!.difficulty)),
+            DataColumn(label: Text(AppLocalizations.of(context)!.created)),
+            DataColumn(label: Text(AppLocalizations.of(context)!.actions)),
           ],
           rows: sports.map((sport) {
             return DataRow(
@@ -187,7 +188,7 @@ class SportsListPage extends ConsumerWidget {
                           ref.read(adminViewProvider.notifier).state =
                               AdminView.sportDetail;
                         },
-                        tooltip: 'Manage Details',
+                        tooltip: AppLocalizations.of(context)!.manageDetails,
                       ),
                       IconButton(
                         icon: const Icon(Icons.edit_outlined,
@@ -197,14 +198,14 @@ class SportsListPage extends ConsumerWidget {
                           ref.read(adminViewProvider.notifier).state =
                               AdminView.editSport;
                         },
-                        tooltip: 'Edit',
+                        tooltip: AppLocalizations.of(context)!.edit,
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete_outline,
                             color: AdminColors.error, size: 20),
                         onPressed: () =>
                             _confirmDelete(context, ref, sport),
-                        tooltip: 'Delete',
+                        tooltip: AppLocalizations.of(context)!.delete,
                       ),
                     ],
                   ),
@@ -222,12 +223,12 @@ class SportsListPage extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Sport'),
+        title: Text(AppLocalizations.of(context)!.deleteSport),
         content: Text('Are you sure you want to delete "${sport.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -254,8 +255,8 @@ class SportsListPage extends ConsumerWidget {
                 }
               }
             },
-            child: const Text('Delete',
-                style: TextStyle(color: AdminColors.error)),
+            child: Text(AppLocalizations.of(context)!.delete,
+                style: const TextStyle(color: AdminColors.error)),
           ),
         ],
       ),

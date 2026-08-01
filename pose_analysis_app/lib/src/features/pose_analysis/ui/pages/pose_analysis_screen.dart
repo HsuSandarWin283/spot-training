@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
 
 class PoseAnalysisScreen extends StatefulWidget {
@@ -26,7 +27,7 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
           SafeArea(
             child: Column(
               children: [
-                const CustomAppBar(title: 'Pose Analysis', showBack: false),
+                CustomAppBar(title: AppLocalizations.of(context)!.poseAnalysisTitle, showBack: false),
                 Expanded(
                   child: Stack(
                     children: [
@@ -54,19 +55,19 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                             children: [
                               Container(
                                 color: const Color(0xFF1A1F3A),
-                                child: const Center(
+                                child: Center(
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.videocam,
                                         size: 60,
                                         color: AppColors.textMuted,
                                       ),
-                                      SizedBox(height: 12),
+                                      const SizedBox(height: 12),
                                       Text(
-                                        'Camera Preview',
-                                        style: TextStyle(
+                                        AppLocalizations.of(context)!.cameraPreview,
+                                        style: const TextStyle(
                                           color: AppColors.textMuted,
                                           fontSize: 14,
                                         ),
@@ -103,9 +104,9 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                                         ),
                                       ),
                                       const SizedBox(width: 6),
-                                      const Text(
-                                        'Live',
-                                        style: TextStyle(
+                                      Text(
+                                        AppLocalizations.of(context)!.live,
+                                        style: const TextStyle(
                                           color: AppColors.success,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
@@ -155,20 +156,20 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildMetric('⚖️', 'Body\nBalance', '92%'),
+                      _buildMetric('⚖️', AppLocalizations.of(context)!.bodyBalance, '92%'),
                       _buildVerticalDivider(),
-                      _buildMetric('🦵', 'Knee\nAngle', '135°'),
+                      _buildMetric('🦵', AppLocalizations.of(context)!.kneeAngle, '135°'),
                       _buildVerticalDivider(),
-                      _buildMetric('🦶', 'Leg\nPosition', 'Good'),
+                      _buildMetric('🦶', AppLocalizations.of(context)!.legPosition, 'Good'),
                       _buildVerticalDivider(),
-                      _buildMetric('➡️', 'Follow\nThrough', '85%'),
+                      _buildMetric('➡️', AppLocalizations.of(context)!.followThrough, '85%'),
                     ],
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                   child: GradientButton(
-                    text: _isAnalyzing ? 'Analyzing...' : 'Start Analysis',
+                    text: _isAnalyzing ? AppLocalizations.of(context)!.analyzing : AppLocalizations.of(context)!.startAnalysis,
                     icon: _isAnalyzing ? null : Icons.play_arrow,
                     onPressed: _isAnalyzing
                         ? () {}

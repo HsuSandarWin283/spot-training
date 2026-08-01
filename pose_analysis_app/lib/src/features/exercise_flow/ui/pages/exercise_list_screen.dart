@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/data/models/exercise.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/data/providers/exercise_flow_providers.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/ui/pages/exercise_flow_screen.dart';
@@ -43,7 +44,7 @@ class ExerciseListScreen extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'Select an exercise to begin',
+                    AppLocalizations.of(context)!.selectExerciseToBegin,
                     style: TextStyle(
                       color: AppColors.textSecondary.withOpacity(0.8),
                       fontSize: 14,
@@ -72,8 +73,8 @@ class ExerciseListScreen extends ConsumerWidget {
                               const Icon(Icons.fitness_center,
                                   size: 48, color: AppColors.textMuted),
                               const SizedBox(height: 16),
-                              const Text(
-                                'No Exercises',
+                              Text(
+                                AppLocalizations.of(context)!.noExercises,
                                 style: TextStyle(
                                   color: AppColors.textPrimary,
                                   fontSize: 18,
@@ -181,7 +182,7 @@ class _ExerciseCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${exercise.stepCount} steps',
+                  AppLocalizations.of(context)!.stepsCount(exercise.stepCount),
                   style: const TextStyle(
                     color: AppColors.primary,
                     fontSize: 12,

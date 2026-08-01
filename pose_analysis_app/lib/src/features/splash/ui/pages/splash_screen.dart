@@ -5,7 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/features/fitness_assessment/data/services/fitness_assessment_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -60,16 +63,40 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   void _checkAuth() {
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () async {
       if (!mounted || _hasNavigated) return;
 
-      final firebaseUser = fb.FirebaseAuth.instance.currentUser;
-      if (firebaseUser != null) {
+      try {
+        final firebaseUser = fb.FirebaseAuth.instance.currentUser;
+
+        if (firebaseUser != null) {
+          _hasNavigated = true;
+          final assessmentService = FitnessAssessmentService();
+          final hasCompleted = await assessmentService.hasCompletedAssessment(firebaseUser.uid);
+          if (!mounted) return;
+          if (hasCompleted) {
+            context.go('/main');
+          } else {
+            context.go('/fitness-assessment');
+          }
+          return;
+        }
+
+        final prefs = await SharedPreferences.getInstance();
+        final hasSelectedLanguage = prefs.getBool('hasSelectedLanguage') ?? false;
+        if (!hasSelectedLanguage) {
+          _hasNavigated = true;
+          if (mounted) context.go('/language');
+          return;
+        }
+
         _hasNavigated = true;
-        context.go('/main');
-      } else {
+        if (mounted) setState(() => _showAuthButtons = true);
+      } catch (e) {
         _hasNavigated = true;
-        setState(() => _showAuthButtons = true);
+        if (mounted) {
+          context.go('/main');
+        }
       }
     });
   }
@@ -155,8 +182,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Container(
-                                        width: 100,
-                                        height: 100,
+                                        width: 120,
+                                        height: 120,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           gradient: AppColors.primaryGradient,
@@ -170,7 +197,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                         ),
                                         child: const Icon(
                                           Icons.fitness_center,
-                                          size: 50,
+                                          size: 56,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -185,7 +212,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                        'Pose Analysis Assistant',
+                                        AppLocalizations.of(context)?.splashSubtitle ?? 'Pose Analysis Assistant',
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: AppColors.textSecondary.withOpacity(0.8),
@@ -207,8 +234,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Text(
-                                        'Master your sport with AI-powered pose analysis and personalized training plans.',
+                                      Text(
+                                        AppLocalizations.of(context)?.splashDescription ?? 'Master your sport with AI-powered pose analysis and personalized training plans.',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 13,
@@ -218,14 +245,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                       ),
                                       const SizedBox(height: 24),
                                       GradientButton(
-                                        text: 'Sign Up',
+                                        text: AppLocalizations.of(context)?.signUp ?? 'Sign Up',
                                         icon: Icons.person_add,
                                         height: 50,
                                         onPressed: () => context.go('/register'),
                                       ),
                                       const SizedBox(height: 12),
                                       OutlineButton(
-                                        text: 'Login',
+                                        text: AppLocalizations.of(context)?.login ?? 'Login',
                                         height: 50,
                                         onPressed: () => context.go('/login'),
                                       ),

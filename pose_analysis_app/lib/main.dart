@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
+import 'package:ai_sports_training/src/core/services/locale_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ai_sports_training/firebase_options.dart';
 
@@ -18,6 +20,8 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(localeProvider);
+
     return MaterialApp.router(
       title: 'AI Sports Training',
       theme: AppTheme.darkTheme,
@@ -25,6 +29,9 @@ class MyApp extends ConsumerWidget {
       themeMode: ThemeMode.dark,
       routerConfig: AppRouter.router(ref),
       debugShowCheckedModeBanner: false,
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
     );
   }
 }

@@ -3,9 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
+import 'package:ai_sports_training/src/features/fitness_assessment/data/services/fitness_assessment_service.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -56,33 +58,44 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   String? _validateFullName(String? value) {
-    if (value == null || value.isEmpty) return 'Full name is required';
-    if (value.trim().length < 2) return 'Name must be at least 2 characters';
+    if (value == null || value.isEmpty) return AppLocalizations.of(context)!.fullNameRequired;
+    if (value.trim().length < 2) return AppLocalizations.of(context)!.nameMinLength;
     return null;
   }
 
   String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) return 'Email is required';
+    if (value == null || value.isEmpty) return AppLocalizations.of(context)!.emailRequired;
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(value)) return 'Enter a valid email address';
+    if (!emailRegex.hasMatch(value)) return AppLocalizations.of(context)!.enterValidEmail;
     return null;
   }
 
   String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Password is required';
-    if (value.length < 8) return 'Password must be at least 8 characters';
-    if (!RegExp(r'[A-Z]').hasMatch(value)) return 'Include at least one uppercase letter';
-    if (!RegExp(r'[a-z]').hasMatch(value)) return 'Include at least one lowercase letter';
-    if (!RegExp(r'[0-9]').hasMatch(value)) return 'Include at least one number';
+    if (value == null || value.isEmpty) return AppLocalizations.of(context)!.passwordRequired;
+    if (value.length < 8) return AppLocalizations.of(context)!.passwordMinLength;
+    if (!RegExp(r'[A-Z]').hasMatch(value)) return AppLocalizations.of(context)!.includeUppercase;
+    if (!RegExp(r'[a-z]').hasMatch(value)) return AppLocalizations.of(context)!.includeLowercase;
+    if (!RegExp(r'[0-9]').hasMatch(value)) return AppLocalizations.of(context)!.includeNumber;
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<dynamic>>(authStateProvider, (prev, next) {
-      next.whenData((user) {
+      next.whenData((user) async {
         if (user != null && mounted) {
-          context.go('/main');
+          try {
+            final service = FitnessAssessmentService();
+            final hasCompleted = await service.hasCompletedAssessment(user.uid);
+            if (!mounted) return;
+            if (hasCompleted) {
+              context.go('/main');
+            } else {
+              context.go('/fitness-assessment');
+            }
+          } catch (e) {
+            if (mounted) context.go('/main');
+          }
         }
       });
     });
@@ -146,8 +159,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      const Text(
-                        'Create Account',
+                      Text(
+                        AppLocalizations.of(context)!.createAccount,
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 26,
@@ -156,7 +169,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Start your training journey today',
+                        AppLocalizations.of(context)!.startTrainingJourney,
                         style: TextStyle(
                           color: AppColors.textSecondary.withOpacity(0.8),
                           fontSize: 14,
@@ -165,9 +178,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       const SizedBox(height: 40),
                       TextFormField(
                         controller: _fullNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Full Name',
-                          prefixIcon: Icon(Icons.person_outline, color: AppColors.textMuted),
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.fullName,
+                          prefixIcon: const Icon(Icons.person_outline, color: AppColors.textMuted),
                         ),
                         textCapitalization: TextCapitalization.words,
                         validator: _validateFullName,
@@ -175,9 +188,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _emailController,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          prefixIcon: Icon(Icons.email_outlined, color: AppColors.textMuted),
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.email,
+                          prefixIcon: const Icon(Icons.email_outlined, color: AppColors.textMuted),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: _validateEmail,
@@ -186,7 +199,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       TextFormField(
                         controller: _passwordController,
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          labelText: AppLocalizations.of(context)!.password,
                           prefixIcon: const Icon(Icons.lock_outline, color: AppColors.textMuted),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -200,13 +213,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         validator: _validatePassword,
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Min 8 characters, include uppercase, lowercase and number',
+                      Text(
+                        AppLocalizations.of(context)!.passwordHint,
                         style: TextStyle(fontSize: 11, color: AppColors.textMuted),
                       ),
                       const SizedBox(height: 24),
                       GradientButton(
-                        text: _isLoading ? 'Creating Account...' : 'Sign Up',
+                        text: _isLoading ? AppLocalizations.of(context)!.creatingAccount : AppLocalizations.of(context)!.signUp,
                         icon: _isLoading ? null : Icons.person_add,
                         onPressed: _isLoading ? () {} : _signUp,
                       ),
@@ -214,14 +227,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            'Already have an account? ',
+                          Text(
+                            AppLocalizations.of(context)!.alreadyHaveAccount,
                             style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                           ),
                           GestureDetector(
                             onTap: () => context.go('/login'),
-                            child: const Text(
-                              'Sign In',
+                            child: Text(
+                              AppLocalizations.of(context)!.signIn,
                               style: TextStyle(
                                 color: AppColors.primary,
                                 fontSize: 13,

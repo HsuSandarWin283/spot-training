@@ -6,6 +6,7 @@ import 'package:admin_panel/src/core/models/sport_detail_models.dart';
 import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_providers.dart';
 import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart';
+import 'package:admin_panel/src/core/l10n/app_localizations.dart';
 
 class SportDetailPage extends ConsumerStatefulWidget {
   const SportDetailPage({super.key});
@@ -81,9 +82,9 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Manage sport details across all categories',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.manageSportDetailsDescription,
+                      style: const TextStyle(
                         color: AdminColors.textSecondary,
                         fontSize: 14,
                       ),
@@ -151,7 +152,7 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
                           value;
                     },
                     decoration: InputDecoration(
-                      hintText: 'Search...',
+                      hintText: AppLocalizations.of(context)!.search,
                       prefixIcon: const Icon(Icons.search,
                           color: AdminColors.textMuted, size: 20),
                       contentPadding: const EdgeInsets.symmetric(
@@ -175,7 +176,7 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
               ),
               const SizedBox(width: 12),
               GradientButton(
-                text: 'Add',
+                text: AppLocalizations.of(context)!.add,
                 icon: Icons.add,
                 onPressed: () {
                   ref.read(currentDetailTypeProvider.notifier).state =
@@ -287,11 +288,11 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
             constraints: BoxConstraints(minWidth: constraints.maxWidth),
             child: SingleChildScrollView(
               child: DataTable(
-                columns: const [
-                  DataColumn(label: Text('Title')),
-                  DataColumn(label: Text('Description')),
-                  DataColumn(label: Text('Created Date')),
-                  DataColumn(label: Text('Actions')),
+                columns: [
+                  DataColumn(label: Text(AppLocalizations.of(context)!.title)),
+                  DataColumn(label: Text(AppLocalizations.of(context)!.descriptionLabel)),
+                  DataColumn(label: Text(AppLocalizations.of(context)!.createdDate)),
+                  DataColumn(label: Text(AppLocalizations.of(context)!.actions)),
                 ],
                 rows: items.map((item) {
                   return DataRow(
@@ -349,14 +350,14 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
                                     .read(adminViewProvider.notifier)
                                     .state = AdminView.editSportDetail;
                               },
-                              tooltip: 'Edit',
+                              tooltip: AppLocalizations.of(context)!.edit,
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete_outline,
                                   color: AdminColors.error, size: 20),
                               onPressed: () => _confirmDelete(
                                   context, ref, item, type),
-                              tooltip: 'Delete',
+                              tooltip: AppLocalizations.of(context)!.delete,
                             ),
                           ],
                         ),
@@ -383,7 +384,7 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -412,8 +413,8 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
                 }
               }
             },
-            child: const Text('Delete',
-                style: TextStyle(color: AdminColors.error)),
+            child: Text(AppLocalizations.of(context)!.delete,
+                style: const TextStyle(color: AdminColors.error)),
           ),
         ],
       ),

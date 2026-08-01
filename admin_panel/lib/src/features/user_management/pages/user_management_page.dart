@@ -5,6 +5,7 @@ import 'package:admin_panel/src/core/theme/admin_theme.dart';
 import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/user_management/providers/user_providers.dart';
 import 'package:admin_panel/src/features/user_management/pages/user_edit_dialog.dart';
+import 'package:admin_panel/src/core/l10n/app_localizations.dart';
 
 class UserManagementPage extends ConsumerStatefulWidget {
   const UserManagementPage({super.key});
@@ -34,22 +35,22 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
         children: [
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'User Management',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.userManagement,
+                      style: const TextStyle(
                         color: AdminColors.textPrimary,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      'Manage registered users',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.manageRegisteredUsers,
+                      style: const TextStyle(
                         color: AdminColors.textSecondary,
                         fontSize: 14,
                       ),
@@ -86,10 +87,10 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
           usersAsync.when(
             data: (users) {
               if (users.isEmpty) {
-                return const EmptyState(
+                return EmptyState(
                   icon: Icons.people_outline,
-                  title: 'No Users Yet',
-                  subtitle: 'No users have registered yet',
+                  title: AppLocalizations.of(context)!.noUsersYet,
+                  subtitle: AppLocalizations.of(context)!.noUsersRegistered,
                 );
               }
 
@@ -105,14 +106,14 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
                     }).toList();
 
               if (filtered.isEmpty) {
-                return const EmptyState(
+                return EmptyState(
                   icon: Icons.search_off,
-                  title: 'No Results',
-                  subtitle: 'No users match your search',
+                  title: AppLocalizations.of(context)!.noResults,
+                  subtitle: AppLocalizations.of(context)!.noUsersMatchSearch,
                 );
               }
 
-              return _buildUsersTable(filtered);
+              return _buildUsersTable(context, filtered);
             },
             loading: () => const Center(
               child: Padding(
@@ -132,7 +133,7 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
     );
   }
 
-  Widget _buildUsersTable(List<Map<String, dynamic>> users) {
+  Widget _buildUsersTable(BuildContext context, List<Map<String, dynamic>> users) {
     return AdminCard(
       padding: EdgeInsets.zero,
       child: LayoutBuilder(
@@ -143,12 +144,12 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
               constraints: BoxConstraints(minWidth: constraints.maxWidth),
               child: SingleChildScrollView(
                 child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('User')),
-                    DataColumn(label: Text('Email')),
-                    DataColumn(label: Text('Phone')),
-                    DataColumn(label: Text('Joined')),
-                    DataColumn(label: Text('Actions')),
+                  columns: [
+                    DataColumn(label: Text(AppLocalizations.of(context)!.user)),
+                    DataColumn(label: Text(AppLocalizations.of(context)!.email)),
+                    DataColumn(label: Text(AppLocalizations.of(context)!.phone)),
+                    DataColumn(label: Text(AppLocalizations.of(context)!.joined)),
+                    DataColumn(label: Text(AppLocalizations.of(context)!.actions)),
                   ],
                   rows: users.map((user) {
                     final photoUrl = user['photoUrl'] as String? ?? '';
@@ -240,13 +241,13 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
                                 icon: const Icon(Icons.edit_outlined,
                                     color: AdminColors.primary, size: 20),
                                 onPressed: () => _openEditDialog(user),
-                                tooltip: 'Edit',
+                                tooltip: AppLocalizations.of(context)!.edit,
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete_outline,
                                     color: AdminColors.error, size: 20),
                                 onPressed: () => _confirmDelete(user),
-                                tooltip: 'Delete',
+                                tooltip: AppLocalizations.of(context)!.delete,
                               ),
                             ],
                           ),
@@ -275,13 +276,13 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete User'),
+        title: Text(AppLocalizations.of(context)!.deleteUser),
         content: Text(
             'Are you sure you want to delete "$fullName"? This cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -292,8 +293,8 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
                     .deleteUser(user['uid'] as String);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('User deleted successfully'),
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context)!.userDeletedSuccessfully),
                       backgroundColor: AdminColors.success,
                     ),
                   );
@@ -309,8 +310,8 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
                 }
               }
             },
-            child: const Text('Delete',
-                style: TextStyle(color: AdminColors.error)),
+            child: Text(AppLocalizations.of(context)!.delete,
+                style: const TextStyle(color: AdminColors.error)),
           ),
         ],
       ),

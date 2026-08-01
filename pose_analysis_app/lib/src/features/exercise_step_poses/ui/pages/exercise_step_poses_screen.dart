@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/features/exercise_step_poses/providers/exercise_step_image_providers.dart';
 
 class ExerciseStepPosesScreen extends ConsumerWidget {
@@ -30,12 +31,12 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CustomAppBar(title: 'Exercise Step Poses', showBack: false),
+                CustomAppBar(title: AppLocalizations.of(context)!.exerciseStepPoses, showBack: false),
                 const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'Follow step-by-step pose guides for your exercises.',
+                    AppLocalizations.of(context)!.followStepByStepGuides,
                     style: TextStyle(
                       color: AppColors.textSecondary.withOpacity(0.8),
                       fontSize: 14,
@@ -47,7 +48,7 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
                   child: postsAsync.when(
                     data: (posts) {
                       if (posts.isEmpty) {
-                        return _buildEmptyState();
+                        return _buildEmptyState(context);
                       }
                       return ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -69,7 +70,7 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
                       child:
                           CircularProgressIndicator(color: AppColors.primary),
                     ),
-                    error: (error, _) => _buildErrorState(error),
+                    error: (error, _) => _buildErrorState(context, error),
                   ),
                 ),
               ],
@@ -80,7 +81,7 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -98,8 +99,8 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'No Poses Available',
+          Text(
+            AppLocalizations.of(context)!.noPosesAvailable,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
@@ -107,8 +108,8 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Exercise step poses will appear here once added.',
+          Text(
+            AppLocalizations.of(context)!.exerciseStepPosesWillAppear,
             style: TextStyle(
               color: AppColors.textMuted,
               fontSize: 14,
@@ -119,7 +120,7 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorState(Object error) {
+  Widget _buildErrorState(BuildContext context, Object error) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -137,8 +138,8 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Failed to Load Poses',
+          Text(
+            AppLocalizations.of(context)!.failedToLoadPoses,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
@@ -266,7 +267,7 @@ class _PostCardState extends State<_PostCard>
                           const SizedBox(width: 8),
                         ],
                         Text(
-                          '${widget.itemCount} step${widget.itemCount != 1 ? 's' : ''}',
+                          AppLocalizations.of(context)!.stepsCount(widget.itemCount),
                           style: const TextStyle(
                             color: AppColors.textMuted,
                             fontSize: 12,

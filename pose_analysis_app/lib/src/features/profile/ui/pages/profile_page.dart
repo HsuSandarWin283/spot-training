@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/core/services/locale_provider.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
 import 'package:ai_sports_training/src/features/auth/domain/entities/user.dart';
 
@@ -30,7 +32,7 @@ class ProfilePage extends ConsumerWidget {
           SafeArea(
             child: userAsync.when(
               loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-              error: (_, __) => const Center(child: Text('Something went wrong', style: TextStyle(color: AppColors.textMuted))),
+              error: (_, __) => Center(child: Text(AppLocalizations.of(context)!.somethingWentWrong, style: TextStyle(color: AppColors.textMuted))),
               data: (user) => _buildContent(context, ref, user),
             ),
           ),
@@ -42,7 +44,7 @@ class ProfilePage extends ConsumerWidget {
   Widget _buildContent(BuildContext context, WidgetRef ref, User? user) {
     return Column(
       children: [
-        const CustomAppBar(title: 'Profile', showBack: false),
+        CustomAppBar(title: AppLocalizations.of(context)!.profile, showBack: false),
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -106,7 +108,7 @@ class ProfilePage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  user?.fullName ?? 'Athlete',
+                  user?.fullName ?? AppLocalizations.of(context)!.athlete,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 24,
@@ -147,8 +149,8 @@ class ProfilePage extends ConsumerWidget {
                     color: AppColors.primary.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text(
-                    'Intermediate Level',
+                  child: Text(
+                    AppLocalizations.of(context)!.intermediateLevel,
                     style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -162,7 +164,7 @@ class ProfilePage extends ConsumerWidget {
                           children: [
                             const Text('22.7', style: TextStyle(color: AppColors.textPrimary, fontSize: 22, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
-                            const Text('BMI', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                            Text(AppLocalizations.of(context)!.bmi, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
                           ],
                         ),
                       ),
@@ -175,7 +177,7 @@ class ProfilePage extends ConsumerWidget {
                           children: [
                             const Text('76%', style: TextStyle(color: AppColors.textPrimary, fontSize: 22, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
-                            const Text('Fitness', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                            Text(AppLocalizations.of(context)!.fitness, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
                           ],
                         ),
                       ),
@@ -188,7 +190,7 @@ class ProfilePage extends ConsumerWidget {
                           children: [
                             const Text('24', style: TextStyle(color: AppColors.textPrimary, fontSize: 22, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
-                            const Text('Sessions', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                            Text(AppLocalizations.of(context)!.sessions, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
                           ],
                         ),
                       ),
@@ -199,35 +201,31 @@ class ProfilePage extends ConsumerWidget {
                 GlassCard(
                   child: Column(
                     children: [
-                      _buildMenuItem(Icons.person_outline, 'Edit Profile', AppColors.primary, () {
+                      _buildMenuItem(Icons.person_outline, AppLocalizations.of(context)!.editProfile, AppColors.primary, () {
                         _showEditProfileSheet(context, ref, user);
                       }),
                       const Divider(color: AppColors.border),
-                      _buildMenuItem(Icons.fitness_center, 'My Workouts', AppColors.secondary, () {}),
-                      const Divider(color: AppColors.border),
-                      _buildMenuItem(Icons.history, 'Training History', AppColors.warning, () {}),
-                      const Divider(color: AppColors.border),
-                      _buildMenuItem(Icons.notifications_outlined, 'Notifications', AppColors.accent, () {}),
+                      _buildLanguageItem(context, ref),
                     ],
                   ),
                 ),
                 const SizedBox(height: 16),
                 GlassCard(
-                  child: _buildMenuItem(Icons.logout, 'Logout', AppColors.error, () async {
+                  child: _buildMenuItem(Icons.logout, AppLocalizations.of(context)!.logout, AppColors.error, () async {
                     final confirmed = await showDialog<bool>(
                       context: context,
                       builder: (ctx) => AlertDialog(
                         backgroundColor: AppColors.card,
-                        title: const Text('Logout', style: TextStyle(color: AppColors.textPrimary)),
-                        content: const Text('Are you sure you want to logout?', style: TextStyle(color: AppColors.textSecondary)),
+                        title: Text(AppLocalizations.of(context)!.logout, style: TextStyle(color: AppColors.textPrimary)),
+                        content: Text(AppLocalizations.of(context)!.logoutConfirm, style: TextStyle(color: AppColors.textSecondary)),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(ctx).pop(false),
-                            child: const Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
+                            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: AppColors.textMuted)),
                           ),
                           TextButton(
                             onPressed: () => Navigator.of(ctx).pop(true),
-                            child: const Text('Logout', style: TextStyle(color: AppColors.error)),
+                            child: Text(AppLocalizations.of(context)!.logout, style: TextStyle(color: AppColors.error)),
                           ),
                         ],
                       ),
@@ -269,57 +267,57 @@ class ProfilePage extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Edit Profile',
+              Text(
+                AppLocalizations.of(context)!.editProfile,
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Full Name',
-                  prefixIcon: Icon(Icons.person_outline, color: AppColors.textMuted),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.fullName,
+                  prefixIcon: const Icon(Icons.person_outline, color: AppColors.textMuted),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email_outlined, color: AppColors.textMuted),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.email,
+                  prefixIcon: const Icon(Icons.email_outlined, color: AppColors.textMuted),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: phoneController,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Phone (optional)',
-                  prefixIcon: Icon(Icons.phone_outlined, color: AppColors.textMuted),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.phoneOptional,
+                  prefixIcon: const Icon(Icons.phone_outlined, color: AppColors.textMuted),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: bioController,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Bio (optional)',
-                  prefixIcon: Icon(Icons.info_outline, color: AppColors.textMuted),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.bioOptional,
+                  prefixIcon: const Icon(Icons.info_outline, color: AppColors.textMuted),
                   alignLabelWithHint: true,
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: photoController,
-                decoration: const InputDecoration(
-                  labelText: 'Profile Image URL (optional)',
-                  prefixIcon: Icon(Icons.link, color: AppColors.textMuted),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.profileImageUrlOptional,
+                  prefixIcon: const Icon(Icons.link, color: AppColors.textMuted),
                 ),
               ),
               const SizedBox(height: 24),
               GradientButton(
-                text: 'Save Changes',
+                text: AppLocalizations.of(context)!.saveChanges,
                 icon: Icons.save,
                 height: 50,
                 onPressed: () async {
@@ -339,8 +337,8 @@ class ProfilePage extends ConsumerWidget {
                     if (ctx.mounted) {
                       Navigator.of(ctx).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Profile updated. Verification email may be sent for email change.'),
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.profileUpdated),
                           backgroundColor: AppColors.success,
                           behavior: SnackBarBehavior.floating,
                         ),
@@ -376,6 +374,77 @@ class ProfilePage extends ConsumerWidget {
               child: Text(label, style: const TextStyle(color: AppColors.textPrimary, fontSize: 15)),
             ),
             const Icon(Icons.chevron_right, color: AppColors.textMuted, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageItem(BuildContext context, WidgetRef ref) {
+    final currentLocale = ref.watch(localeProvider);
+    final langLabel = currentLocale.languageCode == 'my' ? 'မြန်မာ' : 'English';
+
+    return InkWell(
+      onTap: () => _showLanguageDialog(context, ref),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.secondary.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.language, color: AppColors.secondary, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(AppLocalizations.of(context)!.settings, style: const TextStyle(color: AppColors.textPrimary, fontSize: 15)),
+                  Text(langLabel, style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: AppColors.textMuted, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context, WidgetRef ref) {
+    final currentLocale = ref.read(localeProvider);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card,
+        title: const Text('Language', style: TextStyle(color: AppColors.textPrimary)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<Locale>(
+              title: const Text('English', style: TextStyle(color: AppColors.textPrimary)),
+              value: const Locale('en'),
+              groupValue: currentLocale,
+              activeColor: AppColors.primary,
+              onChanged: (locale) {
+                if (locale != null) ref.read(localeProvider.notifier).setLocale(locale);
+                Navigator.of(ctx).pop();
+              },
+            ),
+            RadioListTile<Locale>(
+              title: const Text('မြန်မာ', style: TextStyle(color: AppColors.textPrimary)),
+              value: const Locale('my'),
+              groupValue: currentLocale,
+              activeColor: AppColors.primary,
+              onChanged: (locale) {
+                if (locale != null) ref.read(localeProvider.notifier).setLocale(locale);
+                Navigator.of(ctx).pop();
+              },
+            ),
           ],
         ),
       ),

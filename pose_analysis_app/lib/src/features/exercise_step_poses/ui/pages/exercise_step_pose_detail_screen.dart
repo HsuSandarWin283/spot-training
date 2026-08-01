@@ -12,6 +12,10 @@ import 'package:ai_sports_training/src/core/models/exercise_step_image_post.dart
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/features/exercise_step_poses/providers/exercise_step_image_providers.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
+import 'package:ai_sports_training/src/features/exercise_step_poses/data/services/exercise_completion_service.dart';
+import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ExerciseStepPoseDetailScreen extends ConsumerWidget {
   final String postId;
@@ -37,13 +41,13 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
           SafeArea(
             child: Column(
               children: [
-                const CustomAppBar(title: 'Step by Step', showBack: true),
+                CustomAppBar(title: AppLocalizations.of(context)!.stepByStep, showBack: true),
                 const SizedBox(height: 8),
                 Expanded(
                   child: itemsAsync.when(
                     data: (items) {
                       if (items.isEmpty) {
-                        return _buildEmptyState();
+                        return _buildEmptyState(context);
                       }
                       return ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -63,7 +67,7 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
                       child:
                           CircularProgressIndicator(color: AppColors.primary),
                     ),
-                    error: (error, _) => _buildErrorState(error),
+                    error: (error, _) => _buildErrorState(context, error),
                   ),
                 ),
                 itemsAsync.when(
@@ -72,13 +76,37 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
                     return Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                       child: GradientButton(
-                        text: 'Start Practice',
+                        text: AppLocalizations.of(context)!.startPractice,
                         icon: Icons.play_arrow,
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => PosePracticeScreen(
                                 items: items,
+                                postId: postId,
+                                onDone: () async {
+                                  final user = ref.read(currentUserProvider);
+                                  if (user != null) {
+                                    try {
+                                      final postDoc = await FirebaseFirestore.instance
+                                          .collection('exercise_step_image_posts')
+                                          .doc(postId)
+                                          .get();
+                                      String postType = '';
+                                      if (postDoc.exists) {
+                                        final data = postDoc.data();
+                                        if (data != null && data['type'] != null) {
+                                          postType = data['type'] as String;
+                                        }
+                                      }
+                                      await ExerciseCompletionService().saveCompletion(
+                                        userId: user.uid,
+                                        postId: postId,
+                                        postType: postType,
+                                      );
+                                    } catch (_) {}
+                                  }
+                                },
                               ),
                             ),
                           );
@@ -97,7 +125,7 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -115,8 +143,8 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'No Steps Available',
+          Text(
+            AppLocalizations.of(context)!.noStepsAvailable,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
@@ -124,8 +152,8 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Step images will appear here once added.',
+          Text(
+            AppLocalizations.of(context)!.stepImagesWillAppear,
             style: TextStyle(
               color: AppColors.textMuted,
               fontSize: 14,
@@ -136,7 +164,7 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorState(Object error) {
+  Widget _buildErrorState(BuildContext context, Object error) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
@@ -156,9 +184,9 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Failed to Load Steps',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.failedToLoadSteps,
+              style: const TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -300,8 +328,10 @@ class _StepCard extends StatelessWidget {
 
 class PosePracticeScreen extends StatefulWidget {
   final List<ExerciseStepImageItem> items;
+  final String postId;
+  final VoidCallback? onDone;
 
-  const PosePracticeScreen({super.key, required this.items});
+  const PosePracticeScreen({super.key, required this.items, required this.postId, this.onDone});
 
   @override
   State<PosePracticeScreen> createState() => _PosePracticeScreenState();
@@ -475,7 +505,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Step ${_currentStepItems.first.stepNumber}',
+                          AppLocalizations.of(context)!.stepNumber(_currentStepItems.first.stepNumber),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -584,7 +614,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                           color: AppColors.success.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
@@ -597,7 +627,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                             ),
                             SizedBox(width: 8),
                             Text(
-                              'Auto-advancing in 5s...',
+                              AppLocalizations.of(context)!.autoAdvancingIn5s,
                               style: TextStyle(
                                 color: AppColors.success,
                                 fontSize: 13,
@@ -609,7 +639,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                       )
                     else if (_stepComplete)
                       GradientButton(
-                        text: _isLastStep ? 'Finish' : 'Next Step',
+                        text: _isLastStep ? AppLocalizations.of(context)!.finish : AppLocalizations.of(context)!.nextStep,
                         icon: Icons.arrow_forward,
                         onPressed: _onNextStep,
                       )
@@ -635,8 +665,8 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                             const SizedBox(width: 8),
                             Text(
                               _isLastItemInStep
-                                  ? 'Match the pose to complete step...'
-                                  : 'Match the pose to continue...',
+                                  ? AppLocalizations.of(context)!.matchPoseToCompleteStep
+                                  : AppLocalizations.of(context)!.matchPoseToContinue,
                               style: const TextStyle(
                                   color: Colors.white70, fontSize: 13),
                             ),
@@ -666,8 +696,8 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                     const SizedBox(width: 6),
                     Text(
                       _autoAdvancing
-                          ? 'Image Complete! Next in 5s...'
-                          : (_isLastStep ? 'All Steps Complete!' : 'Step Complete!'),
+                          ? AppLocalizations.of(context)!.imageCompleteNextIn5s
+                          : (_isLastStep ? AppLocalizations.of(context)!.allStepsComplete : AppLocalizations.of(context)!.stepComplete),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -697,7 +727,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              _feedback.isEmpty ? 'Analyzing pose...' : _feedback,
+              _feedback.isEmpty ? AppLocalizations.of(context)!.analyzingPose : _feedback,
               style: TextStyle(
                 color: Colors.white.withOpacity(0.8),
                 fontSize: 12,
@@ -760,8 +790,8 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      'Camera Permission Required',
+                    Text(
+                      AppLocalizations.of(context)!.cameraPermissionRequired,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 22,
@@ -779,20 +809,20 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                     ),
                     const SizedBox(height: 32),
                     GradientButton(
-                      text: 'Grant Permission',
+                      text: AppLocalizations.of(context)!.grantPermission,
                       icon: Icons.camera_alt,
                       onPressed: _requestCameraPermission,
                     ),
                     const SizedBox(height: 12),
                     OutlineButton(
-                      text: 'Go Back',
+                      text: AppLocalizations.of(context)!.goBack,
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     const SizedBox(height: 16),
                     TextButton(
                       onPressed: () => openAppSettings(),
-                      child: const Text(
-                        'Open App Settings',
+                      child: Text(
+                        AppLocalizations.of(context)!.openAppSettings,
                         style: TextStyle(
                           color: AppColors.primary,
                           fontSize: 13,
@@ -848,8 +878,8 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      'All Steps Complete!',
+                    Text(
+                      AppLocalizations.of(context)!.allStepsComplete,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 28,
@@ -858,7 +888,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'You completed all ${_steps.length} steps (${widget.items.length} images).',
+                      AppLocalizations.of(context)!.allStepsCompleteDescription(_steps.length, widget.items.length),
                       style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 16,
@@ -866,13 +896,16 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                     ),
                     const SizedBox(height: 40),
                     GradientButton(
-                      text: 'Done',
+                      text: AppLocalizations.of(context)!.done,
                       icon: Icons.check,
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () {
+                        widget.onDone?.call();
+                        Navigator.of(context).pop();
+                      },
                     ),
                     const SizedBox(height: 12),
                     OutlineButton(
-                      text: 'Practice Again',
+                      text: AppLocalizations.of(context)!.practiceAgain,
                       onPressed: () {
                         setState(() {
                           _currentStepIndex = 0;
@@ -1031,7 +1064,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
               .length;
 
           if (detectedCount < 8) {
-            widget.onResult(0, 'Step back to show full body');
+            widget.onResult(0, AppLocalizations.of(context)!.stepBackToShowFullBody);
             _speakMyanmar('Step back to show full body');
             _isProcessing = false;
             return;
@@ -1047,7 +1080,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
             _speakMyanmar(result.$2);
           }
         } else if (mounted) {
-          widget.onResult(0, 'No person detected');
+          widget.onResult(0, AppLocalizations.of(context)!.noPersonDetected);
           _speakMyanmar('Match the reference pose');
         }
       } catch (_) {}
@@ -1155,7 +1188,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
   }
 
   (double, String) _compareWithReference(Map<String, double> userAngles) {
-    if (widget.stepAngles.isEmpty) return (0, 'No reference angles');
+    if (widget.stepAngles.isEmpty) return (0, AppLocalizations.of(context)!.noReferenceAngles);
 
     double totalDiff = 0;
     int count = 0;
@@ -1169,12 +1202,12 @@ class _PoseCameraViewState extends State<PoseCameraView> {
       count++;
     }
 
-    if (count == 0) return (0, 'No matching angles');
+    if (count == 0) return (0, AppLocalizations.of(context)!.noMatchingAngles);
 
     if (count < widget.stepAngles.length) {
       final matchRatio = count / widget.stepAngles.length;
       if (matchRatio < 0.6) {
-        return (0, 'Not enough body visible');
+        return (0, AppLocalizations.of(context)!.notEnoughBodyVisible);
       }
     }
 
@@ -1183,13 +1216,13 @@ class _PoseCameraViewState extends State<PoseCameraView> {
 
     String feedback;
     if (accuracy >= 90) {
-      feedback = 'Excellent form!';
+      feedback = AppLocalizations.of(context)!.excellentForm;
     } else if (accuracy >= 60) {
-      feedback = 'Good, adjust slightly';
+      feedback = AppLocalizations.of(context)!.goodAdjustSlightly;
     } else if (accuracy >= 40) {
-      feedback = 'Keep adjusting your pose';
+      feedback = AppLocalizations.of(context)!.keepAdjustingPose;
     } else {
-      feedback = 'Match the reference pose';
+      feedback = AppLocalizations.of(context)!.matchTheReferencePose;
     }
 
     return (accuracy.roundToDouble(), feedback);

@@ -11,6 +11,7 @@ import 'package:admin_panel/src/features/sports_management/providers/sports_prov
 import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart';
 import 'package:admin_panel/src/features/auth/providers/admin_auth_provider.dart';
 import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_providers.dart';
+import 'package:admin_panel/src/core/l10n/app_localizations.dart';
 
 class _DetailEntry {
   final TextEditingController titleController;
@@ -299,7 +300,7 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
               ),
               const SizedBox(width: 8),
               Text(
-                _isEditing ? 'Edit Sport' : 'Add New Sport',
+                _isEditing ? AppLocalizations.of(context)!.editSport : AppLocalizations.of(context)!.addNewSportTitle,
                 style: const TextStyle(
                   color: AdminColors.textPrimary,
                   fontSize: 28,
@@ -348,7 +349,7 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
                     SizedBox(
                       width: double.infinity,
                       child: GradientButton(
-                        text: _isEditing ? 'Update Sport' : 'Add Sport',
+                        text: _isEditing ? AppLocalizations.of(context)!.updateSport : AppLocalizations.of(context)!.addSport,
                         icon: _isEditing ? Icons.save : Icons.add,
                         isLoading: _isLoading,
                         onPressed: _saveSport,
@@ -369,9 +370,9 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Sport Information',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.sportInformation,
+            style: const TextStyle(
               color: AdminColors.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -380,10 +381,10 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
           const SizedBox(height: 24),
           TextFormField(
             controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Sport Name',
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.sportName,
               prefixIcon:
-                  Icon(Icons.sports, color: AdminColors.textMuted),
+                  const Icon(Icons.sports, color: AdminColors.textMuted),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -395,9 +396,9 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
           const SizedBox(height: 16),
           TextFormField(
             controller: _descriptionController,
-            decoration: const InputDecoration(
-              labelText: 'Description',
-              prefixIcon: Icon(Icons.description_outlined,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.description,
+              prefixIcon: const Icon(Icons.description_outlined,
                   color: AdminColors.textMuted),
               alignLabelWithHint: true,
             ),
@@ -412,9 +413,9 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             value: _difficultyLevel,
-            decoration: const InputDecoration(
-              labelText: 'Difficulty Level',
-              prefixIcon: Icon(Icons.signal_cellular_alt,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.difficultyLevel,
+              prefixIcon: const Icon(Icons.signal_cellular_alt,
                   color: AdminColors.textMuted),
             ),
             items: _difficultyLevels.map((level) {
@@ -439,9 +440,9 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Photo',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.photo,
+            style: const TextStyle(
               color: AdminColors.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -470,8 +471,8 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
                 },
                 icon: const Icon(Icons.close,
                     size: 16, color: AdminColors.error),
-                label: const Text('Remove',
-                    style: TextStyle(color: AdminColors.error)),
+                label: Text(AppLocalizations.of(context)!.remove,
+                    style: const TextStyle(color: AdminColors.error)),
               ),
             ),
           ] else if (_existingThumbnailUrl != null &&
@@ -508,8 +509,8 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
                 },
                 icon: const Icon(Icons.close,
                     size: 16, color: AdminColors.error),
-                label: const Text('Remove',
-                    style: TextStyle(color: AdminColors.error)),
+                label: Text(AppLocalizations.of(context)!.remove,
+                    style: const TextStyle(color: AdminColors.error)),
               ),
             ),
           ],
@@ -521,8 +522,8 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
               icon: const Icon(Icons.upload_outlined),
               label: Text(
                 (_existingThumbnailUrl?.isNotEmpty ?? false) || _selectedImageBytes != null
-                    ? 'Change Image'
-                    : 'Upload Image',
+                    ? AppLocalizations.of(context)!.changeImage
+                    : AppLocalizations.of(context)!.uploadImage,
               ),
             ),
           ),
@@ -675,11 +676,11 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
           const SizedBox(height: 8),
           TextFormField(
             controller: entry.titleController,
-            decoration: const InputDecoration(
-              labelText: 'Title',
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.title,
               isDense: true,
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -691,11 +692,11 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
           const SizedBox(height: 8),
           TextFormField(
             controller: entry.descriptionController,
-            decoration: const InputDecoration(
-              labelText: 'Description',
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.descriptionLabel,
               isDense: true,
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             ),
             maxLines: 2,
             validator: (value) {

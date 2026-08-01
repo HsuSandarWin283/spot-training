@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:admin_panel/src/core/theme/admin_theme.dart';
+import 'package:admin_panel/src/core/l10n/app_localizations.dart';
 import 'package:admin_panel/src/features/auth/providers/admin_auth_provider.dart';
 
 class AdminLoginPage extends ConsumerStatefulWidget {
@@ -48,15 +49,15 @@ class _AdminLoginPageState extends ConsumerState<AdminLoginPage> {
   }
 
   String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) return 'Email is required';
+    if (value == null || value.isEmpty) return AppLocalizations.of(context)!.emailRequired;
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(value)) return 'Enter a valid email address';
+    if (!emailRegex.hasMatch(value)) return AppLocalizations.of(context)!.enterValidEmail;
     return null;
   }
 
   String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Password is required';
-    if (value.length < 8) return 'Password must be at least 8 characters';
+    if (value == null || value.isEmpty) return AppLocalizations.of(context)!.passwordRequired;
+    if (value.length < 8) return AppLocalizations.of(context)!.passwordMinLength;
     return null;
   }
 
@@ -152,9 +153,9 @@ class _AdminLoginPageState extends ConsumerState<AdminLoginPage> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      const Text(
-                        'Admin Panel',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.adminPanel,
+                        style: const TextStyle(
                           color: AdminColors.textPrimary,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -162,7 +163,7 @@ class _AdminLoginPageState extends ConsumerState<AdminLoginPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Sign in to manage your sports training data',
+                        AppLocalizations.of(context)!.signInToManage,
                         style: TextStyle(
                           color: AdminColors.textSecondary.withOpacity(0.8),
                           fontSize: 13,
@@ -172,10 +173,9 @@ class _AdminLoginPageState extends ConsumerState<AdminLoginPage> {
                       const SizedBox(height: 36),
                       TextFormField(
                         controller: _emailController,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          prefixIcon:
-                              Icon(Icons.email_outlined, color: AdminColors.textMuted),
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.email,
+                          prefixIcon: const Icon(Icons.email_outlined, color: AdminColors.textMuted),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: _validateEmail,
@@ -184,7 +184,7 @@ class _AdminLoginPageState extends ConsumerState<AdminLoginPage> {
                       TextFormField(
                         controller: _passwordController,
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          labelText: AppLocalizations.of(context)!.password,
                           prefixIcon: const Icon(Icons.lock_outline,
                               color: AdminColors.textMuted),
                           suffixIcon: IconButton(
@@ -218,7 +218,7 @@ class _AdminLoginPageState extends ConsumerState<AdminLoginPage> {
                                           Colors.white),
                                     ),
                                   )
-                                : const Text('Sign In'),
+                                : Text(AppLocalizations.of(context)!.signIn),
                           ),
                         ),
                       ),

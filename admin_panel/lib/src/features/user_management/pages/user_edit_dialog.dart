@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:admin_panel/src/core/theme/admin_theme.dart';
 import 'package:admin_panel/src/features/user_management/providers/user_providers.dart';
+import 'package:admin_panel/src/core/l10n/app_localizations.dart';
 
 class UserEditDialog extends ConsumerStatefulWidget {
   final Map<String, dynamic> user;
@@ -41,9 +42,9 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(
-        'Edit User',
-        style: TextStyle(
+      title: Text(
+        AppLocalizations.of(context)!.editProfile,
+        style: const TextStyle(
           color: AdminColors.textPrimary,
           fontWeight: FontWeight.w600,
         ),
@@ -57,25 +58,25 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
             children: [
               TextFormField(
                 controller: _fullNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Full Name',
-                  prefixIcon: Icon(Icons.person_outline),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.fullName,
+                  prefixIcon: const Icon(Icons.person_outline),
                 ),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Phone',
-                  prefixIcon: Icon(Icons.phone_outlined),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.phone,
+                  prefixIcon: const Icon(Icons.phone_outlined),
                 ),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _bioController,
-                decoration: const InputDecoration(
-                  labelText: 'Bio',
-                  prefixIcon: Icon(Icons.info_outline),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.bio,
+                  prefixIcon: const Icon(Icons.info_outline),
                 ),
                 maxLines: 3,
               ),
@@ -86,7 +87,7 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
       actions: [
         TextButton(
           onPressed: _isSaving ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         TextButton(
           onPressed: _isSaving ? null : _save,
@@ -100,9 +101,9 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
                         AdminColors.primary),
                   ),
                 )
-              : const Text(
-                  'Save',
-                  style: TextStyle(color: AdminColors.primary),
+              : Text(
+                  AppLocalizations.of(context)!.save,
+                  style: const TextStyle(color: AdminColors.primary),
                 ),
         ),
       ],
@@ -124,8 +125,8 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('User updated successfully'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.userUpdatedSuccessfully),
             backgroundColor: AdminColors.success,
           ),
         );

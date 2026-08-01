@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/models/sport_detail_item.dart';
 import 'package:ai_sports_training/src/core/constants/app_constants.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/features/sport_detail/providers/sport_detail_providers.dart';
 
@@ -440,9 +441,9 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'This section will be updated soon.',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.sectionUpdatedSoon,
+              style: const TextStyle(
                 color: AppColors.textMuted,
                 fontSize: 14,
               ),
@@ -474,9 +475,9 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Failed to Load Data',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.failedToLoadData,
+              style: const TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,

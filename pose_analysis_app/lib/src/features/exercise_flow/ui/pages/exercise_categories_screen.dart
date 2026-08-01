@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/data/models/exercise_category.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/data/providers/exercise_flow_providers.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/ui/pages/exercise_list_screen.dart';
@@ -30,12 +31,12 @@ class ExerciseCategoriesScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CustomAppBar(title: 'Exercise Categories', showBack: true),
+                CustomAppBar(title: AppLocalizations.of(context)!.exerciseCategories, showBack: true),
                 const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'Choose a category to start training',
+                    AppLocalizations.of(context)!.chooseCategoryDescription,
                     style: TextStyle(
                       color: AppColors.textSecondary.withOpacity(0.8),
                       fontSize: 14,
@@ -57,7 +58,7 @@ class ExerciseCategoriesScreen extends ConsumerWidget {
 
                       final categories = snapshot.data ?? [];
                       if (categories.isEmpty) {
-                        return _buildEmptyState();
+                        return _buildEmptyState(context);
                       }
 
                       return ListView.builder(
@@ -91,7 +92,7 @@ class ExerciseCategoriesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -109,8 +110,8 @@ class ExerciseCategoriesScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'No Categories Yet',
+          Text(
+            AppLocalizations.of(context)!.noCategoriesYet,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
@@ -118,8 +119,8 @@ class ExerciseCategoriesScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Exercise categories will appear here.',
+          Text(
+            AppLocalizations.of(context)!.exerciseCategoriesWillAppear,
             style: TextStyle(
               color: AppColors.textMuted,
               fontSize: 14,
@@ -198,7 +199,7 @@ class _CategoryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${category.exerciseCount} exercises',
+                  AppLocalizations.of(context)!.exercisesCount(category.exerciseCount),
                   style: const TextStyle(
                     color: AppColors.textMuted,
                     fontSize: 12,

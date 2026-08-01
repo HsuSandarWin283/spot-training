@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/data/models/exercise.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/data/providers/exercise_flow_providers.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/ui/pages/exercise_completion_screen.dart';
@@ -131,7 +132,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
             voiceService.speakSuccess();
 
             if (mounted) {
-              setState(() => _currentFeedback = 'Step Complete!');
+              setState(() => _currentFeedback = AppLocalizations.of(context)!.stepComplete);
 
               if (stepState.isAutoNext) {
                 _autoNextTimer = Timer(const Duration(seconds: 1), () {
@@ -154,7 +155,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
             }
           }
         } else if (mounted) {
-          setState(() => _currentFeedback = 'No person detected');
+          setState(() => _currentFeedback = AppLocalizations.of(context)!.noPersonDetected);
         }
       } catch (_) {}
 
@@ -461,7 +462,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
               if (stepState.isStepComplete)
                 if (!stepState.isAutoNext || stepState.isLastStep)
                   GradientButton(
-                    text: stepState.isLastStep ? 'Finish' : 'Next Step',
+                    text: stepState.isLastStep ? AppLocalizations.of(context)!.finish : AppLocalizations.of(context)!.nextStep,
                     icon: Icons.arrow_forward,
                     onPressed: _onManualNext,
                   )
@@ -473,10 +474,10 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                       color: AppColors.success.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
@@ -484,9 +485,9 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                             color: AppColors.success,
                           ),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          'Auto-advancing...',
+                          AppLocalizations.of(context)!.autoAdvancing,
                           style: TextStyle(
                             color: AppColors.success,
                             fontSize: 13,
@@ -504,10 +505,10 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                     color: Colors.white.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
@@ -515,10 +516,10 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                           color: AppColors.primary,
                         ),
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
-                        'Match the reference pose...',
-                        style: TextStyle(color: Colors.white70, fontSize: 13),
+                        AppLocalizations.of(context)!.matchReferencePose,
+                        style: const TextStyle(color: Colors.white70, fontSize: 13),
                       ),
                     ],
                   ),
@@ -545,8 +546,8 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
           children: [
             Text(
               stepState.isStepComplete
-                  ? 'Step Complete!'
-                  : (_currentFeedback.isEmpty ? 'Analyzing...' : _currentFeedback),
+                  ? AppLocalizations.of(context)!.stepComplete
+                  : (_currentFeedback.isEmpty ? AppLocalizations.of(context)!.analyzing : _currentFeedback),
               style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12),
             ),
             Text(
@@ -585,14 +586,14 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
             color: AppColors.success.withOpacity(0.9),
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.check_circle, color: Colors.white, size: 22),
-              SizedBox(width: 8),
+              const Icon(Icons.check_circle, color: Colors.white, size: 22),
+              const SizedBox(width: 8),
               Text(
-                'Step Completed!',
-                style: TextStyle(
+                AppLocalizations.of(context)!.stepCompleted,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -635,8 +636,8 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                           size: 64, color: AppColors.error),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      'Camera Permission Required',
+                    Text(
+                      AppLocalizations.of(context)!.cameraPermissionRequired,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 22,
@@ -644,21 +645,21 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'This feature needs camera access to detect your pose.',
+                    Text(
+                      AppLocalizations.of(context)!.cameraPermissionDescription,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: AppColors.textSecondary, fontSize: 14),
                     ),
                     const SizedBox(height: 32),
                     GradientButton(
-                      text: 'Grant Permission',
+                      text: AppLocalizations.of(context)!.grantPermission,
                       icon: Icons.camera_alt,
                       onPressed: _requestPermission,
                     ),
                     const SizedBox(height: 12),
                     OutlineButton(
-                      text: 'Go Back',
+                      text: AppLocalizations.of(context)!.goBack,
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],

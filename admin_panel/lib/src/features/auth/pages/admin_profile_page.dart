@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:admin_panel/src/core/theme/admin_theme.dart';
 import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
+import 'package:admin_panel/src/core/l10n/app_localizations.dart';
 import 'package:admin_panel/src/features/auth/providers/admin_auth_provider.dart';
 
 class AdminProfilePage extends ConsumerStatefulWidget {
@@ -57,8 +58,8 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
       ref.invalidate(currentUserProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.profileUpdatedSuccessfully),
             backgroundColor: AdminColors.success,
           ),
         );
@@ -86,18 +87,18 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'My Profile',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.myProfile,
+            style: const TextStyle(
               color: AdminColors.textPrimary,
               fontSize: 28,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Manage your admin account',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.manageAdminAccount,
+            style: const TextStyle(
               color: AdminColors.textSecondary,
               fontSize: 14,
             ),
@@ -160,7 +161,7 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    user?.displayName ?? 'Admin',
+                    user?.displayName ?? AppLocalizations.of(context)!.admin,
                     style: const TextStyle(
                       color: AdminColors.textPrimary,
                       fontSize: 22,
@@ -183,9 +184,9 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
                       color: AdminColors.primary.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text(
-                      'Admin',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.admin,
+                      style: const TextStyle(
                         color: AdminColors.primary,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -197,9 +198,9 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Edit Profile',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context)!.editProfile,
+                          style: const TextStyle(
                             color: AdminColors.textPrimary,
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -208,18 +209,18 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: _nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Display Name',
-                            prefixIcon: Icon(Icons.person_outline,
+                          decoration: InputDecoration(
+                            labelText: AppLocalizations.of(context)!.displayName,
+                            prefixIcon: const Icon(Icons.person_outline,
                                 color: AdminColors.textMuted),
                           ),
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _emailController,
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.email_outlined,
+                          decoration: InputDecoration(
+                            labelText: AppLocalizations.of(context)!.email,
+                            prefixIcon: const Icon(Icons.email_outlined,
                                 color: AdminColors.textMuted),
                           ),
                           keyboardType: TextInputType.emailAddress,
@@ -227,9 +228,9 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _photoUrlController,
-                          decoration: const InputDecoration(
-                            labelText: 'Profile Photo URL (optional)',
-                            prefixIcon: Icon(Icons.link,
+                          decoration: InputDecoration(
+                            labelText: AppLocalizations.of(context)!.profilePhotoUrl,
+                            prefixIcon: const Icon(Icons.link,
                                 color: AdminColors.textMuted),
                           ),
                         ),
@@ -237,7 +238,7 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
                         SizedBox(
                           width: double.infinity,
                           child: GradientButton(
-                            text: 'Save Changes',
+                            text: AppLocalizations.of(context)!.saveChanges,
                             icon: Icons.save,
                             isLoading: _isLoading,
                             onPressed: _save,

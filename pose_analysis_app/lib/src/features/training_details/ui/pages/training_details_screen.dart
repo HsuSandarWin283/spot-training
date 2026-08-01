@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 
 class TrainingDetailsScreen extends StatefulWidget {
   const TrainingDetailsScreen({super.key});
@@ -15,36 +16,36 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<Map<String, dynamic>> _drills = [
+  List<Map<String, dynamic>> _getDrills(BuildContext context) => [
     {
-      'title': 'Dribbling Drill',
-      'description': 'Practice close ball control through cone patterns',
+      'title': AppLocalizations.of(context)!.dribblingDrill,
+      'description': AppLocalizations.of(context)!.dribblingDescription,
       'duration': '15 min',
-      'difficulty': 'Medium',
+      'difficulty': AppLocalizations.of(context)!.medium,
       'icon': '⚽',
       'color': AppColors.primary,
     },
     {
-      'title': 'Passing Drill',
-      'description': 'Improve accuracy with partner passing exercises',
+      'title': AppLocalizations.of(context)!.passingDrill,
+      'description': AppLocalizations.of(context)!.passingDescription,
       'duration': '20 min',
-      'difficulty': 'Easy',
+      'difficulty': AppLocalizations.of(context)!.easy,
       'icon': '🔄',
       'color': AppColors.secondary,
     },
     {
-      'title': 'Shooting Drill',
-      'description': 'Work on finishing from various positions and angles',
+      'title': AppLocalizations.of(context)!.shootingDrill,
+      'description': AppLocalizations.of(context)!.shootingDescription,
       'duration': '25 min',
-      'difficulty': 'Hard',
+      'difficulty': AppLocalizations.of(context)!.hard,
       'icon': '🎯',
       'color': AppColors.warning,
     },
     {
-      'title': 'Small-Sided Game',
-      'description': 'Practice match situations in reduced spaces',
+      'title': AppLocalizations.of(context)!.smallSidedGame,
+      'description': AppLocalizations.of(context)!.smallSidedDescription,
       'duration': '30 min',
-      'difficulty': 'Medium',
+      'difficulty': AppLocalizations.of(context)!.medium,
       'icon': '🏆',
       'color': AppColors.accent,
     },
@@ -100,10 +101,10 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
                     ),
                     indicatorSize: TabBarIndicatorSize.tab,
                     dividerHeight: 0,
-                    tabs: const [
-                      Tab(text: 'Beginner'),
-                      Tab(text: 'Intermediate'),
-                      Tab(text: 'Advanced'),
+                    tabs: [
+                      Tab(text: AppLocalizations.of(context)!.beginner),
+                      Tab(text: AppLocalizations.of(context)!.intermediate),
+                      Tab(text: AppLocalizations.of(context)!.advanced),
                     ],
                   ),
                 ),
@@ -112,9 +113,9 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      _buildDrillList(),
-                      _buildDrillList(),
-                      _buildDrillList(),
+                      _buildDrillList(context),
+                      _buildDrillList(context),
+                      _buildDrillList(context),
                     ],
                   ),
                 ),
@@ -126,12 +127,13 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
     );
   }
 
-  Widget _buildDrillList() {
+  Widget _buildDrillList(BuildContext context) {
+    final drills = _getDrills(context);
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: _drills.length,
+      itemCount: drills.length,
       itemBuilder: (context, index) {
-        final drill = _drills[index];
+        final drill = drills[index];
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: GlassCard(
