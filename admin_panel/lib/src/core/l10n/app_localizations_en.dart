@@ -109,6 +109,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingPoses => 'Training Poses';
 
   @override
+  String get exerciseStepPoses => 'Exercise Step Poses';
+
+  @override
   String get registeredUsers => 'Registered Users';
 
   @override

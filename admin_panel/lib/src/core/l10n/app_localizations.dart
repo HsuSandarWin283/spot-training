@@ -290,6 +290,12 @@ abstract class AppLocalizations {
   /// **'Training Poses'**
   String get trainingPoses;
 
+  /// No description provided for @exerciseStepPoses.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Step Poses'**
+  String get exerciseStepPoses;
+
   /// No description provided for @registeredUsers.
   ///
   /// In en, this message translates to:
