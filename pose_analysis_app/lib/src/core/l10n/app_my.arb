@@ -308,5 +308,8 @@
   "needsPractice": "လေ့ကျင့်ရန် လိုအပ်သည်",
   "recommendedNext": "နောက်ထပ် အကြံပြုချက်",
   "practiceTheseExercises": "ဤလေ့ကျင့်ခန်းများကို လေ့ကျင့်ပါ",
-  "exerciseCompletions": "လေ့ကျင့်ခန်း ပြီးဆုံးမှု"
+  "exerciseCompletions": "လေ့ကျင့်ခန်း ပြီးဆုံးမှု",
+  "photoSelected": "ဓာတ်ပုံ ရွေးချယ်ပြီးပါပြီ",
+  "uploading": "တင်နေသည်...",
+  "imageUploadFailed": "ဓာတ်ပုံ တင်ခြင်း မအောင်မြင်ပါ"
 }

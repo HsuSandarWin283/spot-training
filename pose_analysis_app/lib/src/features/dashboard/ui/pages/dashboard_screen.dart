@@ -111,25 +111,38 @@ class DashboardScreen extends ConsumerWidget {
           const Spacer(),
           GestureDetector(
             onTap: onProfileTap,
-            child: Container(
-              width: 42,
-              height: 42,
-              decoration: const BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  (displayName.isNotEmpty ? displayName[0] : 'A')
-                      .toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+            child: user?.photoUrl != null
+                ? Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.primary, width: 2),
+                      image: DecorationImage(
+                        image: NetworkImage(user!.photoUrl!),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: 42,
+                    height: 42,
+                    decoration: const BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        (displayName.isNotEmpty ? displayName[0] : 'A')
+                            .toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
           ),
         ],
       ),

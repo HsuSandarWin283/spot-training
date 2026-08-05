@@ -883,4 +883,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exerciseCompletions => 'Exercise Completions';
+
+  @override
+  String get photoSelected => 'Photo selected';
+
+  @override
+  String get uploading => 'Uploading...';
+
+  @override
+  String get imageUploadFailed => 'Image upload failed';
 }

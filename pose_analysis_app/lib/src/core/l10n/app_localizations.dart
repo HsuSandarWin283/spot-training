@@ -1771,6 +1771,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exercise Completions'**
   String get exerciseCompletions;
+
+  /// No description provided for @photoSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo selected'**
+  String get photoSelected;
+
+  /// No description provided for @uploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading...'**
+  String get uploading;
+
+  /// No description provided for @imageUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Image upload failed'**
+  String get imageUploadFailed;
 }
 
 class _AppLocalizationsDelegate

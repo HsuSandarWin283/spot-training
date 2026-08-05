@@ -35,6 +35,8 @@ dependencies:
   edge_tts: ^0.1.5
   path_provider: ^2.1.5
   crypto: ^3.0.3
+  image_picker: ^1.1.2
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:

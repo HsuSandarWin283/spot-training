@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +8,7 @@ import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/core/services/locale_provider.dart';
+import 'package:ai_sports_training/src/core/services/image_upload_service.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
 import 'package:ai_sports_training/src/features/auth/domain/entities/user.dart';
 import 'package:ai_sports_training/src/features/fitness_assessment/data/providers/fitness_assessment_providers.dart';
@@ -326,104 +328,219 @@ class ProfilePage extends ConsumerWidget {
     final emailController = TextEditingController(text: user?.email ?? '');
     final phoneController = TextEditingController(text: user?.phone ?? '');
     final bioController = TextEditingController(text: user?.bio ?? '');
-    final photoController = TextEditingController(text: user?.photoUrl ?? '');
+    final imageUploadService = ImageUploadService();
+
+    Uint8List? pickedImageBytes;
+    String? pickedImageName;
+    bool isUploading = false;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(ctx).viewInsets.bottom + 24),
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppLocalizations.of(context)!.editProfile,
-                style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.fullName,
-                  prefixIcon: const Icon(Icons.person_outline, color: AppColors.textMuted),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Container(
+          padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(ctx).viewInsets.bottom + 24),
+          decoration: const BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.editProfile,
+                  style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.email,
-                  prefixIcon: const Icon(Icons.email_outlined, color: AppColors.textMuted),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.phoneOptional,
-                  prefixIcon: const Icon(Icons.phone_outlined, color: AppColors.textMuted),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: bioController,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.bioOptional,
-                  prefixIcon: const Icon(Icons.info_outline, color: AppColors.textMuted),
-                  alignLabelWithHint: true,
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: photoController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.profileImageUrlOptional,
-                  prefixIcon: const Icon(Icons.link, color: AppColors.textMuted),
-                ),
-              ),
-              const SizedBox(height: 24),
-              GradientButton(
-                text: AppLocalizations.of(context)!.saveChanges,
-                icon: Icons.save,
-                height: 50,
-                onPressed: () async {
-                  final newName = nameController.text.trim();
-                  final newEmail = emailController.text.trim();
-                  final newPhone = phoneController.text.trim();
-                  final newBio = bioController.text.trim();
-                  final newPhoto = photoController.text.trim();
-                  if (newName.isNotEmpty) {
-                    await ref.read(authRepositoryProvider).updateProfile(
-                          fullName: newName,
-                          email: newEmail.isNotEmpty ? newEmail : null,
-                          photoUrl: newPhoto.isNotEmpty ? newPhoto : null,
-                          phone: newPhone.isNotEmpty ? newPhone : null,
-                          bio: newBio.isNotEmpty ? newBio : null,
-                        );
-                    if (ctx.mounted) {
-                      Navigator.of(ctx).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(AppLocalizations.of(context)!.profileUpdated),
-                          backgroundColor: AppColors.success,
-                          behavior: SnackBarBehavior.floating,
+                const SizedBox(height: 20),
+                Center(
+                  child: GestureDetector(
+                    onTap: isUploading
+                        ? null
+                        : () async {
+                            final result = await imageUploadService.pickImageBytes();
+                            if (result != null) {
+                              setSheetState(() {
+                                pickedImageBytes = result['bytes'] as Uint8List;
+                                pickedImageName = result['name'] as String;
+                              });
+                            }
+                          },
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        if (pickedImageBytes != null)
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppColors.primary, width: 3),
+                              image: DecorationImage(
+                                image: MemoryImage(pickedImageBytes!),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          )
+                        else if (user?.photoUrl != null)
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppColors.primary, width: 3),
+                              image: DecorationImage(
+                                image: NetworkImage(user!.photoUrl!),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          )
+                        else
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: AppColors.primaryGradient,
+                            ),
+                            child: Center(
+                              child: Text(
+                                (user?.fullName.isNotEmpty == true ? user!.fullName[0] : 'A').toUpperCase(),
+                                style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: isUploading
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                          ),
                         ),
-                      );
-                    }
-                  }
-                },
-              ),
-            ],
+                      ],
+                    ),
+                  ),
+                ),
+                if (pickedImageBytes != null) ...[
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text(
+                      AppLocalizations.of(context)!.photoSelected,
+                      style: TextStyle(color: AppColors.success, fontSize: 12),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 20),
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.fullName,
+                    prefixIcon: const Icon(Icons.person_outline, color: AppColors.textMuted),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.email,
+                    prefixIcon: const Icon(Icons.email_outlined, color: AppColors.textMuted),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.phoneOptional,
+                    prefixIcon: const Icon(Icons.phone_outlined, color: AppColors.textMuted),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: bioController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.bioOptional,
+                    prefixIcon: const Icon(Icons.info_outline, color: AppColors.textMuted),
+                    alignLabelWithHint: true,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                GradientButton(
+                  text: isUploading ? AppLocalizations.of(context)!.uploading : AppLocalizations.of(context)!.saveChanges,
+                  icon: isUploading ? null : Icons.save,
+                  height: 50,
+                  onPressed: isUploading
+                      ? null
+                      : () async {
+                          final newName = nameController.text.trim();
+                          final newEmail = emailController.text.trim();
+                          final newPhone = phoneController.text.trim();
+                          final newBio = bioController.text.trim();
+                          if (newName.isEmpty) return;
+
+                          setSheetState(() => isUploading = true);
+
+                          String? photoUrl;
+                          if (pickedImageBytes != null && pickedImageName != null) {
+                            try {
+                              photoUrl = await imageUploadService.uploadImage(
+                                bytes: pickedImageBytes!,
+                                fileName: pickedImageName!,
+                              );
+                            } catch (e) {
+                              setSheetState(() => isUploading = false);
+                              if (ctx.mounted) {
+                                ScaffoldMessenger.of(ctx).showSnackBar(
+                                  SnackBar(
+                                    content: Text('${AppLocalizations.of(ctx)!.imageUploadFailed}: $e'),
+                                    backgroundColor: AppColors.error,
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              }
+                              return;
+                            }
+                          }
+
+                          await ref.read(authRepositoryProvider).updateProfile(
+                                fullName: newName,
+                                email: newEmail.isNotEmpty ? newEmail : null,
+                                photoUrl: photoUrl ?? user?.photoUrl,
+                                phone: newPhone.isNotEmpty ? newPhone : null,
+                                bio: newBio.isNotEmpty ? newBio : null,
+                              );
+                          if (ctx.mounted) {
+                            Navigator.of(ctx).pop();
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(
+                                content: Text(AppLocalizations.of(ctx)!.profileUpdated),
+                                backgroundColor: AppColors.success,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                        },
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -317,5 +317,8 @@
   "needsPractice": "Needs Practice",
   "recommendedNext": "Recommended Next",
   "practiceTheseExercises": "Practice these exercises",
-  "exerciseCompletions": "Exercise Completions"
+  "exerciseCompletions": "Exercise Completions",
+  "photoSelected": "Photo selected",
+  "uploading": "Uploading...",
+  "imageUploadFailed": "Image upload failed"
 }

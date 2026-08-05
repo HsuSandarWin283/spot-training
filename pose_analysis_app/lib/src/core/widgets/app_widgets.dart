@@ -63,7 +63,7 @@ class GlassCard extends StatelessWidget {
 
 class GradientButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final IconData? icon;
   final double? width;
   final double height;

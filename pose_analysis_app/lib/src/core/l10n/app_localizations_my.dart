@@ -899,4 +899,13 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get exerciseCompletions => 'လေ့ကျင့်ခန်း ပြီးဆုံးမှု';
+
+  @override
+  String get photoSelected => 'ဓာတ်ပုံ ရွေးချယ်ပြီးပါပြီ';
+
+  @override
+  String get uploading => 'တင်နေသည်...';
+
+  @override
+  String get imageUploadFailed => 'ဓာတ်ပုံ တင်ခြင်း မအောင်မြင်ပါ';
 }
