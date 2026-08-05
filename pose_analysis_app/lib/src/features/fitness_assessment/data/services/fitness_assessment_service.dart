@@ -28,6 +28,22 @@ class FitnessAssessmentService {
     return FitnessAssessment.fromFirestore(snapshot.docs.first);
   }
 
+  Stream<FitnessAssessment?> watchLatestAssessment(String userId) {
+    return _firestore
+        .collection('fitness_assessments')
+        .where('userId', isEqualTo: userId)
+        .where('isCompleted', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.docs.isEmpty) return null;
+      final list = snapshot.docs
+          .map((doc) => FitnessAssessment.fromFirestore(doc))
+          .toList();
+      list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return list.first;
+    });
+  }
+
   Future<String> createAssessment(FitnessAssessment assessment) async {
     final docRef = await _firestore
         .collection('fitness_assessments')
@@ -43,11 +59,10 @@ class FitnessAssessmentService {
   }
 
   Future<void> completeAssessment(FitnessAssessment assessment) async {
-    final completed = assessment.copyWith(
-      isCompleted: true,
-      completedAt: DateTime.now(),
-    );
-    await updateAssessment(completed);
+    await _firestore
+        .collection('fitness_assessments')
+        .doc(assessment.id)
+        .update({'isCompleted': true});
   }
 
   Future<void> saveExerciseHistory(ExerciseHistory history) async {
@@ -146,19 +161,16 @@ class FitnessAssessmentService {
     }
 
     if (assessment != null) {
-      if (assessment.strengthScore != null && assessment.strengthScore! < 50) {
-        areasToImprove.add('Strength training recommended');
+      if (assessment.overallScore < 50) {
+        areasToImprove.add('Overall fitness needs improvement');
         recommended.add('Squats');
-        recommended.add('Strength Training');
-      }
-      if (assessment.flexibilityScore != null && assessment.flexibilityScore! < 50) {
-        areasToImprove.add('Flexibility needs improvement');
         recommended.add('Stretching');
-        recommended.add('Yoga');
-      }
-      if (assessment.balanceTotalScore != null && assessment.balanceTotalScore! < 50) {
-        areasToImprove.add('Balance training recommended');
         recommended.add('Balance Training');
+      }
+      if (assessment.fitnessLevel == FitnessLevel.beginner) {
+        areasToImprove.add('Build a consistent exercise routine');
+        recommended.add('Walking');
+        recommended.add('Basic Stretches');
       }
     }
 
@@ -186,14 +198,14 @@ class FitnessAssessmentService {
     double? strengthImprove, flexImprove, balanceImprove, coordImprove, overallImprove;
     if (assessment != null && history.length >= 10) {
       final recentAvg = history.take(10).map((h) => h.accuracy).reduce((a, b) => a + b) / 10;
-      final initialScore = assessment.overallScore ?? 50;
+      final initialScore = assessment.overallScore;
       overallImprove = recentAvg - initialScore;
-      strengthImprove = (assessment.strengthScore ?? 50) > 0 ? recentAvg - (assessment.strengthScore ?? 50) : null;
+      strengthImprove = recentAvg - initialScore;
     }
 
     return PerformanceReport(
       overallProgressPercentage: overallProgress,
-      fitnessLevel: assessment?.fitnessLevel?.name ?? 'beginner',
+      fitnessLevel: assessment?.fitnessLevel?.toString().split('.').last ?? 'beginner',
       strengths: strengths,
       areasToImprove: areasToImprove,
       recommendedExercises: recommended,

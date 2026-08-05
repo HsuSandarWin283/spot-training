@@ -32,9 +32,11 @@ final _routerProvider = Provider<GoRouter>((ref) {
           state.matchedLocation == '/register';
       final isOnSplash = state.matchedLocation == '/' ||
           state.matchedLocation == '/splash';
+      final isOnLanguage = state.matchedLocation == '/language';
       final isOnAssessment = state.matchedLocation == '/fitness-assessment';
 
       if (isOnSplash) return null;
+      if (isOnLanguage) return null;
       if (isOnAssessment) return null;
 
       if (!isAuthenticated && !isOnAuthRoute) {
@@ -118,7 +120,10 @@ final _routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/fitness-assessment',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const FitnessAssessmentScreen(),
+        builder: (context, state) {
+          final existing = state.extra as dynamic;
+          return FitnessAssessmentScreen(existingAssessment: existing);
+        },
       ),
     ],
   );

@@ -738,4 +738,149 @@ class AppLocalizationsEn extends AppLocalizations {
   String repsValue(Object count) {
     return 'Reps: $count';
   }
+
+  @override
+  String get fitnessAssessment => 'Fitness Assessment';
+
+  @override
+  String get basicInformation => 'Basic Information';
+
+  @override
+  String get tellUsAboutYourBody => 'Tell us about your body';
+
+  @override
+  String get age => 'Age';
+
+  @override
+  String get required => 'Required';
+
+  @override
+  String get enterValidAge => 'Enter valid age';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get heightCm => 'Height (cm)';
+
+  @override
+  String get enterValidHeight => 'Enter valid height';
+
+  @override
+  String get weightKg => 'Weight (kg)';
+
+  @override
+  String get enterValidWeight => 'Enter valid weight';
+
+  @override
+  String get activityLevel => 'Activity Level';
+
+  @override
+  String get howActiveAreYou => 'How active are you?';
+
+  @override
+  String get exerciseFrequencyQuestion => 'How often do you exercise per week?';
+
+  @override
+  String get never => 'Never';
+
+  @override
+  String get dailyActivityQuestion => 'What is your daily activity level?';
+
+  @override
+  String get sedentary => 'Sedentary';
+
+  @override
+  String get light => 'Light';
+
+  @override
+  String get moderate => 'Moderate';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get saving => 'Saving...';
+
+  @override
+  String get completeAssessment => 'Complete Assessment';
+
+  @override
+  String get notSignedIn => 'Not signed in';
+
+  @override
+  String get failedToSave => 'Failed to save:';
+
+  @override
+  String get fitnessScoreLabel => 'Fitness Score';
+
+  @override
+  String get notAssessed => 'Not Assessed';
+
+  @override
+  String get completeAssessmentToSee =>
+      'Complete fitness assessment to see your score';
+
+  @override
+  String get editFitnessInfo => 'Edit Fitness Info';
+
+  @override
+  String get maxLevelReached => 'Max level reached';
+
+  @override
+  String get exercisesCompleted => 'exercises completed';
+
+  @override
+  String get moreToIntermediate => 'more to Intermediate';
+
+  @override
+  String get moreToAdvanced => 'more to Advanced';
+
+  @override
+  String get beginnerLevel => 'Beginner Level';
+
+  @override
+  String get intermediateLevelLabel => 'Intermediate Level';
+
+  @override
+  String get advancedLevel => 'Advanced Level';
+
+  @override
+  String get noCompletedExercises => 'No Completed Exercises';
+
+  @override
+  String get completeExercisesToSee =>
+      'Complete exercises to see your progress here.';
+
+  @override
+  String yourGoals(Object count) {
+    return 'Your Goals ($count)';
+  }
+
+  @override
+  String get performanceFeedback => 'Performance Feedback';
+
+  @override
+  String get strengthsLabel => 'Strengths';
+
+  @override
+  String get needsPractice => 'Needs Practice';
+
+  @override
+  String get recommendedNext => 'Recommended Next';
+
+  @override
+  String get practiceTheseExercises => 'Practice these exercises';
+
+  @override
+  String get exerciseCompletions => 'Exercise Completions';
 }

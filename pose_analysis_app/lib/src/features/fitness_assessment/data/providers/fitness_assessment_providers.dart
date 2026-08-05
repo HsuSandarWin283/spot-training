@@ -17,11 +17,11 @@ final hasCompletedAssessmentProvider = FutureProvider<bool>((ref) async {
   return service.hasCompletedAssessment(user.uid);
 });
 
-final latestAssessmentProvider = FutureProvider<FitnessAssessment?>((ref) async {
+final latestAssessmentProvider = StreamProvider<FitnessAssessment?>((ref) {
   final user = ref.watch(currentUserProvider);
-  if (user == null) return null;
+  if (user == null) return Stream.value(null);
   final service = ref.read(fitnessAssessmentServiceProvider);
-  return service.getLatestAssessment(user.uid);
+  return service.watchLatestAssessment(user.uid);
 });
 
 final exerciseHistoryProvider = FutureProvider<List<ExerciseHistory>>((ref) async {

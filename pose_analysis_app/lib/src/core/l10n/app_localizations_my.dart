@@ -684,7 +684,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get logoutConfirm => 'ထွက်မည်မှာ သေချာပါသလား?';
 
   @override
-  String get settings => 'ဆက်တင်များ';
+  String get settings => 'ဘာသာစကား';
 
   @override
   String get darkMode => 'အမှောင် စနစ်';
@@ -753,4 +753,150 @@ class AppLocalizationsMy extends AppLocalizations {
   String repsValue(Object count) {
     return 'ထပ်ကိတ်: $count';
   }
+
+  @override
+  String get fitnessAssessment => 'ကျန်းမာရေး အကဲဖြတ်မှု';
+
+  @override
+  String get basicInformation => 'အခြေခံ အချက်အလက်';
+
+  @override
+  String get tellUsAboutYourBody => 'သင်၏ ခန္ဓာကိုယ်အကြောင်း ပြောပြပါ';
+
+  @override
+  String get age => 'အသက်';
+
+  @override
+  String get required => 'ထည့်သွင်းရန် လိုအပ်ပါသည်';
+
+  @override
+  String get enterValidAge => 'မှန်ကန်သော အသက် ထည့်သွင်းပါ';
+
+  @override
+  String get gender => 'ကျား/မ';
+
+  @override
+  String get male => 'ကျား';
+
+  @override
+  String get female => 'မ';
+
+  @override
+  String get other => 'အခြား';
+
+  @override
+  String get heightCm => 'အရပ် (စင်တီမီတာ)';
+
+  @override
+  String get enterValidHeight => 'မှန်ကန်သော အရပ် ထည့်သွင်းပါ';
+
+  @override
+  String get weightKg => 'ကိုယ်အလေးချိန် (ကီလို)';
+
+  @override
+  String get enterValidWeight => 'မှန်ကန်သော ကိုယ်အလေးချိန် ထည့်သွင်းပါ';
+
+  @override
+  String get activityLevel => 'လှုပ်ရှားမှု အဆင့်';
+
+  @override
+  String get howActiveAreYou => 'သင် ဘယ်လောက် လှုပ်ရှားပါသလဲ?';
+
+  @override
+  String get exerciseFrequencyQuestion =>
+      'တစ်ပတ်လျှင် ဘယ်နှစ်ကြိမ် လေ့ကျင့်ခန်း လုပ်ပါသလဲ?';
+
+  @override
+  String get never => 'မလုပ်ဖူးပါ';
+
+  @override
+  String get dailyActivityQuestion => 'သင်၏ နေ့စဉ် လှုပ်ရှားမှု အဆင့်က ဘာလဲ?';
+
+  @override
+  String get sedentary => 'ထိုင်နေထသာ';
+
+  @override
+  String get light => 'အနည်းငယ်';
+
+  @override
+  String get moderate => 'အလယ်အလတ်';
+
+  @override
+  String get active => 'တက်ကြွ';
+
+  @override
+  String get saving => 'သိမ်းဆည်းနေသည်...';
+
+  @override
+  String get completeAssessment => 'အကဲဖြတ်မှု ပြီးဆုံးရန်';
+
+  @override
+  String get notSignedIn => 'ဝင်ရောက်မထားပါ';
+
+  @override
+  String get failedToSave => 'သိမ်းဆည်းမှု မအောင်မြင်ပါ:';
+
+  @override
+  String get fitnessScoreLabel => 'ကျန်းမာရေး ရမှတ်';
+
+  @override
+  String get notAssessed => 'မစစ်ဆေးရသေးပါ';
+
+  @override
+  String get completeAssessmentToSee =>
+      'ရမှတ်ကြည့်ရန် ကျန်းမာရေး စစ်ဆေးမှု ပြီးဆုံးအောင် လုပ်ပါ';
+
+  @override
+  String get editFitnessInfo => 'ကျန်းမာရေး အချက်အလက် ပြင်ဆင်ရန်';
+
+  @override
+  String get maxLevelReached => 'အမြင့်ဆုံး အဆင့် ရောက်ပါပြီ';
+
+  @override
+  String get exercisesCompleted => 'လေ့ကျင့်ခန်း ပြီးဆုံး';
+
+  @override
+  String get moreToIntermediate => 'နောက် အလယ်အလတ် အဆင့်သို့';
+
+  @override
+  String get moreToAdvanced => 'နောက် အဆင့်မြင့် အဆင့်သို့';
+
+  @override
+  String get beginnerLevel => 'အစပြုသူ အဆင့်';
+
+  @override
+  String get intermediateLevelLabel => 'အလယ်အလတ် အဆင့်';
+
+  @override
+  String get advancedLevel => 'အဆင့်မြင့် အဆင့်';
+
+  @override
+  String get noCompletedExercises => 'ပြီးဆုံးထားသော လေ့ကျင့်ခန်း မရှိသေးပါ';
+
+  @override
+  String get completeExercisesToSee =>
+      'တိုးတက်မှု ကြည့်ရန် လေ့ကျင့်ခန်းများ ပြီးဆုံးအောင် လုပ်ပါ။';
+
+  @override
+  String yourGoals(Object count) {
+    return 'သင်၏ ပန်းတိုင်များ ($count)';
+  }
+
+  @override
+  String get performanceFeedback => 'စွမ်းဆောင်ရည် အကြံပြုချက်';
+
+  @override
+  String get strengthsLabel => 'အားသာချက်များ';
+
+  @override
+  String get needsPractice => 'လေ့ကျင့်ရန် လိုအပ်သည်';
+
+  @override
+  String get recommendedNext => 'နောက်ထပ် အကြံပြုချက်';
+
+  @override
+  String get practiceTheseExercises => 'ဤလေ့ကျင့်ခန်းများကို လေ့ကျင့်ပါ';
+
+  @override
+  String get exerciseCompletions => 'လေ့ကျင့်ခန်း ပြီးဆုံးမှု';
 }

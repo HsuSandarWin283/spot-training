@@ -1489,6 +1489,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reps: {count}'**
   String repsValue(Object count);
+
+  /// No description provided for @fitnessAssessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness Assessment'**
+  String get fitnessAssessment;
+
+  /// No description provided for @basicInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Information'**
+  String get basicInformation;
+
+  /// No description provided for @tellUsAboutYourBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us about your body'**
+  String get tellUsAboutYourBody;
+
+  /// No description provided for @age.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get age;
+
+  /// No description provided for @required.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get required;
+
+  /// No description provided for @enterValidAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter valid age'**
+  String get enterValidAge;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @male.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// No description provided for @female.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @heightCm.
+  ///
+  /// In en, this message translates to:
+  /// **'Height (cm)'**
+  String get heightCm;
+
+  /// No description provided for @enterValidHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter valid height'**
+  String get enterValidHeight;
+
+  /// No description provided for @weightKg.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get weightKg;
+
+  /// No description provided for @enterValidWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter valid weight'**
+  String get enterValidWeight;
+
+  /// No description provided for @activityLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity Level'**
+  String get activityLevel;
+
+  /// No description provided for @howActiveAreYou.
+  ///
+  /// In en, this message translates to:
+  /// **'How active are you?'**
+  String get howActiveAreYou;
+
+  /// No description provided for @exerciseFrequencyQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'How often do you exercise per week?'**
+  String get exerciseFrequencyQuestion;
+
+  /// No description provided for @never.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get never;
+
+  /// No description provided for @dailyActivityQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What is your daily activity level?'**
+  String get dailyActivityQuestion;
+
+  /// No description provided for @sedentary.
+  ///
+  /// In en, this message translates to:
+  /// **'Sedentary'**
+  String get sedentary;
+
+  /// No description provided for @light.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get light;
+
+  /// No description provided for @moderate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get moderate;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get saving;
+
+  /// No description provided for @completeAssessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Assessment'**
+  String get completeAssessment;
+
+  /// No description provided for @notSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Not signed in'**
+  String get notSignedIn;
+
+  /// No description provided for @failedToSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save:'**
+  String get failedToSave;
+
+  /// No description provided for @fitnessScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness Score'**
+  String get fitnessScoreLabel;
+
+  /// No description provided for @notAssessed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Assessed'**
+  String get notAssessed;
+
+  /// No description provided for @completeAssessmentToSee.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete fitness assessment to see your score'**
+  String get completeAssessmentToSee;
+
+  /// No description provided for @editFitnessInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Fitness Info'**
+  String get editFitnessInfo;
+
+  /// No description provided for @maxLevelReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Max level reached'**
+  String get maxLevelReached;
+
+  /// No description provided for @exercisesCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'exercises completed'**
+  String get exercisesCompleted;
+
+  /// No description provided for @moreToIntermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'more to Intermediate'**
+  String get moreToIntermediate;
+
+  /// No description provided for @moreToAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'more to Advanced'**
+  String get moreToAdvanced;
+
+  /// No description provided for @beginnerLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner Level'**
+  String get beginnerLevel;
+
+  /// No description provided for @intermediateLevelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermediate Level'**
+  String get intermediateLevelLabel;
+
+  /// No description provided for @advancedLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Level'**
+  String get advancedLevel;
+
+  /// No description provided for @noCompletedExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'No Completed Exercises'**
+  String get noCompletedExercises;
+
+  /// No description provided for @completeExercisesToSee.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete exercises to see your progress here.'**
+  String get completeExercisesToSee;
+
+  /// No description provided for @yourGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Goals ({count})'**
+  String yourGoals(Object count);
+
+  /// No description provided for @performanceFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance Feedback'**
+  String get performanceFeedback;
+
+  /// No description provided for @strengthsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Strengths'**
+  String get strengthsLabel;
+
+  /// No description provided for @needsPractice.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Practice'**
+  String get needsPractice;
+
+  /// No description provided for @recommendedNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Next'**
+  String get recommendedNext;
+
+  /// No description provided for @practiceTheseExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice these exercises'**
+  String get practiceTheseExercises;
+
+  /// No description provided for @exerciseCompletions.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Completions'**
+  String get exerciseCompletions;
 }
 
 class _AppLocalizationsDelegate

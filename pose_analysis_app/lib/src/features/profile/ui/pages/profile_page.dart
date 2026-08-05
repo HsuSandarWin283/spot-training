@@ -9,6 +9,9 @@ import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/core/services/locale_provider.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
 import 'package:ai_sports_training/src/features/auth/domain/entities/user.dart';
+import 'package:ai_sports_training/src/features/fitness_assessment/data/providers/fitness_assessment_providers.dart';
+import 'package:ai_sports_training/src/features/exercise_step_poses/data/providers/exercise_completion_providers.dart';
+import 'package:ai_sports_training/src/features/fitness_assessment/ui/pages/fitness_assessment_screen.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -16,6 +19,8 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(userProfileStreamProvider);
+    final assessmentAsync = ref.watch(latestAssessmentProvider);
+    final completionsAsync = ref.watch(completionsByTypeProvider);
 
     return Scaffold(
       body: Stack(
@@ -33,7 +38,7 @@ class ProfilePage extends ConsumerWidget {
             child: userAsync.when(
               loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
               error: (_, __) => Center(child: Text(AppLocalizations.of(context)!.somethingWentWrong, style: TextStyle(color: AppColors.textMuted))),
-              data: (user) => _buildContent(context, ref, user),
+              data: (user) => _buildContent(context, ref, user, assessmentAsync.valueOrNull, completionsAsync.valueOrNull),
             ),
           ),
         ],
@@ -41,7 +46,37 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, WidgetRef ref, User? user) {
+  Widget _buildContent(BuildContext context, WidgetRef ref, User? user, dynamic assessment, dynamic completions) {
+    final hasAssessment = assessment != null;
+
+    int totalCompletions = 0;
+    if (completions != null) {
+      for (final c in completions) {
+        totalCompletions += (c.count as int);
+      }
+    }
+
+    String fitnessLevel;
+    if (totalCompletions >= 25) {
+      fitnessLevel = 'advanced';
+    } else if (totalCompletions >= 10) {
+      fitnessLevel = 'intermediate';
+    } else {
+      fitnessLevel = 'beginner';
+    }
+
+    final bmi = hasAssessment
+        ? (assessment.weightKg / ((assessment.heightCm / 100) * (assessment.heightCm / 100)))
+        : 0.0;
+
+    Color levelColor;
+    if (fitnessLevel == 'advanced') {
+      levelColor = AppColors.success;
+    } else if (fitnessLevel == 'intermediate') {
+      levelColor = AppColors.warning;
+    } else {
+      levelColor = AppColors.primary;
+    }
     return Column(
       children: [
         CustomAppBar(title: AppLocalizations.of(context)!.profile, showBack: false),
@@ -146,56 +181,97 @@ class ProfilePage extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.15),
+                    color: levelColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
-                    AppLocalizations.of(context)!.intermediateLevel,
-                    style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w600),
+                    child: Text(
+                      fitnessLevel == 'advanced'
+                          ? AppLocalizations.of(context)!.advancedLevel
+                          : fitnessLevel == 'intermediate'
+                              ? AppLocalizations.of(context)!.intermediateLevelLabel
+                              : AppLocalizations.of(context)!.beginnerLevel,
+                      style: TextStyle(color: levelColor, fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                ),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () {
+                    if (hasAssessment) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => FitnessAssessmentScreen(
+                            existingAssessment: assessment,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: GlassCard(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 70,
+                        height: 70,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 70,
+                              height: 70,
+                              child: CircularProgressIndicator(
+                                value: hasAssessment ? (assessment.overallScore ?? 0) / 100 : 0,
+                                strokeWidth: 7,
+                                backgroundColor: AppColors.border,
+                                valueColor: AlwaysStoppedAnimation(levelColor),
+                                strokeCap: StrokeCap.round,
+                              ),
+                            ),
+                            Text(
+                              hasAssessment ? (assessment.overallScore ?? 0).toStringAsFixed(0) : '0',
+                              style: TextStyle(
+                                color: levelColor,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              hasAssessment ? AppLocalizations.of(context)!.fitnessScoreLabel : AppLocalizations.of(context)!.notAssessed,
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    hasAssessment
+                                        ? 'BMI: ${bmi.toStringAsFixed(1)} • ${assessment.heightCm.toStringAsFixed(0)}cm • ${assessment.weightKg.toStringAsFixed(0)}kg'
+                                        : AppLocalizations.of(context)!.completeAssessmentToSee,
+                                    style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+                                  ),
+                                ),
+                                if (hasAssessment)
+                                  const Icon(Icons.edit, color: AppColors.textMuted, size: 16),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: GlassCard(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            const Text('22.7', style: TextStyle(color: AppColors.textPrimary, fontSize: 22, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
-                            Text(AppLocalizations.of(context)!.bmi, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: GlassCard(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            const Text('76%', style: TextStyle(color: AppColors.textPrimary, fontSize: 22, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
-                            Text(AppLocalizations.of(context)!.fitness, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: GlassCard(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            const Text('24', style: TextStyle(color: AppColors.textPrimary, fontSize: 22, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
-                            Text(AppLocalizations.of(context)!.sessions, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 24),
                 GlassCard(
