@@ -19,6 +19,8 @@ class InjuryPreventionScreen extends ConsumerStatefulWidget {
 class _InjuryPreventionScreenState extends ConsumerState<InjuryPreventionScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
 
   static const List<InjuryDataType> _tabs = [
     InjuryDataType.prevention,
@@ -34,6 +36,7 @@ class _InjuryPreventionScreenState extends ConsumerState<InjuryPreventionScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -59,6 +62,28 @@ class _InjuryPreventionScreenState extends ConsumerState<InjuryPreventionScreen>
                 CustomAppBar(title: AppLocalizations.of(context)!.injuryPreventionLabel, showBack: false),
                 const SizedBox(height: 8),
                 _buildTabBar(),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) => setState(() => _searchQuery = value),
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)!.searchInjuryHint,
+                      prefixIcon: Icon(Icons.search, color: AppColors.txtMuted(context), size: 20),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.clear, color: AppColors.txtMuted(context), size: 18),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _searchQuery = '');
+                              },
+                            )
+                          : null,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
@@ -149,10 +174,18 @@ class _InjuryPreventionScreenState extends ConsumerState<InjuryPreventionScreen>
 
     return itemsAsync.when(
       data: (items) {
-        if (items.isEmpty) {
+        final filtered = _searchQuery.isEmpty
+            ? items
+            : items.where((item) {
+                final title = item.title.toLowerCase();
+                final desc = item.description.toLowerCase();
+                final q = _searchQuery.toLowerCase();
+                return title.contains(q) || desc.contains(q);
+              }).toList();
+        if (filtered.isEmpty) {
           return _buildEmptyState(type);
         }
-        return _buildItemList(items, type);
+        return _buildItemList(filtered, type);
       },
       loading: () => Center(
         child: CircularProgressIndicator(color: AppColors.primary),
@@ -297,7 +330,9 @@ class _InjuryPreventionScreenState extends ConsumerState<InjuryPreventionScreen>
             ),
             const SizedBox(height: 20),
             Text(
-              _emptyTitle(type),
+              _searchQuery.isNotEmpty
+                  ? AppLocalizations.of(context)!.noResults
+                  : _emptyTitle(type),
               style: TextStyle(
                 color: AppColors.txtPrimary(context),
                 fontSize: 18,
@@ -306,7 +341,9 @@ class _InjuryPreventionScreenState extends ConsumerState<InjuryPreventionScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              AppLocalizations.of(context)!.sectionUpdatedSoon,
+              _searchQuery.isNotEmpty
+                  ? AppLocalizations.of(context)!.tryDifferentSearch
+                  : AppLocalizations.of(context)!.sectionUpdatedSoon,
               style: TextStyle(
                 color: AppColors.txtMuted(context),
                 fontSize: 14,

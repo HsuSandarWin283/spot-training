@@ -920,4 +920,19 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get imageUploadFailed => 'ဓာတ်ပုံ တင်ခြင်း မအောင်မြင်ပါ';
+
+  @override
+  String get searchSportsHint => 'အားကစား ရှာဖွေရန်...';
+
+  @override
+  String get searchPosesHint => 'အနေအထား ရှာဖွေရန်...';
+
+  @override
+  String get searchInjuryHint => 'ကာကွယ်မှုနှင့် ကုသမှု ရှာဖွေရန်...';
+
+  @override
+  String get noResults => 'ရလဒ် မရှိပါ';
+
+  @override
+  String get tryDifferentSearch => 'အခြား ရှာဖွေစကား သုံးကြည့်ပါ';
 }

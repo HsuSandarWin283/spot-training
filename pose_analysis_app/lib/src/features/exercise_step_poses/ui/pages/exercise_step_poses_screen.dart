@@ -8,11 +8,27 @@ import 'package:ai_sports_training/src/core/utils/app_router.dart';
 import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/features/exercise_step_poses/providers/exercise_step_image_providers.dart';
 
-class ExerciseStepPosesScreen extends ConsumerWidget {
+class ExerciseStepPosesScreen extends ConsumerStatefulWidget {
   const ExerciseStepPosesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ExerciseStepPosesScreen> createState() =>
+      _ExerciseStepPosesScreenState();
+}
+
+class _ExerciseStepPosesScreenState
+    extends ConsumerState<ExerciseStepPosesScreen> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final postsAsync = ref.watch(exerciseStepImagePostsProvider);
 
     return Scaffold(
@@ -42,18 +58,47 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) => setState(() => _searchQuery = value),
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)!.searchPosesHint,
+                      prefixIcon: Icon(Icons.search, color: AppColors.txtMuted(context), size: 20),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.clear, color: AppColors.txtMuted(context), size: 18),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _searchQuery = '');
+                              },
+                            )
+                          : null,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 Expanded(
                   child: postsAsync.when(
                     data: (posts) {
-                      if (posts.isEmpty) {
+                      final filtered = _searchQuery.isEmpty
+                          ? posts
+                          : posts.where((p) {
+                              final title = p.title.toLowerCase();
+                              final type = p.type.toLowerCase();
+                              final q = _searchQuery.toLowerCase();
+                              return title.contains(q) || type.contains(q);
+                            }).toList();
+                      if (filtered.isEmpty) {
                         return _buildEmptyState(context);
                       }
                       return ListView.builder(
                         padding: EdgeInsets.symmetric(horizontal: 20),
-                        itemCount: posts.length,
+                        itemCount: filtered.length,
                         itemBuilder: (context, index) {
-                          final post = posts[index];
+                          final post = filtered[index];
                           return _PostCard(
                             title: post.title,
                             type: post.type,
@@ -99,7 +144,9 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            AppLocalizations.of(context)!.noPosesAvailable,
+            _searchQuery.isNotEmpty
+                ? AppLocalizations.of(context)!.noResults
+                : AppLocalizations.of(context)!.noPosesAvailable,
             style: TextStyle(
               color: AppColors.txtPrimary(context),
               fontSize: 18,
@@ -108,7 +155,9 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            AppLocalizations.of(context)!.exerciseStepPosesWillAppear,
+            _searchQuery.isNotEmpty
+                ? AppLocalizations.of(context)!.tryDifferentSearch
+                : AppLocalizations.of(context)!.exerciseStepPosesWillAppear,
             style: TextStyle(
               color: AppColors.txtMuted(context),
               fontSize: 14,

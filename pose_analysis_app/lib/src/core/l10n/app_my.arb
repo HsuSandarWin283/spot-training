@@ -316,5 +316,11 @@
   "exerciseCompletions": "လေ့ကျင့်ခန်း ပြီးဆုံးမှု",
   "photoSelected": "ဓာတ်ပုံ ရွေးချယ်ပြီးပါပြီ",
   "uploading": "တင်နေသည်...",
-  "imageUploadFailed": "ဓာတ်ပုံ တင်ခြင်း မအောင်မြင်ပါ"
+  "imageUploadFailed": "ဓာတ်ပုံ တင်ခြင်း မအောင်မြင်ပါ",
+
+  "searchSportsHint": "အားကစား ရှာဖွေရန်...",
+  "searchPosesHint": "အနေအထား ရှာဖွေရန်...",
+  "searchInjuryHint": "ကာကွယ်မှုနှင့် ကုသမှု ရှာဖွေရန်...",
+  "noResults": "ရလဒ် မရှိပါ",
+  "tryDifferentSearch": "အခြား ရှာဖွေစကား သုံးကြည့်ပါ"
 }

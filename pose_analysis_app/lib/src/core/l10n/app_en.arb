@@ -325,5 +325,11 @@
   "exerciseCompletions": "Exercise Completions",
   "photoSelected": "Photo selected",
   "uploading": "Uploading...",
-  "imageUploadFailed": "Image upload failed"
+  "imageUploadFailed": "Image upload failed",
+
+  "searchSportsHint": "Search sports...",
+  "searchPosesHint": "Search poses...",
+  "searchInjuryHint": "Search prevention & treatment...",
+  "noResults": "No Results",
+  "tryDifferentSearch": "Try a different search term"
 }

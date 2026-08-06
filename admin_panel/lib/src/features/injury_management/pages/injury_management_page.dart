@@ -19,7 +19,6 @@ class InjuryManagementPage extends ConsumerStatefulWidget {
 class _InjuryManagementPageState extends ConsumerState<InjuryManagementPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final _searchController = TextEditingController();
 
   static const List<InjuryDataType> _tabs = [
     InjuryDataType.prevention,
@@ -41,14 +40,11 @@ class _InjuryManagementPageState extends ConsumerState<InjuryManagementPage>
   @override
   void dispose() {
     _tabController.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final searchQuery = ref.watch(injurySearchQueryProvider);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -60,8 +56,6 @@ class _InjuryManagementPageState extends ConsumerState<InjuryManagementPage>
                 icon: const Icon(Icons.arrow_back_ios_new,
                     color: AdminColors.textPrimary, size: 20),
                 onPressed: () {
-                  _searchController.clear();
-                  ref.read(injurySearchQueryProvider.notifier).state = '';
                   ref.read(adminViewProvider.notifier).state =
                       AdminView.dashboard;
                 },
@@ -140,38 +134,7 @@ class _InjuryManagementPageState extends ConsumerState<InjuryManagementPage>
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Row(
             children: [
-              Expanded(
-                child: SizedBox(
-                  height: 44,
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      ref.read(injurySearchQueryProvider.notifier).state =
-                          value;
-                    },
-                    decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context)!.search,
-                      prefixIcon: const Icon(Icons.search,
-                          color: AdminColors.textMuted, size: 20),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                      suffixIcon: searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear,
-                                  color: AdminColors.textMuted, size: 18),
-                              onPressed: () {
-                                _searchController.clear();
-                                ref
-                                    .read(injurySearchQueryProvider.notifier)
-                                    .state = '';
-                              },
-                            )
-                          : null,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
+              const Spacer(),
               GradientButton(
                 text: AppLocalizations.of(context)!.add,
                 icon: Icons.add,
@@ -191,7 +154,7 @@ class _InjuryManagementPageState extends ConsumerState<InjuryManagementPage>
           child: TabBarView(
             controller: _tabController,
             children: _tabs
-                .map((type) => _buildTabContent(type, searchQuery))
+                .map((type) => _buildTabContent(type))
                 .toList(),
           ),
         ),
@@ -235,24 +198,12 @@ class _InjuryManagementPageState extends ConsumerState<InjuryManagementPage>
     }
   }
 
-  Widget _buildTabContent(InjuryDataType type, String searchQuery) {
+  Widget _buildTabContent(InjuryDataType type) {
     final itemsAsync = ref.watch(injuryListProvider(type));
 
     return itemsAsync.when(
       data: (items) {
-        final filtered = searchQuery.isEmpty
-            ? items
-            : items
-                .where((item) =>
-                    item.title
-                        .toLowerCase()
-                        .contains(searchQuery.toLowerCase()) ||
-                    item.description
-                        .toLowerCase()
-                        .contains(searchQuery.toLowerCase()))
-                .toList();
-
-        if (filtered.isEmpty) {
+        if (items.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
@@ -277,7 +228,7 @@ class _InjuryManagementPageState extends ConsumerState<InjuryManagementPage>
               Expanded(
                 child: AdminCard(
                   padding: EdgeInsets.zero,
-                  child: _buildDataTable(context, ref, filtered, type),
+                  child: _buildDataTable(context, ref, items, type),
                 ),
               ),
             ],

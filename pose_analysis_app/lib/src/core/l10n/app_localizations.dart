@@ -1813,6 +1813,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Image upload failed'**
   String get imageUploadFailed;
+
+  /// No description provided for @searchSportsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search sports...'**
+  String get searchSportsHint;
+
+  /// No description provided for @searchPosesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search poses...'**
+  String get searchPosesHint;
+
+  /// No description provided for @searchInjuryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search prevention & treatment...'**
+  String get searchInjuryHint;
+
+  /// No description provided for @noResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No Results'**
+  String get noResults;
+
+  /// No description provided for @tryDifferentSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different search term'**
+  String get tryDifferentSearch;
 }
 
 class _AppLocalizationsDelegate

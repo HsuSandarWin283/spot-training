@@ -9,11 +9,26 @@ import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
 import 'package:ai_sports_training/src/features/sport_detail/providers/sport_detail_providers.dart';
 
-class SportsSelectionScreen extends ConsumerWidget {
+class SportsSelectionScreen extends ConsumerStatefulWidget {
   const SportsSelectionScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SportsSelectionScreen> createState() =>
+      _SportsSelectionScreenState();
+}
+
+class _SportsSelectionScreenState extends ConsumerState<SportsSelectionScreen> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final sportsAsync = ref.watch(sportsListProvider);
 
     return Scaffold(
@@ -43,11 +58,40 @@ class SportsSelectionScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) => setState(() => _searchQuery = value),
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)!.searchSportsHint,
+                      prefixIcon: Icon(Icons.search, color: AppColors.txtMuted(context), size: 20),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.clear, color: AppColors.txtMuted(context), size: 18),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _searchQuery = '');
+                              },
+                            )
+                          : null,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 Expanded(
                   child: sportsAsync.when(
                     data: (sports) {
-                      if (sports.isEmpty) {
+                      final filtered = _searchQuery.isEmpty
+                          ? sports
+                          : sports.where((s) {
+                              final name = (s['name'] as String? ?? '').toLowerCase();
+                              final desc = (s['description'] as String? ?? '').toLowerCase();
+                              final q = _searchQuery.toLowerCase();
+                              return name.contains(q) || desc.contains(q);
+                            }).toList();
+                      if (filtered.isEmpty) {
                         return _buildEmptyState(context);
                       }
                       return GridView.builder(
@@ -59,9 +103,9 @@ class SportsSelectionScreen extends ConsumerWidget {
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
                         ),
-                        itemCount: sports.length,
+                        itemCount: filtered.length,
                         itemBuilder: (context, index) {
-                          final sport = sports[index];
+                          final sport = filtered[index];
                           final sportId = sport['id'] as String;
                           final name = sport['name'] as String? ?? '';
                           final description =
@@ -126,7 +170,9 @@ class SportsSelectionScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            AppLocalizations.of(context)!.noSportsAvailable,
+            _searchQuery.isNotEmpty
+                ? AppLocalizations.of(context)!.noResults
+                : AppLocalizations.of(context)!.noSportsAvailable,
             style: TextStyle(
               color: AppColors.txtPrimary(context),
               fontSize: 18,
@@ -135,7 +181,9 @@ class SportsSelectionScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            AppLocalizations.of(context)!.sportsWillAppear,
+            _searchQuery.isNotEmpty
+                ? AppLocalizations.of(context)!.tryDifferentSearch
+                : AppLocalizations.of(context)!.sportsWillAppear,
             style: TextStyle(
               color: AppColors.txtMuted(context),
               fontSize: 14,

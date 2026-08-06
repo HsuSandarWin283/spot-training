@@ -904,4 +904,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get imageUploadFailed => 'Image upload failed';
+
+  @override
+  String get searchSportsHint => 'Search sports...';
+
+  @override
+  String get searchPosesHint => 'Search poses...';
+
+  @override
+  String get searchInjuryHint => 'Search prevention & treatment...';
+
+  @override
+  String get noResults => 'No Results';
+
+  @override
+  String get tryDifferentSearch => 'Try a different search term';
 }
