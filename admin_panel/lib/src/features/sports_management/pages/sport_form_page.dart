@@ -40,7 +40,6 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
-  String _difficultyLevel = 'Beginner';
   bool _isLoading = false;
   String? _existingThumbnailUrl;
   Uint8List? _selectedImageBytes;
@@ -49,22 +48,14 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
   final Map<SportDetailType, List<_DetailEntry>> _detailEntries = {
     SportDetailType.rules: [],
     SportDetailType.trainingMethods: [],
-    SportDetailType.injuryPreventions: [],
     SportDetailType.fitnessRequirements: [],
   };
 
   final Map<SportDetailType, bool> _sectionExpanded = {
     SportDetailType.rules: true,
     SportDetailType.trainingMethods: true,
-    SportDetailType.injuryPreventions: true,
     SportDetailType.fitnessRequirements: true,
   };
-
-  final List<String> _difficultyLevels = [
-    'Beginner',
-    'Intermediate',
-    'Advanced',
-  ];
 
   bool get _isEditing => widget.sport != null;
 
@@ -74,7 +65,6 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
     _nameController = TextEditingController(text: widget.sport?.name ?? '');
     _descriptionController =
         TextEditingController(text: widget.sport?.description ?? '');
-    _difficultyLevel = widget.sport?.difficultyLevel ?? 'Beginner';
     _existingThumbnailUrl = widget.sport?.thumbnailUrl;
 
     if (_isEditing) {
@@ -86,7 +76,7 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
     final sportId = widget.sport!.id;
     final service = ref.read(sportDetailServiceProvider);
 
-    for (final type in SportDetailType.values) {
+    for (final type in SportDetailType.values.where((t) => t != SportDetailType.injuryPreventions)) {
       try {
         final items = await service.getItems(sportId, type).first;
         if (mounted) {
@@ -152,7 +142,7 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
   }
 
   String? _validateDetails() {
-    for (final type in SportDetailType.values) {
+    for (final type in SportDetailType.values.where((t) => t != SportDetailType.injuryPreventions)) {
       final entries = _detailEntries[type]!;
       if (entries.isEmpty) {
         return '${type.label} requires at least one item.';
@@ -224,11 +214,11 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
               id: sportId,
               name: _nameController.text.trim(),
               description: _descriptionController.text.trim(),
-              difficultyLevel: _difficultyLevel,
+              difficultyLevel: 'Beginner',
               thumbnailUrl: thumbnailUrl,
             );
 
-        for (final type in SportDetailType.values) {
+        for (final type in SportDetailType.values.where((t) => t != SportDetailType.injuryPreventions)) {
           final existing = await detailService.getItems(sportId, type).first;
           for (final old in existing) {
             await detailService.deleteItem(old.id, type);
@@ -238,12 +228,12 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
         sportId = await ref.read(sportServiceProvider).addSport(
               name: _nameController.text.trim(),
               description: _descriptionController.text.trim(),
-              difficultyLevel: _difficultyLevel,
+              difficultyLevel: 'Beginner',
               thumbnailUrl: thumbnailUrl,
             );
       }
 
-      for (final type in SportDetailType.values) {
+      for (final type in SportDetailType.values.where((t) => t != SportDetailType.injuryPreventions)) {
         final entries = _detailEntries[type]!;
         for (final entry in entries) {
           final title = entry.titleController.text.trim();
@@ -328,18 +318,12 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
                       AdminColors.primaryGradient,
                     ),
                     const SizedBox(height: 16),
-                    _buildDetailSection(
-                      SportDetailType.trainingMethods,
-                      Icons.fitness_center,
-                      AdminColors.successGradient,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildDetailSection(
-                      SportDetailType.injuryPreventions,
-                      Icons.health_and_safety,
-                      AdminColors.warningGradient,
-                    ),
-                    const SizedBox(height: 16),
+                     _buildDetailSection(
+                       SportDetailType.trainingMethods,
+                       Icons.fitness_center,
+                       AdminColors.successGradient,
+                     ),
+                     const SizedBox(height: 16),
                     _buildDetailSection(
                       SportDetailType.fitnessRequirements,
                       Icons.directions_run,
@@ -410,26 +394,6 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
               return null;
             },
           ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            value: _difficultyLevel,
-            decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.difficultyLevel,
-              prefixIcon: const Icon(Icons.signal_cellular_alt,
-                  color: AdminColors.textMuted),
-            ),
-            items: _difficultyLevels.map((level) {
-              return DropdownMenuItem(
-                value: level,
-                child: Text(level),
-              );
-            }).toList(),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() => _difficultyLevel = value);
-              }
-            },
-          ),
         ],
       ),
     );
@@ -454,7 +418,7 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
               borderRadius: BorderRadius.circular(12),
               child: Image.memory(
                 _selectedImageBytes!,
-                height: 200,
+                height: 320,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
@@ -481,11 +445,11 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
                 _existingThumbnailUrl!,
-                height: 200,
+                height: 320,
                 width: double.infinity,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
-                  height: 200,
+                  height: 320,
                   decoration: BoxDecoration(
                     color: AdminColors.surface,
                     borderRadius: BorderRadius.circular(12),

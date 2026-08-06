@@ -25,7 +25,6 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
   static const List<SportDetailType> _tabs = [
     SportDetailType.rules,
     SportDetailType.trainingMethods,
-    SportDetailType.injuryPreventions,
     SportDetailType.fitnessRequirements,
   ];
 
@@ -268,10 +267,10 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
         return Icons.gavel;
       case SportDetailType.trainingMethods:
         return Icons.fitness_center;
-      case SportDetailType.injuryPreventions:
-        return Icons.health_and_safety;
       case SportDetailType.fitnessRequirements:
         return Icons.directions_run;
+      default:
+        return Icons.help_outline;
     }
   }
 
@@ -404,10 +403,10 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
         return AppColors.primary;
       case SportDetailType.trainingMethods:
         return AppColors.secondary;
-      case SportDetailType.injuryPreventions:
-        return AppColors.error;
       case SportDetailType.fitnessRequirements:
         return AppColors.warning;
+      default:
+        return AppColors.primary;
     }
   }
 

@@ -96,7 +96,6 @@ class SportsListPage extends ConsumerWidget {
           columns: [
             DataColumn(label: Text(AppLocalizations.of(context)!.sport)),
             DataColumn(label: Text(AppLocalizations.of(context)!.description)),
-            DataColumn(label: Text(AppLocalizations.of(context)!.difficulty)),
             DataColumn(label: Text(AppLocalizations.of(context)!.created)),
             DataColumn(label: Text(AppLocalizations.of(context)!.actions)),
           ],
@@ -166,7 +165,6 @@ class SportsListPage extends ConsumerWidget {
                     ),
                   ),
                 ),
-                DataCell(DifficultyBadge(level: sport.difficultyLevel)),
                 DataCell(
                   Text(
                     '${sport.createdAt.day}/${sport.createdAt.month}/${sport.createdAt.year}',
