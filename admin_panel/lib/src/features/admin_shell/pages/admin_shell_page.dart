@@ -17,6 +17,9 @@ import 'package:admin_panel/src/features/exercise_step_images/pages/exercise_ste
 import 'package:admin_panel/src/features/exercise_step_images/providers/exercise_step_image_providers.dart';
 import 'package:admin_panel/src/features/user_management/pages/user_management_page.dart';
 import 'package:admin_panel/src/features/auth/pages/admin_profile_page.dart';
+import 'package:admin_panel/src/features/injury_management/pages/injury_management_page.dart';
+import 'package:admin_panel/src/features/injury_management/pages/injury_form_page.dart';
+import 'package:admin_panel/src/features/injury_management/providers/injury_providers.dart';
 
 enum AdminView {
   dashboard,
@@ -29,6 +32,9 @@ enum AdminView {
   exerciseStepImages,
   addExerciseStepImage,
   editExerciseStepImage,
+  injuryManagement,
+  addInjuryItem,
+  editInjuryItem,
   users,
   adminProfile,
 }
@@ -87,6 +93,13 @@ class AdminShellPage extends ConsumerWidget {
       case AdminView.editExerciseStepImage:
         final post = ref.watch(selectedExerciseStepImagePostProvider);
         return ExerciseStepImageFormPage(post: post);
+      case AdminView.injuryManagement:
+        return const InjuryManagementPage();
+      case AdminView.addInjuryItem:
+        return const InjuryFormPage();
+      case AdminView.editInjuryItem:
+        final item = ref.watch(selectedInjuryItemProvider);
+        return InjuryFormPage(item: item);
       case AdminView.users:
         return const UserManagementPage();
       case AdminView.adminProfile:
@@ -166,6 +179,13 @@ class AdminShellPage extends ConsumerWidget {
             icon: Icons.photo_library_outlined,
             label: AppLocalizations.of(context)!.exerciseStepImages,
             isSelected: currentView == AdminView.exerciseStepImages,
+          ),
+          _buildNavItem(
+            ref: ref,
+            view: AdminView.injuryManagement,
+            icon: Icons.health_and_safety,
+            label: AppLocalizations.of(context)!.injuryPreventionAndTreatment,
+            isSelected: currentView == AdminView.injuryManagement,
           ),
           _buildNavItem(
             ref: ref,
@@ -294,12 +314,16 @@ class AdminShellPage extends ConsumerWidget {
                   size: 20,
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : AdminColors.textSecondary,
-                    fontSize: 14,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : AdminColors.textSecondary,
+                      fontSize: 14,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.visible,
                   ),
                 ),
               ],

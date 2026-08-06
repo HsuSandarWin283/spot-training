@@ -231,6 +231,11 @@
   "injuryPreventionLabel": "ဒဏ်ရာ ကာကွယ်မှု",
   "fitnessRequirements": "ကျန်းမာရေး လိုအပ်ချက်များ",
 
+  "prevention": "ကာကွယ်မှု",
+  "treatment": "ကုသမှု",
+  "noPreventionAvailable": "ကာကွယ်မှု မရှိသေးပါ",
+  "noTreatmentAvailable": "ကုသမှု မရှိသေးပါ",
+
   "cancel": "ပယ်ဖျက်ရန်",
   "logout": "ထွက်ရန်",
   "logoutConfirm": "ထွက်မည်မှာ သေချာပါသလား?",

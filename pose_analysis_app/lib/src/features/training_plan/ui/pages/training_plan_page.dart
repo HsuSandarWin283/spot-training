@@ -50,7 +50,7 @@ class TrainingPlanPage extends ConsumerWidget {
           itemBuilder: (context, index) {
             final plan = plans[index];
             return Card(
-              margin: const EdgeInsets.all(8),
+              margin: EdgeInsets.all(8),
               child: ListTile(
                 title: Text(plan.name),
                 subtitle: Text(AppLocalizations.of(context)!.weeksCount(plan.durationWeeks)),
@@ -60,7 +60,7 @@ class TrainingPlanPage extends ConsumerWidget {
             );
           },
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
       ),
       floatingActionButton: FloatingActionButton(

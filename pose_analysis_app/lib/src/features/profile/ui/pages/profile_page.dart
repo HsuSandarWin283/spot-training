@@ -8,6 +8,7 @@ import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/core/services/locale_provider.dart';
+import 'package:ai_sports_training/src/core/services/theme_provider.dart';
 import 'package:ai_sports_training/src/core/services/image_upload_service.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
 import 'package:ai_sports_training/src/features/auth/domain/entities/user.dart';
@@ -28,18 +29,17 @@ class ProfilePage extends ConsumerWidget {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
           SafeArea(
             child: userAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-              error: (_, __) => Center(child: Text(AppLocalizations.of(context)!.somethingWentWrong, style: TextStyle(color: AppColors.textMuted))),
+              loading: () => Center(child: CircularProgressIndicator(color: AppColors.primary)),
+              error: (_, __) => Center(child: Text(AppLocalizations.of(context)!.somethingWentWrong, style: TextStyle(color: AppColors.txtMuted(context)))),
               data: (user) => _buildContent(context, ref, user, assessmentAsync.valueOrNull, completionsAsync.valueOrNull),
             ),
           ),
@@ -84,7 +84,7 @@ class ProfilePage extends ConsumerWidget {
         CustomAppBar(title: AppLocalizations.of(context)!.profile, showBack: false),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
                 const SizedBox(height: 20),
@@ -122,7 +122,7 @@ class ProfilePage extends ConsumerWidget {
                         child: Center(
                           child: Text(
                             (user?.fullName.isNotEmpty == true ? user!.fullName[0] : 'A').toUpperCase(),
-                            style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold),
+                            style: TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
@@ -132,8 +132,8 @@ class ProfilePage extends ConsumerWidget {
                       child: GestureDetector(
                         onTap: () => _showEditProfileSheet(context, ref, user),
                         child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: const BoxDecoration(
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
                             color: AppColors.primary,
                             shape: BoxShape.circle,
                           ),
@@ -146,8 +146,8 @@ class ProfilePage extends ConsumerWidget {
                 const SizedBox(height: 16),
                 Text(
                   user?.fullName ?? AppLocalizations.of(context)!.athlete,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
+                  style: TextStyle(
+                    color: AppColors.txtPrimary(context),
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
@@ -155,13 +155,13 @@ class ProfilePage extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   user?.email ?? '',
-                  style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+                  style: TextStyle(color: AppColors.txtMuted(context), fontSize: 14),
                 ),
                 if (user != null && user.bio != null && user.bio!.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
                     user.bio!,
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                    style: TextStyle(color: AppColors.txtSecondary(context), fontSize: 13),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -170,18 +170,18 @@ class ProfilePage extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.phone, color: AppColors.textMuted, size: 14),
+                      Icon(Icons.phone, color: AppColors.txtMuted(context), size: 14),
                       const SizedBox(width: 4),
                       Text(
                         user.phone!,
-                        style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+                        style: TextStyle(color: AppColors.txtMuted(context), fontSize: 13),
                       ),
                     ],
                   ),
                 ],
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: levelColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(20),
@@ -209,7 +209,7 @@ class ProfilePage extends ConsumerWidget {
                     }
                   },
                   child: GlassCard(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   child: Row(
                     children: [
                       SizedBox(
@@ -224,7 +224,7 @@ class ProfilePage extends ConsumerWidget {
                               child: CircularProgressIndicator(
                                 value: hasAssessment ? (assessment.overallScore ?? 0) / 100 : 0,
                                 strokeWidth: 7,
-                                backgroundColor: AppColors.border,
+                                backgroundColor: AppColors.bdr(context),
                                 valueColor: AlwaysStoppedAnimation(levelColor),
                                 strokeCap: StrokeCap.round,
                               ),
@@ -247,8 +247,8 @@ class ProfilePage extends ConsumerWidget {
                           children: [
                             Text(
                               hasAssessment ? AppLocalizations.of(context)!.fitnessScoreLabel : AppLocalizations.of(context)!.notAssessed,
-                              style: const TextStyle(
-                                color: AppColors.textPrimary,
+                              style: TextStyle(
+                                color: AppColors.txtPrimary(context),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -261,11 +261,11 @@ class ProfilePage extends ConsumerWidget {
                                     hasAssessment
                                         ? 'BMI: ${bmi.toStringAsFixed(1)} • ${assessment.heightCm.toStringAsFixed(0)}cm • ${assessment.weightKg.toStringAsFixed(0)}kg'
                                         : AppLocalizations.of(context)!.completeAssessmentToSee,
-                                    style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+                                    style: TextStyle(color: AppColors.txtMuted(context), fontSize: 12),
                                   ),
                                 ),
                                 if (hasAssessment)
-                                  const Icon(Icons.edit, color: AppColors.textMuted, size: 16),
+                                  Icon(Icons.edit, color: AppColors.txtMuted(context), size: 16),
                               ],
                             ),
                           ],
@@ -279,27 +279,29 @@ class ProfilePage extends ConsumerWidget {
                 GlassCard(
                   child: Column(
                     children: [
-                      _buildMenuItem(Icons.person_outline, AppLocalizations.of(context)!.editProfile, AppColors.primary, () {
+                      _buildMenuItem(context, Icons.person_outline, AppLocalizations.of(context)!.editProfile, AppColors.primary, () {
                         _showEditProfileSheet(context, ref, user);
                       }),
-                      const Divider(color: AppColors.border),
+                      Divider(color: AppColors.bdr(context)),
                       _buildLanguageItem(context, ref),
+                      Divider(color: AppColors.bdr(context)),
+                      _buildDarkModeItem(context, ref),
                     ],
                   ),
                 ),
                 const SizedBox(height: 16),
                 GlassCard(
-                  child: _buildMenuItem(Icons.logout, AppLocalizations.of(context)!.logout, AppColors.error, () async {
+                  child: _buildMenuItem(context, Icons.logout, AppLocalizations.of(context)!.logout, AppColors.error, () async {
                     final confirmed = await showDialog<bool>(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        backgroundColor: AppColors.card,
-                        title: Text(AppLocalizations.of(context)!.logout, style: TextStyle(color: AppColors.textPrimary)),
-                        content: Text(AppLocalizations.of(context)!.logoutConfirm, style: TextStyle(color: AppColors.textSecondary)),
+                        backgroundColor: AppColors.crd(context),
+                        title: Text(AppLocalizations.of(context)!.logout, style: TextStyle(color: AppColors.txtPrimary(context))),
+                        content: Text(AppLocalizations.of(context)!.logoutConfirm, style: TextStyle(color: AppColors.txtSecondary(context))),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(ctx).pop(false),
-                            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: AppColors.textMuted)),
+                            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: AppColors.txtMuted(context))),
                           ),
                           TextButton(
                             onPressed: () => Navigator.of(ctx).pop(true),
@@ -341,8 +343,8 @@ class ProfilePage extends ConsumerWidget {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheetState) => Container(
           padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(ctx).viewInsets.bottom + 24),
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
+          decoration: BoxDecoration(
+            color: AppColors.surf(context),
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: SingleChildScrollView(
@@ -352,7 +354,7 @@ class ProfilePage extends ConsumerWidget {
               children: [
                 Text(
                   AppLocalizations.of(context)!.editProfile,
-                  style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppColors.txtPrimary(context), fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
                 Center(
@@ -408,7 +410,7 @@ class ProfilePage extends ConsumerWidget {
                             child: Center(
                               child: Text(
                                 (user?.fullName.isNotEmpty == true ? user!.fullName[0] : 'A').toUpperCase(),
-                                style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
@@ -416,8 +418,8 @@ class ProfilePage extends ConsumerWidget {
                           bottom: 0,
                           right: 0,
                           child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: const BoxDecoration(
+                            padding: EdgeInsets.all(6),
+                            decoration: BoxDecoration(
                               color: AppColors.primary,
                               shape: BoxShape.circle,
                             ),
@@ -451,7 +453,7 @@ class ProfilePage extends ConsumerWidget {
                   controller: nameController,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.fullName,
-                    prefixIcon: const Icon(Icons.person_outline, color: AppColors.textMuted),
+                    prefixIcon: Icon(Icons.person_outline, color: AppColors.txtMuted(context)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -460,7 +462,7 @@ class ProfilePage extends ConsumerWidget {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.email,
-                    prefixIcon: const Icon(Icons.email_outlined, color: AppColors.textMuted),
+                    prefixIcon: Icon(Icons.email_outlined, color: AppColors.txtMuted(context)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -469,7 +471,7 @@ class ProfilePage extends ConsumerWidget {
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.phoneOptional,
-                    prefixIcon: const Icon(Icons.phone_outlined, color: AppColors.textMuted),
+                    prefixIcon: Icon(Icons.phone_outlined, color: AppColors.txtMuted(context)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -478,7 +480,7 @@ class ProfilePage extends ConsumerWidget {
                   maxLines: 3,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.bioOptional,
-                    prefixIcon: const Icon(Icons.info_outline, color: AppColors.textMuted),
+                    prefixIcon: Icon(Icons.info_outline, color: AppColors.txtMuted(context)),
                     alignLabelWithHint: true,
                   ),
                 ),
@@ -547,15 +549,15 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String label, Color color, VoidCallback onTap) {
+  Widget _buildMenuItem(BuildContext context, IconData icon, String label, Color color, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: color.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8),
@@ -564,9 +566,9 @@ class ProfilePage extends ConsumerWidget {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(label, style: const TextStyle(color: AppColors.textPrimary, fontSize: 15)),
+              child: Text(label, style: TextStyle(color: AppColors.txtPrimary(context), fontSize: 15)),
             ),
-            const Icon(Icons.chevron_right, color: AppColors.textMuted, size: 20),
+            Icon(Icons.chevron_right, color: AppColors.txtMuted(context), size: 20),
           ],
         ),
       ),
@@ -580,11 +582,11 @@ class ProfilePage extends ConsumerWidget {
     return InkWell(
       onTap: () => _showLanguageDialog(context, ref),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: AppColors.secondary.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8),
@@ -596,12 +598,61 @@ class ProfilePage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(AppLocalizations.of(context)!.settings, style: const TextStyle(color: AppColors.textPrimary, fontSize: 15)),
-                  Text(langLabel, style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                  Text(AppLocalizations.of(context)!.settings, style: TextStyle(color: AppColors.txtPrimary(context), fontSize: 15)),
+                  Text(langLabel, style: TextStyle(color: AppColors.txtMuted(context), fontSize: 12)),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppColors.textMuted, size: 20),
+            Icon(Icons.chevron_right, color: AppColors.txtMuted(context), size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDarkModeItem(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+
+    return InkWell(
+      onTap: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                isDark ? Icons.dark_mode : Icons.light_mode,
+                color: AppColors.warning,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isDark ? AppLocalizations.of(context)!.darkMode : AppLocalizations.of(context)!.darkMode,
+                    style: TextStyle(color: AppColors.txtPrimary(context), fontSize: 15),
+                  ),
+                  Text(
+                    isDark ? 'ON' : 'OFF',
+                    style: TextStyle(color: AppColors.txtMuted(context), fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: isDark,
+              onChanged: (_) => ref.read(themeModeProvider.notifier).toggleTheme(),
+              activeColor: AppColors.primary,
+            ),
           ],
         ),
       ),
@@ -613,13 +664,13 @@ class ProfilePage extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.card,
-        title: const Text('Language', style: TextStyle(color: AppColors.textPrimary)),
+        backgroundColor: AppColors.crd(context),
+        title: Text('Language', style: TextStyle(color: AppColors.txtPrimary(context))),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             RadioListTile<Locale>(
-              title: const Text('English', style: TextStyle(color: AppColors.textPrimary)),
+              title: Text('English', style: TextStyle(color: AppColors.txtPrimary(context))),
               value: const Locale('en'),
               groupValue: currentLocale,
               activeColor: AppColors.primary,
@@ -629,7 +680,7 @@ class ProfilePage extends ConsumerWidget {
               },
             ),
             RadioListTile<Locale>(
-              title: const Text('မြန်မာ', style: TextStyle(color: AppColors.textPrimary)),
+              title: Text('မြန်မာ', style: TextStyle(color: AppColors.txtPrimary(context))),
               value: const Locale('my'),
               groupValue: currentLocale,
               activeColor: AppColors.primary,

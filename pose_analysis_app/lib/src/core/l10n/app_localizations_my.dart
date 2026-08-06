@@ -675,6 +675,18 @@ class AppLocalizationsMy extends AppLocalizations {
   String get fitnessRequirements => 'ကျန်းမာရေး လိုအပ်ချက်များ';
 
   @override
+  String get prevention => 'ကာကွယ်မှု';
+
+  @override
+  String get treatment => 'ကုသမှု';
+
+  @override
+  String get noPreventionAvailable => 'ကာကွယ်မှု မရှိသေးပါ';
+
+  @override
+  String get noTreatmentAvailable => 'ကုသမှု မရှိသေးပါ';
+
+  @override
   String get cancel => 'ပယ်ဖျက်ရန်';
 
   @override

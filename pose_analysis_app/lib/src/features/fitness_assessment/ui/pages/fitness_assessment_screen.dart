@@ -164,22 +164,23 @@ class _FitnessAssessmentScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.bg(context),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.background, Color(0xFF0D1229)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.bg(context), AppColors.surf(context)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
         ),
         child: SafeArea(
           child: Column(
             children: [
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (_isEditMode)
                       GestureDetector(
@@ -188,44 +189,46 @@ class _FitnessAssessmentScreenState
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: AppColors.card,
+                            color: AppColors.crd(context),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.border),
+                            border: Border.all(color: AppColors.bdr(context)),
                           ),
-                          child: const Icon(Icons.arrow_back_ios_new,
-                              size: 18, color: AppColors.textPrimary),
+                          child: Icon(Icons.arrow_back_ios_new,
+                              size: 18, color: AppColors.txtPrimary(context)),
                         ),
                       )
                     else
                       const SizedBox(width: 40),
-                    const Spacer(),
-                    Text(
-                      _isEditMode ? l10n.editFitnessInfo : l10n.fitnessAssessment,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _isEditMode ? l10n.editFitnessInfo : l10n.fitnessAssessment,
+                        style: TextStyle(
+                          color: AppColors.txtPrimary(context),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.visible,
                       ),
                     ),
-                    const Spacer(),
-                    const SizedBox(width: 40),
                   ],
                 ),
               ),
               if (_errorMessage != null)
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   child: Text(
                     _errorMessage!,
                     style:
-                        const TextStyle(color: AppColors.error, fontSize: 13),
+                        TextStyle(color: AppColors.error, fontSize: 13),
                     textAlign: TextAlign.center,
                   ),
                 ),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -238,7 +241,7 @@ class _FitnessAssessmentScreenState
                               Row(
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.all(10),
+                                    padding: EdgeInsets.all(10),
                                     decoration: BoxDecoration(
                                       gradient: AppColors.primaryGradient,
                                       borderRadius: BorderRadius.circular(12),
@@ -254,8 +257,8 @@ class _FitnessAssessmentScreenState
                                       children: [
                                         Text(
                                           l10n.basicInformation,
-                                          style: const TextStyle(
-                                            color: AppColors.textPrimary,
+                                          style: TextStyle(
+                                            color: AppColors.txtPrimary(context),
                                             fontSize: 18,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -263,8 +266,8 @@ class _FitnessAssessmentScreenState
                                         const SizedBox(height: 2),
                                         Text(
                                           l10n.tellUsAboutYourBody,
-                                          style: const TextStyle(
-                                            color: AppColors.textSecondary,
+                                          style: TextStyle(
+                                            color: AppColors.txtSecondary(context),
                                             fontSize: 13,
                                           ),
                                         ),
@@ -341,7 +344,7 @@ class _FitnessAssessmentScreenState
                               Row(
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.all(10),
+                                    padding: EdgeInsets.all(10),
                                     decoration: BoxDecoration(
                                       gradient: AppColors.primaryGradient,
                                       borderRadius: BorderRadius.circular(12),
@@ -357,8 +360,8 @@ class _FitnessAssessmentScreenState
                                       children: [
                                         Text(
                                           l10n.activityLevel,
-                                          style: const TextStyle(
-                                            color: AppColors.textPrimary,
+                                          style: TextStyle(
+                                            color: AppColors.txtPrimary(context),
                                             fontSize: 18,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -366,8 +369,8 @@ class _FitnessAssessmentScreenState
                                         const SizedBox(height: 2),
                                         Text(
                                           l10n.howActiveAreYou,
-                                          style: const TextStyle(
-                                            color: AppColors.textSecondary,
+                                          style: TextStyle(
+                                            color: AppColors.txtSecondary(context),
                                             fontSize: 13,
                                           ),
                                         ),
@@ -379,8 +382,8 @@ class _FitnessAssessmentScreenState
                               const SizedBox(height: 24),
                               Text(
                                 l10n.exerciseFrequencyQuestion,
-                                style: const TextStyle(
-                                  color: AppColors.textSecondary,
+                                style: TextStyle(
+                                  color: AppColors.txtSecondary(context),
                                   fontSize: 14,
                                 ),
                               ),
@@ -389,8 +392,8 @@ class _FitnessAssessmentScreenState
                               const SizedBox(height: 24),
                               Text(
                                 l10n.dailyActivityQuestion,
-                                style: const TextStyle(
-                                  color: AppColors.textSecondary,
+                                style: TextStyle(
+                                  color: AppColors.txtSecondary(context),
                                   fontSize: 14,
                                 ),
                               ),
@@ -433,28 +436,28 @@ class _FitnessAssessmentScreenState
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
-      style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
+      style: TextStyle(color: AppColors.txtPrimary(context), fontSize: 15),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.textMuted, size: 20),
-        labelStyle: const TextStyle(color: AppColors.textSecondary),
+        prefixIcon: Icon(icon, color: AppColors.txtMuted(context), size: 20),
+        labelStyle: TextStyle(color: AppColors.txtSecondary(context)),
         filled: true,
-        fillColor: AppColors.surface,
+        fillColor: AppColors.surf(context),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.bdr(context)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error),
+          borderSide: BorderSide(color: AppColors.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error, width: 2),
+          borderSide: BorderSide(color: AppColors.error, width: 2),
         ),
       ),
     );
@@ -466,22 +469,22 @@ class _FitnessAssessmentScreenState
       onChanged: (v) {
         if (v != null) setState(() => _selectedGender = v);
       },
-      style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
-      dropdownColor: AppColors.card,
+      style: TextStyle(color: AppColors.txtPrimary(context), fontSize: 15),
+      dropdownColor: AppColors.crd(context),
       decoration: InputDecoration(
         labelText: l10n.gender,
-        prefixIcon: const Icon(Icons.wc_outlined,
-            color: AppColors.textMuted, size: 20),
-        labelStyle: const TextStyle(color: AppColors.textSecondary),
+        prefixIcon: Icon(Icons.wc_outlined,
+            color: AppColors.txtMuted(context), size: 20),
+        labelStyle: TextStyle(color: AppColors.txtSecondary(context)),
         filled: true,
-        fillColor: AppColors.surface,
+        fillColor: AppColors.surf(context),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.bdr(context)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
       ),
       items: [
@@ -510,7 +513,7 @@ class _FitnessAssessmentScreenState
               duration: const Duration(milliseconds: 200),
               margin: EdgeInsets.only(
                   right: opt.$1 < options.length - 1 ? 6 : 0),
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
                 gradient: isSelected ? AppColors.primaryGradient : null,
                 color: isSelected ? null : AppColors.surface,
@@ -551,8 +554,8 @@ class _FitnessAssessmentScreenState
           onTap: () => setState(() => _activityLevel = opt.$1),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            margin: EdgeInsets.only(bottom: 8),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               color: isSelected
                   ? AppColors.primary.withOpacity(0.15)

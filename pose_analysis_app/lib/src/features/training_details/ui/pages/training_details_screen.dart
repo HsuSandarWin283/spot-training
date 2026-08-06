@@ -69,13 +69,12 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF0A0E21),
-                  Color(0xFF151A30),
+                  AppColors.background,
+                  AppColors.surface,
                 ],
               ),
             ),
@@ -85,16 +84,16 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
               children: [
                 const CustomAppBar(title: 'Training Details'),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  margin: EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: AppColors.crd(context),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: AppColors.bdr(context)),
                   ),
                   child: TabBar(
                     controller: _tabController,
                     labelColor: Colors.white,
-                    unselectedLabelColor: AppColors.textMuted,
+                    unselectedLabelColor: AppColors.txtMuted(context),
                     indicator: BoxDecoration(
                       gradient: AppColors.primaryGradient,
                       borderRadius: BorderRadius.circular(10),
@@ -130,12 +129,12 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
   Widget _buildDrillList(BuildContext context) {
     final drills = _getDrills(context);
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       itemCount: drills.length,
       itemBuilder: (context, index) {
         final drill = drills[index];
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.only(bottom: 12),
           child: GlassCard(
             onTap: () {},
             child: Row(
@@ -150,7 +149,7 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
                   child: Center(
                     child: Text(
                       drill['icon'],
-                      style: const TextStyle(fontSize: 28),
+                      style: TextStyle(fontSize: 28),
                     ),
                   ),
                 ),
@@ -161,8 +160,8 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
                     children: [
                       Text(
                         drill['title'],
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
+                        style: TextStyle(
+                          color: AppColors.txtPrimary(context),
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -170,8 +169,8 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
                       const SizedBox(height: 4),
                       Text(
                         drill['description'],
-                        style: const TextStyle(
-                          color: AppColors.textMuted,
+                        style: TextStyle(
+                          color: AppColors.txtMuted(context),
                           fontSize: 12,
                         ),
                       ),
@@ -194,7 +193,7 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right, color: AppColors.textMuted),
+                Icon(Icons.chevron_right, color: AppColors.txtMuted(context)),
               ],
             ),
           ),
@@ -205,7 +204,7 @@ class _TrainingDetailsScreenState extends State<TrainingDetailsScreen>
 
   Widget _buildChip(IconData icon, String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(6),

@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AdminColors {
-  static const Color background = Color(0xFF0A0E21);
-  static const Color surface = Color(0xFF151A30);
-  static const Color card = Color(0xFF1A1F3A);
+  static const Color background = Color(0xFFF8F9FC);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color card = Color(0xFFFFFFFF);
   static const Color primary = Color(0xFF6C63FF);
   static const Color secondary = Color(0xFF00D4AA);
   static const Color accent = Color(0xFFFF6B6B);
-  static const Color border = Color(0xFF2A2F4A);
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFB0B3C7);
-  static const Color textMuted = Color(0xFF6B7280);
+  static const Color border = Color(0xFFE5E7EB);
+  static const Color textPrimary = Color(0xFF1A1A2E);
+  static const Color textSecondary = Color(0xFF4B5563);
+  static const Color textMuted = Color(0xFF9CA3AF);
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
   static const Color error = Color(0xFFEF4444);
@@ -43,18 +43,18 @@ class AdminColors {
 }
 
 class AdminTheme {
-  static ThemeData get darkTheme {
+  static ThemeData get lightTheme {
     return ThemeData(
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       scaffoldBackgroundColor: AdminColors.background,
       primaryColor: AdminColors.primary,
-      colorScheme: const ColorScheme.dark(
+      colorScheme: const ColorScheme.light(
         primary: AdminColors.primary,
         secondary: AdminColors.secondary,
         surface: AdminColors.surface,
         error: AdminColors.error,
       ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
       appBarTheme: const AppBarTheme(
         backgroundColor: AdminColors.surface,
         elevation: 0,
@@ -122,7 +122,7 @@ class AdminTheme {
         ),
       ),
       dataTableTheme: DataTableThemeData(
-        headingRowColor: WidgetStateProperty.all(AdminColors.surface),
+        headingRowColor: WidgetStateProperty.all(AdminColors.background),
         dataRowColor: WidgetStateProperty.all(Colors.transparent),
         headingTextStyle: const TextStyle(
           color: AdminColors.textSecondary,

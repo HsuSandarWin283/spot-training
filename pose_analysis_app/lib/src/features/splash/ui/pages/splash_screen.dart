@@ -114,14 +114,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         fit: StackFit.expand,
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF0A0E21),
-                  Color(0xFF151A30),
-                  Color(0xFF0A0E21),
+                  AppColors.bg(context),
+                  AppColors.surf(context),
+                  AppColors.bg(context),
                 ],
               ),
             ),
@@ -202,12 +201,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                         ),
                                       ),
                                       const SizedBox(height: 16),
-                                      const Text(
+                                      Text(
                                         'AI Sports Training',
                                         style: TextStyle(
                                           fontSize: 26,
                                           fontWeight: FontWeight.bold,
-                                          color: AppColors.textPrimary,
+                                          color: AppColors.txtPrimary(context),
                                         ),
                                       ),
                                       const SizedBox(height: 6),
@@ -215,7 +214,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                         AppLocalizations.of(context)?.splashSubtitle ?? 'Pose Analysis Assistant',
                                         style: TextStyle(
                                           fontSize: 14,
-                                          color: AppColors.textSecondary.withOpacity(0.8),
+                                          color: AppColors.txtSecondary(context).withOpacity(0.8),
                                         ),
                                       ),
                                     ],
@@ -230,7 +229,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                               child: FadeTransition(
                                 opacity: _fadeAnimation,
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                                  padding: EdgeInsets.symmetric(horizontal: 40),
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -239,7 +238,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 13,
-                                          color: AppColors.textMuted,
+                                          color: AppColors.txtMuted(context),
                                           height: 1.5,
                                         ),
                                       ),
@@ -263,7 +262,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                               ),
                             ),
                           if (!_showAuthButtons)
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.only(bottom: 40),
                               child: SizedBox(
                                 width: 24,

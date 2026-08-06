@@ -15,13 +15,12 @@ class PoseFeedbackScreen extends StatelessWidget {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF0A0E21),
-                  Color(0xFF151A30),
+                  AppColors.background,
+                  AppColors.surface,
                 ],
               ),
             ),
@@ -32,7 +31,7 @@ class PoseFeedbackScreen extends StatelessWidget {
                 CustomAppBar(title: AppLocalizations.of(context)!.poseFeedback),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -62,23 +61,23 @@ class PoseFeedbackScreen extends StatelessWidget {
                             children: [
                               Text(
                                 AppLocalizations.of(context)!.accuracy,
-                                style: const TextStyle(
-                                  color: AppColors.textMuted,
+                                style: TextStyle(
+                                  color: AppColors.txtMuted(context),
                                   fontSize: 14,
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              const Text(
+                              Text(
                                 '87%',
                                 style: TextStyle(
-                                  color: AppColors.textPrimary,
+                                  color: AppColors.txtPrimary(context),
                                   fontSize: 48,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   horizontal: 12,
                                   vertical: 4,
                                 ),
@@ -88,7 +87,7 @@ class PoseFeedbackScreen extends StatelessWidget {
                                 ),
                                 child: Text(
                                   AppLocalizations.of(context)!.goodForm,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: AppColors.success,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -102,18 +101,21 @@ class PoseFeedbackScreen extends StatelessWidget {
                         SectionHeader(title: AppLocalizations.of(context)!.strengths),
                         const SizedBox(height: 12),
                         _buildFeedbackItem(
+                          context,
                           '✅',
                           AppLocalizations.of(context)!.feedbackBackAlignment,
                           AppColors.success,
                         ),
                         const SizedBox(height: 8),
                         _buildFeedbackItem(
+                          context,
                           '✅',
                           AppLocalizations.of(context)!.feedbackKneeTracking,
                           AppColors.success,
                         ),
                         const SizedBox(height: 8),
                         _buildFeedbackItem(
+                          context,
                           '✅',
                           AppLocalizations.of(context)!.feedbackTempo,
                           AppColors.success,
@@ -122,12 +124,14 @@ class PoseFeedbackScreen extends StatelessWidget {
                         SectionHeader(title: AppLocalizations.of(context)!.areasToImprove),
                         const SizedBox(height: 12),
                         _buildFeedbackItem(
+                          context,
                           '⚠️',
                           AppLocalizations.of(context)!.feedbackArmStability,
                           AppColors.warning,
                         ),
                         const SizedBox(height: 8),
                         _buildFeedbackItem(
+                          context,
                           '⚠️',
                           AppLocalizations.of(context)!.feedbackForwardLean,
                           AppColors.warning,
@@ -139,22 +143,25 @@ class PoseFeedbackScreen extends StatelessWidget {
                             children: [
                               Text(
                                 '💡 ${AppLocalizations.of(context)!.improvementSuggestions}',
-                                style: const TextStyle(
-                                  color: AppColors.textPrimary,
+                                style: TextStyle(
+                                  color: AppColors.txtPrimary(context),
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               const SizedBox(height: 12),
                               _buildSuggestion(
+                                context,
                                 AppLocalizations.of(context)!.suggestionChestUp,
                               ),
                               const SizedBox(height: 8),
                               _buildSuggestion(
+                                context,
                                 AppLocalizations.of(context)!.suggestionHeels,
                               ),
                               const SizedBox(height: 8),
                               _buildSuggestion(
+                                context,
                                 AppLocalizations.of(context)!.suggestionMirror,
                               ),
                             ],
@@ -190,7 +197,7 @@ class PoseFeedbackScreen extends StatelessWidget {
 
   Widget _buildPoseComparison(String label, Color color, IconData icon) {
     return GlassCard(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       child: Column(
         children: [
           Container(
@@ -224,18 +231,18 @@ class PoseFeedbackScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeedbackItem(String emoji, String text, Color color) {
+  Widget _buildFeedbackItem(BuildContext context, String emoji, String text, Color color) {
     return GlassCard(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 18)),
+          Text(emoji, style: TextStyle(fontSize: 18)),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: AppColors.txtSecondary(context),
                 fontSize: 13,
               ),
             ),
@@ -245,7 +252,7 @@ class PoseFeedbackScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSuggestion(String text) {
+  Widget _buildSuggestion(BuildContext context, String text) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -258,8 +265,8 @@ class PoseFeedbackScreen extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
+            style: TextStyle(
+              color: AppColors.txtSecondary(context),
               fontSize: 13,
               height: 1.4,
             ),

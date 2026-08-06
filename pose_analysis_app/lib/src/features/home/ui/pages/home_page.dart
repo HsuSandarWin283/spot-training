@@ -4,6 +4,7 @@ import 'package:ai_sports_training/src/features/dashboard/ui/pages/dashboard_scr
 import 'package:ai_sports_training/src/features/sports_selection/ui/pages/sports_selection_screen.dart';
 import 'package:ai_sports_training/src/features/pose_analysis/ui/pages/pose_analysis_screen.dart';
 import 'package:ai_sports_training/src/features/profile/ui/pages/profile_page.dart';
+import 'package:ai_sports_training/src/features/injury_prevention/ui/pages/injury_prevention_screen.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -28,6 +29,7 @@ class _MainPageState extends State<MainPage> {
     const DashboardScreen(),
     const SportsSelectionScreen(),
     const PoseAnalysisScreen(),
+    const InjuryPreventionScreen(),
     const ProfilePage(),
   ];
 
@@ -39,22 +41,23 @@ class _MainPageState extends State<MainPage> {
         children: _screens,
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
+        decoration: BoxDecoration(
+          color: AppColors.surf(context),
           border: Border(
-            top: BorderSide(color: AppColors.border, width: 0.5),
+            top: BorderSide(color: AppColors.bdr(context), width: 0.5),
           ),
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildNavItem(0, Icons.dashboard_rounded, 'Home'),
                 _buildNavItem(1, Icons.sports_soccer, 'Training'),
                 _buildNavItem(2, Icons.accessibility_new, 'Analysis'),
-                _buildNavItem(3, Icons.person_rounded, 'Profile'),
+                _buildNavItem(3, Icons.health_and_safety, 'Injury'),
+                _buildNavItem(4, Icons.person_rounded, 'Profile'),
               ],
             ),
           ),
@@ -69,7 +72,7 @@ class _MainPageState extends State<MainPage> {
       onTap: () => setState(() => _currentIndex = index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: isSelected
             ? BoxDecoration(
                 gradient: AppColors.primaryGradient,
@@ -88,7 +91,7 @@ class _MainPageState extends State<MainPage> {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,

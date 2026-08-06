@@ -1148,6 +1148,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fitness Requirement'**
   String get fitnessRequirement;
+
+  /// No description provided for @injuryPreventionAndTreatment.
+  ///
+  /// In en, this message translates to:
+  /// **'Injury Prevention & Treatment'**
+  String get injuryPreventionAndTreatment;
+
+  /// No description provided for @manageInjuryDataDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage injury prevention tips and treatment guidelines'**
+  String get manageInjuryDataDescription;
+
+  /// No description provided for @prevention.
+  ///
+  /// In en, this message translates to:
+  /// **'Prevention'**
+  String get prevention;
+
+  /// No description provided for @treatment.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment'**
+  String get treatment;
+
+  /// No description provided for @noPreventionAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No Prevention Available'**
+  String get noPreventionAvailable;
+
+  /// No description provided for @noTreatmentAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No Treatment Available'**
+  String get noTreatmentAvailable;
 }
 
 class _AppLocalizationsDelegate

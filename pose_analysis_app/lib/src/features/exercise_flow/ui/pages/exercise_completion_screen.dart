@@ -103,25 +103,24 @@ class _ExerciseCompletionScreenState
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ScaleTransition(
                       scale: _scaleAnim,
                       child: Container(
-                        padding: const EdgeInsets.all(24),
+                        padding: EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           color: AppColors.success.withOpacity(0.15),
                           shape: BoxShape.circle,
@@ -134,7 +133,7 @@ class _ExerciseCompletionScreenState
                     Text(
                       AppLocalizations.of(context)!.exerciseCompleted,
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: AppColors.txtPrimary(context),
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
@@ -142,7 +141,7 @@ class _ExerciseCompletionScreenState
                     const SizedBox(height: 8),
                     Text(
                       widget.exercise.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.primary,
                         fontSize: 16,
                       ),
@@ -208,7 +207,7 @@ class _ExerciseCompletionScreenState
       String value, String label, Color color, IconData icon) {
     return Expanded(
       child: GlassCard(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           children: [
             Icon(icon, color: color, size: 24),
@@ -224,8 +223,8 @@ class _ExerciseCompletionScreenState
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(
-                color: AppColors.textMuted,
+              style: TextStyle(
+                color: AppColors.txtMuted(context),
                 fontSize: 12,
               ),
             ),
@@ -243,7 +242,7 @@ class _ExerciseCompletionScreenState
           Text(
             AppLocalizations.of(context)!.stepResults,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: AppColors.txtPrimary(context),
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
@@ -256,7 +255,7 @@ class _ExerciseCompletionScreenState
                     ? AppColors.warning
                     : AppColors.error;
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
                   Container(

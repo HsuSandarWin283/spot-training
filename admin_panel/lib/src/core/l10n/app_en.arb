@@ -212,5 +212,12 @@
   "rule": "Rule",
   "trainingMethod": "Training Method",
   "injuryPreventionSingular": "Injury Prevention",
-  "fitnessRequirement": "Fitness Requirement"
+  "fitnessRequirement": "Fitness Requirement",
+
+  "injuryPreventionAndTreatment": "Injury Prevention & Treatment",
+  "manageInjuryDataDescription": "Manage injury prevention tips and treatment guidelines",
+  "prevention": "Prevention",
+  "treatment": "Treatment",
+  "noPreventionAvailable": "No Prevention Available",
+  "noTreatmentAvailable": "No Treatment Available"
 }

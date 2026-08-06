@@ -32,9 +32,9 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                   child: Stack(
                     children: [
                       Container(
-                        margin: const EdgeInsets.all(20),
+                        margin: EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: AppColors.card,
+                          color: AppColors.crd(context),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: AppColors.success.withValues(alpha: 0.5),
@@ -54,21 +54,21 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                             fit: StackFit.expand,
                             children: [
                               Container(
-                                color: const Color(0xFF1A1F3A),
+                                color: AppColors.crd(context),
                                 child: Center(
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.videocam,
                                         size: 60,
-                                        color: AppColors.textMuted,
+                                        color: AppColors.txtMuted(context),
                                       ),
                                       const SizedBox(height: 12),
                                       Text(
                                         AppLocalizations.of(context)!.cameraPreview,
-                                        style: const TextStyle(
-                                          color: AppColors.textMuted,
+                                        style: TextStyle(
+                                          color: AppColors.txtMuted(context),
                                           fontSize: 14,
                                         ),
                                       ),
@@ -84,7 +84,7 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                                 top: 16,
                                 left: 16,
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                     horizontal: 12,
                                     vertical: 6,
                                   ),
@@ -98,7 +98,7 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                                       Container(
                                         width: 8,
                                         height: 8,
-                                        decoration: const BoxDecoration(
+                                        decoration: BoxDecoration(
                                           color: AppColors.success,
                                           shape: BoxShape.circle,
                                         ),
@@ -106,7 +106,7 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                                       const SizedBox(width: 6),
                                       Text(
                                         AppLocalizations.of(context)!.live,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           color: AppColors.success,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
@@ -120,7 +120,7 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                                 top: 16,
                                 right: 16,
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                     horizontal: 12,
                                     vertical: 6,
                                   ),
@@ -128,7 +128,7 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                                     color: Colors.black.withValues(alpha: 0.6),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     'Score: 87%',
                                     style: TextStyle(
                                       color: AppColors.primary,
@@ -146,12 +146,12 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  padding: const EdgeInsets.all(16),
+                  margin: EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: AppColors.crd(context),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: AppColors.bdr(context)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -167,7 +167,7 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
                   child: GradientButton(
                     text: _isAnalyzing ? AppLocalizations.of(context)!.analyzing : AppLocalizations.of(context)!.startAnalysis,
                     icon: _isAnalyzing ? null : Icons.play_arrow,
@@ -196,12 +196,12 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(icon, style: const TextStyle(fontSize: 20)),
+        Text(icon, style: TextStyle(fontSize: 20)),
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            color: AppColors.textPrimary,
+          style: TextStyle(
+            color: AppColors.txtPrimary(context),
             fontSize: 14,
             fontWeight: FontWeight.bold,
           ),
@@ -210,8 +210,8 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
         Text(
           label,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: AppColors.textMuted,
+          style: TextStyle(
+            color: AppColors.txtMuted(context),
             fontSize: 10,
           ),
         ),
@@ -223,7 +223,7 @@ class _PoseAnalysisScreenState extends State<PoseAnalysisScreen> {
     return Container(
       width: 1,
       height: 40,
-      color: AppColors.border,
+      color: AppColors.bdr(context),
     );
   }
 }

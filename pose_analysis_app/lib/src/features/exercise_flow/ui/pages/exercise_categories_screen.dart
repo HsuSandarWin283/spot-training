@@ -19,11 +19,10 @@ class ExerciseCategoriesScreen extends ConsumerWidget {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
@@ -34,11 +33,11 @@ class ExerciseCategoriesScreen extends ConsumerWidget {
                 CustomAppBar(title: AppLocalizations.of(context)!.exerciseCategories, showBack: true),
                 const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
                     AppLocalizations.of(context)!.chooseCategoryDescription,
                     style: TextStyle(
-                      color: AppColors.textSecondary.withOpacity(0.8),
+                      color: AppColors.txtSecondary(context).withOpacity(0.8),
                       fontSize: 14,
                     ),
                   ),
@@ -50,7 +49,7 @@ class ExerciseCategoriesScreen extends ConsumerWidget {
                     builder: (context, snapshot) {
                       if (snapshot.connectionState ==
                           ConnectionState.waiting) {
-                        return const Center(
+                        return Center(
                           child: CircularProgressIndicator(
                               color: AppColors.primary),
                         );
@@ -62,7 +61,7 @@ class ExerciseCategoriesScreen extends ConsumerWidget {
                       }
 
                       return ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.symmetric(horizontal: 20),
                         itemCount: categories.length,
                         itemBuilder: (context, index) {
                           final cat = categories[index];
@@ -98,22 +97,22 @@ class ExerciseCategoriesScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.textMuted.withOpacity(0.1),
+              color: AppColors.txtMuted(context).withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.fitness_center,
               size: 48,
-              color: AppColors.textMuted,
+              color: AppColors.txtMuted(context),
             ),
           ),
           const SizedBox(height: 20),
           Text(
             AppLocalizations.of(context)!.noCategoriesYet,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: AppColors.txtPrimary(context),
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -122,7 +121,7 @@ class ExerciseCategoriesScreen extends ConsumerWidget {
           Text(
             AppLocalizations.of(context)!.exerciseCategoriesWillAppear,
             style: TextStyle(
-              color: AppColors.textMuted,
+              color: AppColors.txtMuted(context),
               fontSize: 14,
             ),
           ),
@@ -158,7 +157,7 @@ class _CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
           Container(
@@ -181,8 +180,8 @@ class _CategoryCard extends StatelessWidget {
               children: [
                 Text(
                   category.name,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
+                  style: TextStyle(
+                    color: AppColors.txtPrimary(context),
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -190,8 +189,8 @@ class _CategoryCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   category.description,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: AppColors.txtSecondary(context),
                     fontSize: 13,
                   ),
                   maxLines: 1,
@@ -200,15 +199,15 @@ class _CategoryCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   AppLocalizations.of(context)!.exercisesCount(category.exerciseCount),
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
+                  style: TextStyle(
+                    color: AppColors.txtMuted(context),
                     fontSize: 12,
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.textMuted, size: 22),
+          Icon(Icons.chevron_right, color: AppColors.txtMuted(context), size: 22),
         ],
       ),
     );

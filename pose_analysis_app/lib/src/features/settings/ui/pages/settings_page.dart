@@ -71,7 +71,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             title: Text(l10n.settings),
             subtitle: Text(
               currentLocale.languageCode == 'my' ? 'မြန်မာ' : 'English',
-              style: const TextStyle(color: AppColors.primary),
+              style: TextStyle(color: AppColors.primary),
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _showLanguageDialog(context),
@@ -107,12 +107,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Language'),
+        title: Text('Language'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             RadioListTile<Locale>(
-              title: const Text('English'),
+              title: Text('English'),
               value: const Locale('en'),
               groupValue: currentLocale,
               onChanged: (locale) {
@@ -123,7 +123,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               },
             ),
             RadioListTile<Locale>(
-              title: const Text('မြန်မာ'),
+              title: Text('မြန်မာ'),
               value: const Locale('my'),
               groupValue: currentLocale,
               onChanged: (locale) {

@@ -65,7 +65,7 @@ class _PoseDetectionPageState extends ConsumerState<PoseDetectionPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             child: FilledButton.icon(
               onPressed: _isDetecting ? null : _startDetection,
               icon: const Icon(Icons.play_arrow),

@@ -30,11 +30,10 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
@@ -50,7 +49,7 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
                         return _buildEmptyState(context);
                       }
                       return ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.symmetric(horizontal: 20),
                         itemCount: items.length,
                         itemBuilder: (context, index) {
                           final item = items[index];
@@ -63,7 +62,7 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
                         },
                       );
                     },
-                    loading: () => const Center(
+                    loading: () => Center(
                       child:
                           CircularProgressIndicator(color: AppColors.primary),
                     ),
@@ -74,7 +73,7 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
                   data: (items) {
                     if (items.isEmpty) return const SizedBox.shrink();
                     return Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 16),
                       child: GradientButton(
                         text: AppLocalizations.of(context)!.startPractice,
                         icon: Icons.play_arrow,
@@ -131,22 +130,22 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.textMuted.withOpacity(0.1),
+              color: AppColors.txtMuted(context).withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.image_outlined,
               size: 48,
-              color: AppColors.textMuted,
+              color: AppColors.txtMuted(context),
             ),
           ),
           const SizedBox(height: 20),
           Text(
             AppLocalizations.of(context)!.noStepsAvailable,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: AppColors.txtPrimary(context),
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -155,7 +154,7 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
           Text(
             AppLocalizations.of(context)!.stepImagesWillAppear,
             style: TextStyle(
-              color: AppColors.textMuted,
+              color: AppColors.txtMuted(context),
               fontSize: 14,
             ),
           ),
@@ -167,12 +166,12 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
   Widget _buildErrorState(BuildContext context, Object error) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: AppColors.error.withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -186,8 +185,8 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
             const SizedBox(height: 20),
             Text(
               AppLocalizations.of(context)!.failedToLoadSteps,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: AppColors.txtPrimary(context),
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -195,8 +194,8 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             Text(
               error.toString(),
-              style: const TextStyle(
-                color: AppColors.textMuted,
+              style: TextStyle(
+                color: AppColors.txtMuted(context),
                 fontSize: 13,
               ),
               textAlign: TextAlign.center,
@@ -245,7 +244,7 @@ class _StepCard extends StatelessWidget {
               child: Center(
                 child: Text(
                   '$stepOrder',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -257,7 +256,7 @@ class _StepCard extends StatelessWidget {
               Container(
                 width: 2,
                 height: 60,
-                margin: const EdgeInsets.symmetric(vertical: 4),
+                margin: EdgeInsets.symmetric(vertical: 4),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -275,7 +274,7 @@ class _StepCard extends StatelessWidget {
         const SizedBox(width: 16),
         Expanded(
           child: GlassCard(
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: EdgeInsets.only(bottom: 12),
             padding: EdgeInsets.zero,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,9 +296,9 @@ class _StepCard extends StatelessWidget {
                           borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(16)),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.broken_image_outlined,
-                          color: AppColors.textMuted,
+                          color: AppColors.txtMuted(context),
                           size: 40,
                         ),
                       ),
@@ -307,11 +306,11 @@ class _StepCard extends StatelessWidget {
                   ),
                 if (description.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     child: Text(
                       description,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: AppColors.txtSecondary(context),
                         fontSize: 14,
                         height: 1.5,
                       ),
@@ -442,7 +441,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
     if (!_permissionChecked) {
       return Scaffold(
         backgroundColor: Colors.black,
-        body: const Center(
+        body: Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
       );
@@ -506,7 +505,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                       children: [
                         Text(
                           AppLocalizations.of(context)!.stepNumber(_currentStepItems.first.stepNumber),
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -525,7 +524,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
+                    padding: EdgeInsets.symmetric(
                         horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.15),
@@ -533,7 +532,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                     ),
                     child: Text(
                       '${_currentItemIndexInStep + 1}/${_currentStepItems.length}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -588,7 +587,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
             left: 0,
             right: 0,
             child: Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
@@ -608,7 +607,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                     const SizedBox(height: 12),
                     if (_stepComplete && _autoAdvancing)
                       Container(
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                             horizontal: 16, vertical: 10),
                         decoration: BoxDecoration(
                           color: AppColors.success.withOpacity(0.2),
@@ -645,7 +644,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                       )
                     else
                       Container(
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                             horizontal: 16, vertical: 10),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.1),
@@ -667,7 +666,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                               _isLastItemInStep
                                   ? AppLocalizations.of(context)!.matchPoseToCompleteStep
                                   : AppLocalizations.of(context)!.matchPoseToContinue,
-                              style: const TextStyle(
+                              style: TextStyle(
                                   color: Colors.white70, fontSize: 13),
                             ),
                           ],
@@ -683,7 +682,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
               top: MediaQuery.of(context).padding.top + 70,
               left: 12,
               child: Container(
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                     horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: AppColors.success.withOpacity(0.9),
@@ -698,7 +697,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                       _autoAdvancing
                           ? AppLocalizations.of(context)!.imageCompleteNextIn5s
                           : (_isLastStep ? AppLocalizations.of(context)!.allStepsComplete : AppLocalizations.of(context)!.stepComplete),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -762,23 +761,22 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
           SafeArea(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(24),
+                      padding: EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: AppColors.error.withOpacity(0.15),
                         shape: BoxShape.circle,
@@ -793,17 +791,17 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                     Text(
                       AppLocalizations.of(context)!.cameraPermissionRequired,
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: AppColors.txtPrimary(context),
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'This feature needs camera access to detect your pose and compare with the reference.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: AppColors.txtSecondary(context),
                         fontSize: 14,
                       ),
                     ),
@@ -850,23 +848,22 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
           SafeArea(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(24),
+                      padding: EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: AppColors.success.withOpacity(0.15),
                         shape: BoxShape.circle,
@@ -881,7 +878,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                     Text(
                       AppLocalizations.of(context)!.allStepsComplete,
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: AppColors.txtPrimary(context),
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
@@ -889,8 +886,8 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                     const SizedBox(height: 8),
                     Text(
                       AppLocalizations.of(context)!.allStepsCompleteDescription(_steps.length, widget.items.length),
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: AppColors.txtSecondary(context),
                         fontSize: 16,
                       ),
                     ),
@@ -1250,7 +1247,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
               const SizedBox(height: 12),
               Text(
                 _error,
-                style: const TextStyle(color: AppColors.error, fontSize: 13),
+                style: TextStyle(color: AppColors.error, fontSize: 13),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -1262,7 +1259,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
     if (!_isInitialized || _cameraController == null) {
       return Container(
         color: Colors.black,
-        child: const Center(
+        child: Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
       );

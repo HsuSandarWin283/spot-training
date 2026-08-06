@@ -62,11 +62,10 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
+        decoration: BoxDecoration(gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+            colors: [AppColors.bg(context), AppColors.surf(context)],
           ),
         ),
         child: Column(
@@ -141,14 +140,14 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 8),
+          padding: EdgeInsets.only(bottom: 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
                 height: 48,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     children: [
                       IconButton(
@@ -159,8 +158,8 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
                       const Spacer(),
                       Text(
                         name,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
+                        style: TextStyle(
+                          color: AppColors.txtPrimary(context),
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
@@ -188,22 +187,22 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
               const SizedBox(height: 8),
               Text(
                 name,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
+                style: TextStyle(
+                  color: AppColors.txtPrimary(context),
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 4),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: EdgeInsets.symmetric(horizontal: 32),
                 child: Text(
                   description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: AppColors.txtSecondary(context),
                     fontSize: 12,
                   ),
                 ),
@@ -225,25 +224,25 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
         border: Border.all(color: sportColor.withOpacity(0.4), width: 2),
       ),
       child: Center(
-        child: Text(icon, style: const TextStyle(fontSize: 32)),
+        child: Text(icon, style: TextStyle(fontSize: 32)),
       ),
     );
   }
 
   Widget _buildTabBar() {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+      decoration: BoxDecoration(
+        color: AppColors.surf(context),
+        border: Border(top: BorderSide(color: AppColors.bdr(context), width: 1)),
       ),
       child: TabBar(
         controller: _tabController,
         isScrollable: true,
         labelColor: AppColors.primary,
-        unselectedLabelColor: AppColors.textMuted,
+        unselectedLabelColor: AppColors.txtMuted(context),
         indicatorColor: AppColors.primary,
         indicatorWeight: 3,
-        labelStyle: const TextStyle(
+        labelStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 13,
         ),
@@ -286,7 +285,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
         }
         return _buildDetailList(items, type);
       },
-      loading: () => const Center(
+      loading: () => Center(
         child: CircularProgressIndicator(color: AppColors.primary),
       ),
       error: (error, _) => _buildErrorState(error),
@@ -295,14 +294,14 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
 
   Widget _buildDetailList(List<SportDetailItem> items, SportDetailType type) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: _typeColor(type).withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
@@ -313,8 +312,8 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
               const SizedBox(width: 12),
               Text(
                 type.label,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
+                style: TextStyle(
+                  color: AppColors.txtPrimary(context),
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -322,14 +321,14 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
               const Spacer(),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   '${items.length}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.primary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -340,7 +339,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
           ),
           const SizedBox(height: 16),
           ...items.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: EdgeInsets.only(bottom: 12),
                 child: _buildItemCard(item, type),
               )),
         ],
@@ -361,7 +360,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
               Container(
                 width: 6,
                 height: 6,
-                margin: const EdgeInsets.only(top: 6),
+                margin: EdgeInsets.only(top: 6),
                 decoration: BoxDecoration(
                   color: color,
                   shape: BoxShape.circle,
@@ -374,8 +373,8 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
                   children: [
                     Text(
                       item.title,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
+                      style: TextStyle(
+                        color: AppColors.txtPrimary(context),
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -383,8 +382,8 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
                     const SizedBox(height: 6),
                     Text(
                       item.description,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: AppColors.txtSecondary(context),
                         fontSize: 13,
                         height: 1.5,
                       ),
@@ -415,27 +414,27 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
   Widget _buildEmptyState(SportDetailType type) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.textMuted.withOpacity(0.1),
+                color: AppColors.txtMuted(context).withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 _tabIcon(type),
                 size: 48,
-                color: AppColors.textMuted,
+                color: AppColors.txtMuted(context),
               ),
             ),
             const SizedBox(height: 20),
             Text(
               'No ${type.label} Available',
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: AppColors.txtPrimary(context),
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -443,8 +442,8 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.sectionUpdatedSoon,
-              style: const TextStyle(
-                color: AppColors.textMuted,
+              style: TextStyle(
+                color: AppColors.txtMuted(context),
                 fontSize: 14,
               ),
               textAlign: TextAlign.center,
@@ -458,12 +457,12 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
   Widget _buildErrorState(Object error) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: AppColors.error.withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -477,8 +476,8 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
             const SizedBox(height: 20),
             Text(
               AppLocalizations.of(context)!.failedToLoadData,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: AppColors.txtPrimary(context),
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -486,8 +485,8 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
             const SizedBox(height: 8),
             Text(
               error.toString(),
-              style: const TextStyle(
-                color: AppColors.textMuted,
+              style: TextStyle(
+                color: AppColors.txtMuted(context),
                 fontSize: 13,
               ),
               textAlign: TextAlign.center,

@@ -1,13 +1,41 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
-import 'package:ai_sports_training/src/core/constants/app_constants.dart';
+import 'package:ai_sports_training/src/core/models/injury_item.dart';
 import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
+import 'package:ai_sports_training/src/features/injury_prevention/data/providers/injury_providers.dart';
 
-class InjuryPreventionScreen extends StatelessWidget {
+class InjuryPreventionScreen extends ConsumerStatefulWidget {
   const InjuryPreventionScreen({super.key});
+
+  @override
+  ConsumerState<InjuryPreventionScreen> createState() =>
+      _InjuryPreventionScreenState();
+}
+
+class _InjuryPreventionScreenState extends ConsumerState<InjuryPreventionScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  static const List<InjuryDataType> _tabs = [
+    InjuryDataType.prevention,
+    InjuryDataType.treatment,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _tabs.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,13 +43,12 @@ class InjuryPreventionScreen extends StatelessWidget {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF0A0E21),
-                  Color(0xFF151A30),
+                  AppColors.bg(context),
+                  AppColors.surf(context),
                 ],
               ),
             ),
@@ -29,149 +56,308 @@ class InjuryPreventionScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                CustomAppBar(title: AppLocalizations.of(context)!.injuryPreventionLabel),
+                CustomAppBar(title: AppLocalizations.of(context)!.injuryPreventionLabel, showBack: false),
+                const SizedBox(height: 8),
+                _buildTabBar(),
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 8),
-                        Container(
-                          width: double.infinity,
-                          height: 180,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            gradient: LinearGradient(
-                              colors: [
-                                AppColors.primary.withValues(alpha: 0.3),
-                                AppColors.secondary.withValues(alpha: 0.2),
-                              ],
-                            ),
-                            border: Border.all(
-                              color: AppColors.glassBorder,
-                            ),
-                          ),
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  '🧘',
-                                  style: TextStyle(fontSize: 60),
-                                ),
-                                SizedBox(height: 12),
-                                Text(
-                                  AppLocalizations.of(context)!.stretchingWarmUp,
-                                  style: TextStyle(
-                                    color: AppColors.textPrimary,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  AppLocalizations.of(context)!.preventInjuriesDescription,
-                                  style: TextStyle(
-                                    color: AppColors.textMuted,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        SectionHeader(title: AppLocalizations.of(context)!.warmUpExercises),
-                        const SizedBox(height: 12),
-                        ...AppConstants.injuryTips.asMap().entries.map((entry) {
-                          final tip = entry.value;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: GlassCard(
-                              onTap: () {},
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 56,
-                                    height: 56,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primary.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        tip.icon,
-                                        style: const TextStyle(fontSize: 28),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          tip.title,
-                                          style: const TextStyle(
-                                            color: AppColors.textPrimary,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          tip.description,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            color: AppColors.textMuted,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.secondary.withOpacity(0.15),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Text(
-                                      tip.duration,
-                                      style: const TextStyle(
-                                        color: AppColors.secondary,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }),
-                        const SizedBox(height: 20),
-                        GradientButton(
-                          text: AppLocalizations.of(context)!.startWarmUp,
-                          icon: Icons.play_arrow,
-                          onPressed: () {},
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: _tabs
+                        .map((type) => _buildTabContent(type))
+                        .toList(),
                   ),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: AppColors.surf(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.bdr(context)),
+      ),
+      child: TabBar(
+        controller: _tabController,
+        indicator: BoxDecoration(
+          gradient: AppColors.primaryGradient,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        indicatorSize: TabBarIndicatorSize.tab,
+        dividerColor: Colors.transparent,
+        labelColor: Colors.white,
+        unselectedLabelColor: AppColors.txtMuted(context),
+        labelStyle: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 13,
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.normal,
+          fontSize: 13,
+        ),
+        tabs: _tabs
+            .map((type) => Tab(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(_tabIcon(type), size: 16),
+                      const SizedBox(width: 6),
+                      Text(_tabLabel(type)),
+                    ],
+                  ),
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  IconData _tabIcon(InjuryDataType type) {
+    switch (type) {
+      case InjuryDataType.prevention:
+        return Icons.shield;
+      case InjuryDataType.treatment:
+        return Icons.healing;
+    }
+  }
+
+  String _tabLabel(InjuryDataType type) {
+    switch (type) {
+      case InjuryDataType.prevention:
+        return AppLocalizations.of(context)!.prevention;
+      case InjuryDataType.treatment:
+        return AppLocalizations.of(context)!.treatment;
+    }
+  }
+
+  String _emptyTitle(InjuryDataType type) {
+    switch (type) {
+      case InjuryDataType.prevention:
+        return AppLocalizations.of(context)!.noPreventionAvailable;
+      case InjuryDataType.treatment:
+        return AppLocalizations.of(context)!.noTreatmentAvailable;
+    }
+  }
+
+  Widget _buildTabContent(InjuryDataType type) {
+    final itemsAsync = ref.watch(injuryListProvider(type));
+
+    return itemsAsync.when(
+      data: (items) {
+        if (items.isEmpty) {
+          return _buildEmptyState(type);
+        }
+        return _buildItemList(items, type);
+      },
+      loading: () => Center(
+        child: CircularProgressIndicator(color: AppColors.primary),
+      ),
+      error: (error, _) => _buildErrorState(error),
+    );
+  }
+
+  Widget _buildItemList(List<InjuryItem> items, InjuryDataType type) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _typeColor(type).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(_tabIcon(type),
+                    color: _typeColor(type), size: 20),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                _tabLabel(type),
+                style: TextStyle(
+                  color: AppColors.txtPrimary(context),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding:
+                    EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${items.length}',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...items.map((item) => Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: _buildItemCard(item, type),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItemCard(InjuryItem item, InjuryDataType type) {
+    final color = _typeColor(type);
+
+    return GlassCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                margin: EdgeInsets.only(top: 6),
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.title,
+                      style: TextStyle(
+                        color: AppColors.txtPrimary(context),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      item.description,
+                      style: TextStyle(
+                        color: AppColors.txtSecondary(context),
+                        fontSize: 13,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _typeColor(InjuryDataType type) {
+    switch (type) {
+      case InjuryDataType.prevention:
+        return AppColors.secondary;
+      case InjuryDataType.treatment:
+        return AppColors.error;
+    }
+  }
+
+  Widget _buildEmptyState(InjuryDataType type) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.txtMuted(context).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                _tabIcon(type),
+                size: 48,
+                color: AppColors.txtMuted(context),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              _emptyTitle(type),
+              style: TextStyle(
+                color: AppColors.txtPrimary(context),
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              AppLocalizations.of(context)!.sectionUpdatedSoon,
+              style: TextStyle(
+                color: AppColors.txtMuted(context),
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(Object error) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.error.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: AppColors.error,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              AppLocalizations.of(context)!.failedToLoadData,
+              style: TextStyle(
+                color: AppColors.txtPrimary(context),
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error.toString(),
+              style: TextStyle(
+                color: AppColors.txtMuted(context),
+                fontSize: 13,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

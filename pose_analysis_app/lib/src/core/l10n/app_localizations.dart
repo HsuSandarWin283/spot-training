@@ -1340,6 +1340,30 @@ abstract class AppLocalizations {
   /// **'Fitness Requirements'**
   String get fitnessRequirements;
 
+  /// No description provided for @prevention.
+  ///
+  /// In en, this message translates to:
+  /// **'Prevention'**
+  String get prevention;
+
+  /// No description provided for @treatment.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment'**
+  String get treatment;
+
+  /// No description provided for @noPreventionAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No Prevention Available'**
+  String get noPreventionAvailable;
+
+  /// No description provided for @noTreatmentAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No Treatment Available'**
+  String get noTreatmentAvailable;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:

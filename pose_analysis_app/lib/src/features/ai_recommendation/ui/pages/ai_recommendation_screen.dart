@@ -13,13 +13,12 @@ class AIRecommendationScreen extends StatelessWidget {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF0A0E21),
-                  Color(0xFF151A30),
+                  AppColors.background,
+                  AppColors.surface,
                 ],
               ),
             ),
@@ -30,7 +29,7 @@ class AIRecommendationScreen extends StatelessWidget {
                 CustomAppBar(title: AppLocalizations.of(context)!.aiRecommendation),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -58,8 +57,8 @@ class AIRecommendationScreen extends StatelessWidget {
                                   children: [
                                     Text(
                                       'Alex Johnson',
-                                      style: const TextStyle(
-                                        color: AppColors.textPrimary,
+                                      style: TextStyle(
+                                        color: AppColors.txtPrimary(context),
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -67,15 +66,15 @@ class AIRecommendationScreen extends StatelessWidget {
                                     const SizedBox(height: 4),
                                     Text(
                                       '22 years old  |  175 cm  |  72 kg',
-                                      style: const TextStyle(
-                                        color: AppColors.textMuted,
+                                      style: TextStyle(
+                                        color: AppColors.txtMuted(context),
                                         fontSize: 13,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       AppLocalizations.of(context)!.fitnessLevelIntermediate,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: AppColors.secondary,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
@@ -85,7 +84,7 @@ class AIRecommendationScreen extends StatelessWidget {
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.all(8),
+                                padding: EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                   color: AppColors.primary.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(8),
@@ -106,7 +105,7 @@ class AIRecommendationScreen extends StatelessWidget {
                           children: [
                             Expanded(
                               child: GlassCard(
-                                padding: const EdgeInsets.all(16),
+                                padding: EdgeInsets.all(16),
                                 child: Column(
                                   children: [
                                     SizedBox(
@@ -121,7 +120,7 @@ class AIRecommendationScreen extends StatelessWidget {
                                             child: CircularProgressIndicator(
                                               value: 0.22,
                                               strokeWidth: 6,
-                                              backgroundColor: AppColors.border,
+                                              backgroundColor: AppColors.bdr(context),
                                               valueColor: const AlwaysStoppedAnimation<Color>(
                                                 AppColors.secondary,
                                               ),
@@ -132,16 +131,16 @@ class AIRecommendationScreen extends StatelessWidget {
                                             children: [
                                               Text(
                                                 '22.7',
-                                                style: const TextStyle(
-                                                  color: AppColors.textPrimary,
+                                                style: TextStyle(
+                                                  color: AppColors.txtPrimary(context),
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
                                               Text(
                                                 AppLocalizations.of(context)!.bmi,
-                                                style: const TextStyle(
-                                                  color: AppColors.textMuted,
+                                                style: TextStyle(
+                                                  color: AppColors.txtMuted(context),
                                                   fontSize: 10,
                                                 ),
                                               ),
@@ -152,7 +151,7 @@ class AIRecommendationScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 8),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(
+                                      padding: EdgeInsets.symmetric(
                                         horizontal: 8,
                                         vertical: 4,
                                       ),
@@ -162,7 +161,7 @@ class AIRecommendationScreen extends StatelessWidget {
                                       ),
                                       child: Text(
                                         AppLocalizations.of(context)!.normal,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           color: AppColors.success,
                                           fontSize: 11,
                                           fontWeight: FontWeight.w600,
@@ -176,7 +175,7 @@ class AIRecommendationScreen extends StatelessWidget {
                             const SizedBox(width: 12),
                             Expanded(
                               child: GlassCard(
-                                padding: const EdgeInsets.all(16),
+                                padding: EdgeInsets.all(16),
                                 child: Column(
                                   children: [
                                     SizedBox(
@@ -191,7 +190,7 @@ class AIRecommendationScreen extends StatelessWidget {
                                             child: CircularProgressIndicator(
                                               value: 0.76,
                                               strokeWidth: 6,
-                                              backgroundColor: AppColors.border,
+                                              backgroundColor: AppColors.bdr(context),
                                               valueColor: const AlwaysStoppedAnimation<Color>(
                                                 AppColors.primary,
                                               ),
@@ -202,16 +201,16 @@ class AIRecommendationScreen extends StatelessWidget {
                                             children: [
                                               Text(
                                                 '76%',
-                                                style: const TextStyle(
-                                                  color: AppColors.textPrimary,
+                                                style: TextStyle(
+                                                  color: AppColors.txtPrimary(context),
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
                                               Text(
                                                 AppLocalizations.of(context)!.score,
-                                                style: const TextStyle(
-                                                  color: AppColors.textMuted,
+                                                style: TextStyle(
+                                                  color: AppColors.txtMuted(context),
                                                   fontSize: 10,
                                                 ),
                                               ),
@@ -222,7 +221,7 @@ class AIRecommendationScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 8),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(
+                                      padding: EdgeInsets.symmetric(
                                         horizontal: 8,
                                         vertical: 4,
                                       ),
@@ -230,7 +229,7 @@ class AIRecommendationScreen extends StatelessWidget {
                                         color: AppColors.primary.withValues(alpha: 0.15),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: const Text(
+                                      child: Text(
                                         'Good',
                                         style: TextStyle(
                                           color: AppColors.primary,
@@ -249,6 +248,7 @@ class AIRecommendationScreen extends StatelessWidget {
                         SectionHeader(title: AppLocalizations.of(context)!.personalizedTrainingPlan),
                         const SizedBox(height: 12),
                         _buildPlanCard(
+                          context,
                           AppLocalizations.of(context)!.weeklyWorkoutPlan,
                           AppLocalizations.of(context)!.sessionsPerWeek,
                           Icons.calendar_today,
@@ -256,6 +256,7 @@ class AIRecommendationScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         _buildPlanCard(
+                          context,
                           AppLocalizations.of(context)!.exerciseRecommendations,
                           AppLocalizations.of(context)!.basedOnFitnessLevel,
                           Icons.fitness_center,
@@ -263,6 +264,7 @@ class AIRecommendationScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         _buildPlanCard(
+                          context,
                           AppLocalizations.of(context)!.nutritionGuide,
                           AppLocalizations.of(context)!.customizedMealPlans,
                           Icons.restaurant,
@@ -289,12 +291,12 @@ class AIRecommendationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPlanCard(String title, String subtitle, IconData icon, Color color) {
+  Widget _buildPlanCard(BuildContext context, String title, String subtitle, IconData icon, Color color) {
     return GlassCard(
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
@@ -308,8 +310,8 @@ class AIRecommendationScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
+                  style: TextStyle(
+                    color: AppColors.txtPrimary(context),
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
@@ -317,15 +319,15 @@ class AIRecommendationScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
+                  style: TextStyle(
+                    color: AppColors.txtMuted(context),
                     fontSize: 12,
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.textMuted),
+          Icon(Icons.chevron_right, color: AppColors.txtMuted(context)),
         ],
       ),
     );

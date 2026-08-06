@@ -15,13 +15,12 @@ class WeeklyPlanScreen extends StatelessWidget {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF0A0E21),
-                  Color(0xFF151A30),
+                  AppColors.background,
+                  AppColors.surface,
                 ],
               ),
             ),
@@ -32,7 +31,7 @@ class WeeklyPlanScreen extends StatelessWidget {
                 CustomAppBar(title: AppLocalizations.of(context)!.weeklyPlan),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -41,7 +40,7 @@ class WeeklyPlanScreen extends StatelessWidget {
                           child: Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(12),
+                                padding: EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   gradient: AppColors.primaryGradient,
                                   borderRadius: BorderRadius.circular(12),
@@ -60,7 +59,7 @@ class WeeklyPlanScreen extends StatelessWidget {
                                     Text(
                                       AppLocalizations.of(context)!.weekOf(4, 1),
                                       style: TextStyle(
-                                        color: AppColors.textPrimary,
+                                        color: AppColors.txtPrimary(context),
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -69,7 +68,7 @@ class WeeklyPlanScreen extends StatelessWidget {
                                     Text(
                                       AppLocalizations.of(context)!.sessionsCompleted(5),
                                       style: TextStyle(
-                                        color: AppColors.textMuted,
+                                        color: AppColors.txtMuted(context),
                                         fontSize: 12,
                                       ),
                                     ),
@@ -77,7 +76,7 @@ class WeeklyPlanScreen extends StatelessWidget {
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   horizontal: 10,
                                   vertical: 6,
                                 ),
@@ -85,7 +84,7 @@ class WeeklyPlanScreen extends StatelessWidget {
                                   color: AppColors.success.withOpacity(0.15),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   '71%',
                                   style: TextStyle(
                                     color: AppColors.success,
@@ -99,7 +98,7 @@ class WeeklyPlanScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          padding: EdgeInsets.symmetric(horizontal: 4),
                            child: AppProgressBar(value: 0.71, height: 6),
                         ),
                         const SizedBox(height: 24),
@@ -110,7 +109,7 @@ class WeeklyPlanScreen extends StatelessWidget {
                           final isToday = index == 5;
 
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
+                            padding: EdgeInsets.only(bottom: 12),
                             child: _WeeklyDayCard(
                               day: day,
                               isCompleted: isCompleted,
@@ -171,7 +170,7 @@ class _WeeklyDayCard extends StatelessWidget {
                     )
                   : Text(
                       day.icon,
-                      style: const TextStyle(fontSize: 26),
+                      style: TextStyle(fontSize: 26),
                     ),
             ),
           ),
@@ -195,7 +194,7 @@ class _WeeklyDayCard extends StatelessWidget {
                     if (isToday) ...[
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                           horizontal: 6,
                           vertical: 2,
                         ),
@@ -243,7 +242,7 @@ class _WeeklyDayCard extends StatelessWidget {
           ),
           if (isToday)
             Container(
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 horizontal: 12,
                 vertical: 6,
               ),
@@ -261,7 +260,7 @@ class _WeeklyDayCard extends StatelessWidget {
               ),
             )
           else if (!isCompleted)
-            const Icon(Icons.chevron_right, color: AppColors.textMuted),
+            Icon(Icons.chevron_right, color: AppColors.txtMuted(context)),
         ],
       ),
     );

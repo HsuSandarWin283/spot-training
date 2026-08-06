@@ -242,7 +242,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
   @override
   Widget build(BuildContext context) {
     if (!_permissionChecked) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: Colors.black,
         body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
       );
@@ -256,7 +256,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
     final stepState = ref.watch(stepControllerProvider(steps));
 
     if (stepState.isExerciseComplete) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: Colors.black,
         body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
       );
@@ -269,7 +269,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
           if (_cameraReady && _cameraController != null)
             ClipRect(child: _cameraController!.buildPreview())
           else
-            const Center(
+            Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             ),
           _buildTopBar(stepState),
@@ -317,7 +317,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                 children: [
                   Text(
                     widget.exercise.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -334,14 +334,14 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 '${stepState.currentStepIndex + 1}/${stepState.totalSteps}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -413,7 +413,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
       left: 12,
       right: 130,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.7),
           borderRadius: BorderRadius.circular(12),
@@ -425,7 +425,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
             Expanded(
               child: Text(
                 _currentFeedback,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 13,
                 ),
@@ -444,7 +444,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
       left: 0,
       right: 0,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.bottomCenter,
@@ -468,7 +468,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                   )
                 else
                   Container(
-                    padding: const EdgeInsets.symmetric(
+                    padding: EdgeInsets.symmetric(
                         horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
                       color: AppColors.success.withOpacity(0.2),
@@ -500,7 +500,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
               else
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -519,7 +519,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                       const SizedBox(width: 8),
                       Text(
                         AppLocalizations.of(context)!.matchReferencePose,
-                        style: const TextStyle(color: Colors.white70, fontSize: 13),
+                        style: TextStyle(color: Colors.white70, fontSize: 13),
                       ),
                     ],
                   ),
@@ -581,7 +581,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
       right: 0,
       child: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
             color: AppColors.success.withOpacity(0.9),
             borderRadius: BorderRadius.circular(16),
@@ -593,7 +593,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
               const SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context)!.stepCompleted,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -611,23 +611,22 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
           SafeArea(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(24),
+                      padding: EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: AppColors.error.withOpacity(0.15),
                         shape: BoxShape.circle,
@@ -639,7 +638,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                     Text(
                       AppLocalizations.of(context)!.cameraPermissionRequired,
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: AppColors.txtPrimary(context),
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
@@ -649,7 +648,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                       AppLocalizations.of(context)!.cameraPermissionDescription,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          color: AppColors.textSecondary, fontSize: 14),
+                          color: AppColors.txtSecondary(context), fontSize: 14),
                     ),
                     const SizedBox(height: 32),
                     GradientButton(

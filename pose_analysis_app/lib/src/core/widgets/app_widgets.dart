@@ -32,15 +32,15 @@ class GlassCard extends StatelessWidget {
       child: Container(
         margin: margin,
         decoration: BoxDecoration(
-          color: AppColors.card.withOpacity(0.8),
+          color: AppColors.crd(context).withOpacity(0.8),
           borderRadius: BorderRadius.circular(borderRadius),
           border: Border.all(
-            color: borderColor ?? AppColors.glassBorder,
+            color: borderColor ?? AppColors.bdr(context).withOpacity(0.5),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withOpacity(0.1),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -215,8 +215,8 @@ class StatCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
-              color: AppColors.textPrimary,
+            style: TextStyle(
+              color: AppColors.txtPrimary(context),
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -224,8 +224,8 @@ class StatCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             title,
-            style: const TextStyle(
-              color: AppColors.textMuted,
+            style: TextStyle(
+              color: AppColors.txtMuted(context),
               fontSize: 12,
             ),
           ),
@@ -278,7 +278,7 @@ class AppProgressBar extends StatelessWidget {
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: AppColors.border,
+        color: AppColors.bdr(context),
         borderRadius: BorderRadius.circular(height / 2),
       ),
       child: FractionallySizedBox(
@@ -361,8 +361,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             const Spacer(),
             Text(
               title,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: AppColors.txtPrimary(context),
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -398,8 +398,8 @@ class SectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              color: AppColors.textPrimary,
+            style: TextStyle(
+              color: AppColors.txtPrimary(context),
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),

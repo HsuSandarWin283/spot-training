@@ -92,11 +92,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
@@ -120,7 +119,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: EdgeInsets.symmetric(horizontal: 32),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -150,7 +149,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       Text(
                         AppLocalizations.of(context)!.welcomeBack,
                         style: TextStyle(
-                          color: AppColors.textPrimary,
+                          color: AppColors.txtPrimary(context),
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
                         ),
@@ -159,7 +158,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       Text(
                         AppLocalizations.of(context)!.signInToContinue,
                         style: TextStyle(
-                          color: AppColors.textSecondary.withOpacity(0.8),
+                          color: AppColors.txtSecondary(context).withOpacity(0.8),
                           fontSize: 14,
                         ),
                       ),
@@ -168,7 +167,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         controller: _emailController,
                         decoration: InputDecoration(
                           labelText: AppLocalizations.of(context)!.email,
-                          prefixIcon: const Icon(Icons.email_outlined, color: AppColors.textMuted),
+                          prefixIcon: Icon(Icons.email_outlined, color: AppColors.txtMuted(context)),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: _validateEmail,
@@ -178,11 +177,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         controller: _passwordController,
                         decoration: InputDecoration(
                           labelText: AppLocalizations.of(context)!.password,
-                          prefixIcon: const Icon(Icons.lock_outline, color: AppColors.textMuted),
+                          prefixIcon: Icon(Icons.lock_outline, color: AppColors.txtMuted(context)),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                              color: AppColors.textMuted,
+                              color: AppColors.txtMuted(context),
                             ),
                             onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                           ),
@@ -202,7 +201,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         children: [
                           Text(
                             AppLocalizations.of(context)!.dontHaveAccount,
-                            style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                            style: TextStyle(color: AppColors.txtMuted(context), fontSize: 13),
                           ),
                           GestureDetector(
                             onTap: () => context.go('/register'),

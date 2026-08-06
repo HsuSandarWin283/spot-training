@@ -104,11 +104,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
@@ -132,7 +131,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: EdgeInsets.symmetric(horizontal: 32),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -162,7 +161,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       Text(
                         AppLocalizations.of(context)!.createAccount,
                         style: TextStyle(
-                          color: AppColors.textPrimary,
+                          color: AppColors.txtPrimary(context),
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
                         ),
@@ -171,7 +170,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       Text(
                         AppLocalizations.of(context)!.startTrainingJourney,
                         style: TextStyle(
-                          color: AppColors.textSecondary.withOpacity(0.8),
+                          color: AppColors.txtSecondary(context).withOpacity(0.8),
                           fontSize: 14,
                         ),
                       ),
@@ -180,7 +179,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         controller: _fullNameController,
                         decoration: InputDecoration(
                           labelText: AppLocalizations.of(context)!.fullName,
-                          prefixIcon: const Icon(Icons.person_outline, color: AppColors.textMuted),
+                          prefixIcon: Icon(Icons.person_outline, color: AppColors.txtMuted(context)),
                         ),
                         textCapitalization: TextCapitalization.words,
                         validator: _validateFullName,
@@ -190,7 +189,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         controller: _emailController,
                         decoration: InputDecoration(
                           labelText: AppLocalizations.of(context)!.email,
-                          prefixIcon: const Icon(Icons.email_outlined, color: AppColors.textMuted),
+                          prefixIcon: Icon(Icons.email_outlined, color: AppColors.txtMuted(context)),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: _validateEmail,
@@ -200,11 +199,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         controller: _passwordController,
                         decoration: InputDecoration(
                           labelText: AppLocalizations.of(context)!.password,
-                          prefixIcon: const Icon(Icons.lock_outline, color: AppColors.textMuted),
+                          prefixIcon: Icon(Icons.lock_outline, color: AppColors.txtMuted(context)),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                              color: AppColors.textMuted,
+                              color: AppColors.txtMuted(context),
                             ),
                             onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                           ),
@@ -215,7 +214,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       const SizedBox(height: 8),
                       Text(
                         AppLocalizations.of(context)!.passwordHint,
-                        style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                        style: TextStyle(fontSize: 11, color: AppColors.txtMuted(context)),
                       ),
                       const SizedBox(height: 24),
                       GradientButton(
@@ -229,7 +228,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         children: [
                           Text(
                             AppLocalizations.of(context)!.alreadyHaveAccount,
-                            style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                            style: TextStyle(color: AppColors.txtMuted(context), fontSize: 13),
                           ),
                           GestureDetector(
                             onTap: () => context.go('/login'),

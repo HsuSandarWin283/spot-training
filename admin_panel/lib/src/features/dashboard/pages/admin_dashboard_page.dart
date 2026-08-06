@@ -160,6 +160,16 @@ class AdminDashboardPage extends ConsumerWidget {
                 AdminView.addExerciseStepImage;
           },
         ),
+        _QuickActionCard(
+          icon: Icons.health_and_safety,
+          title: AppLocalizations.of(context)!.injuryPreventionAndTreatment,
+          subtitle: AppLocalizations.of(context)!.manageInjuryDataDescription,
+          color: AdminColors.info,
+          onTap: () {
+            ref.read(adminViewProvider.notifier).state =
+                AdminView.injuryManagement;
+          },
+        ),
       ],
     );
   }

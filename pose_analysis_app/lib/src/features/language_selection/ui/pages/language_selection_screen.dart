@@ -15,11 +15,10 @@ class LanguageSelectionScreen extends ConsumerWidget {
         fit: StackFit.expand,
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30), Color(0xFF0A0E21)],
+                colors: [AppColors.bg(context), AppColors.surf(context), AppColors.bg(context)],
               ),
             ),
           ),
@@ -40,7 +39,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
           SafeArea(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: EdgeInsets.symmetric(horizontal: 32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -61,20 +60,20 @@ class LanguageSelectionScreen extends ConsumerWidget {
                       child: const Icon(Icons.language, size: 50, color: Colors.white),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'AI Sports Training',
                       style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: AppColors.txtPrimary(context),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Choose your language',
                       style: TextStyle(
                         fontSize: 16,
-                        color: AppColors.textSecondary,
+                        color: AppColors.txtSecondary(context),
                       ),
                     ),
                     const SizedBox(height: 48),
@@ -122,11 +121,11 @@ class LanguageSelectionScreen extends ConsumerWidget {
       },
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: AppColors.crd(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border, width: 1.5),
+          border: Border.all(color: AppColors.bdr(context), width: 1.5),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
@@ -137,7 +136,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            Text(flag, style: const TextStyle(fontSize: 36)),
+            Text(flag, style: TextStyle(fontSize: 36)),
             const SizedBox(width: 20),
             Expanded(
               child: Column(
@@ -145,8 +144,8 @@ class LanguageSelectionScreen extends ConsumerWidget {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
+                    style: TextStyle(
+                      color: AppColors.txtPrimary(context),
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -154,15 +153,15 @@ class LanguageSelectionScreen extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      color: AppColors.textMuted,
+                    style: TextStyle(
+                      color: AppColors.txtMuted(context),
                       fontSize: 13,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, color: AppColors.textMuted, size: 18),
+            Icon(Icons.arrow_forward_ios, color: AppColors.txtMuted(context), size: 18),
           ],
         ),
       ),

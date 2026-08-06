@@ -239,6 +239,11 @@
   "injuryPreventionLabel": "Injury Prevention",
   "fitnessRequirements": "Fitness Requirements",
 
+  "prevention": "Prevention",
+  "treatment": "Treatment",
+  "noPreventionAvailable": "No Prevention Available",
+  "noTreatmentAvailable": "No Treatment Available",
+
   "cancel": "Cancel",
   "logout": "Logout",
   "logoutConfirm": "Are you sure you want to logout?",

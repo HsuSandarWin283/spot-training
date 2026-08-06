@@ -27,11 +27,10 @@ class ExerciseListScreen extends ConsumerWidget {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
@@ -42,11 +41,11 @@ class ExerciseListScreen extends ConsumerWidget {
                 CustomAppBar(title: categoryName, showBack: true),
                 const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
                     AppLocalizations.of(context)!.selectExerciseToBegin,
                     style: TextStyle(
-                      color: AppColors.textSecondary.withOpacity(0.8),
+                      color: AppColors.txtSecondary(context).withOpacity(0.8),
                       fontSize: 14,
                     ),
                   ),
@@ -58,7 +57,7 @@ class ExerciseListScreen extends ConsumerWidget {
                     builder: (context, snapshot) {
                       if (snapshot.connectionState ==
                           ConnectionState.waiting) {
-                        return const Center(
+                        return Center(
                           child: CircularProgressIndicator(
                               color: AppColors.primary),
                         );
@@ -70,13 +69,13 @@ class ExerciseListScreen extends ConsumerWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.fitness_center,
-                                  size: 48, color: AppColors.textMuted),
+                              Icon(Icons.fitness_center,
+                                  size: 48, color: AppColors.txtMuted(context)),
                               const SizedBox(height: 16),
                               Text(
                                 AppLocalizations.of(context)!.noExercises,
                                 style: TextStyle(
-                                  color: AppColors.textPrimary,
+                                  color: AppColors.txtPrimary(context),
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -87,7 +86,7 @@ class ExerciseListScreen extends ConsumerWidget {
                       }
 
                       return ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.symmetric(horizontal: 20),
                         itemCount: exercises.length,
                         itemBuilder: (context, index) {
                           final exercise = exercises[index];
@@ -126,7 +125,7 @@ class _ExerciseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
           if (exercise.imageUrl.isNotEmpty)
@@ -164,8 +163,8 @@ class _ExerciseCard extends StatelessWidget {
               children: [
                 Text(
                   exercise.name,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
+                  style: TextStyle(
+                    color: AppColors.txtPrimary(context),
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -173,8 +172,8 @@ class _ExerciseCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   exercise.description,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: AppColors.txtSecondary(context),
                     fontSize: 13,
                   ),
                   maxLines: 1,
@@ -183,7 +182,7 @@ class _ExerciseCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   AppLocalizations.of(context)!.stepsCount(exercise.stepCount),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.primary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,

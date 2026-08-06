@@ -36,11 +36,10 @@ class DashboardScreen extends ConsumerWidget {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
@@ -51,7 +50,7 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -86,7 +85,7 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildHeader(
       BuildContext context, String displayName, dynamic user) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Row(
         children: [
           Column(
@@ -94,14 +93,14 @@ class DashboardScreen extends ConsumerWidget {
             children: [
               Text(
                 '${_getGreeting()}! 👋',
-                style: const TextStyle(
-                    color: AppColors.textMuted, fontSize: 14),
+                style: TextStyle(
+                    color: AppColors.txtMuted(context), fontSize: 14),
               ),
               const SizedBox(height: 4),
               Text(
                 displayName,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
+                style: TextStyle(
+                  color: AppColors.txtPrimary(context),
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
@@ -127,7 +126,7 @@ class DashboardScreen extends ConsumerWidget {
                 : Container(
                     width: 42,
                     height: 42,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       gradient: AppColors.primaryGradient,
                       shape: BoxShape.circle,
                     ),
@@ -135,7 +134,7 @@ class DashboardScreen extends ConsumerWidget {
                       child: Text(
                         (displayName.isNotEmpty ? displayName[0] : 'A')
                             .toUpperCase(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -193,7 +192,7 @@ class DashboardScreen extends ConsumerWidget {
                       child: CircularProgressIndicator(
                         value: score / 100,
                         strokeWidth: 8,
-                        backgroundColor: AppColors.border,
+                        backgroundColor: AppColors.bdr(context),
                         valueColor: AlwaysStoppedAnimation(levelColor),
                         strokeCap: StrokeCap.round,
                       ),
@@ -214,10 +213,10 @@ class DashboardScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Fitness Level',
                       style: TextStyle(
-                          color: AppColors.textMuted, fontSize: 12),
+                          color: AppColors.txtMuted(context), fontSize: 12),
                     ),
                     const SizedBox(height: 4),
                     Row(
@@ -239,8 +238,8 @@ class DashboardScreen extends ConsumerWidget {
                       assessment != null
                           ? 'Age ${assessment.age} • ${assessment.heightCm.toStringAsFixed(0)}cm • ${assessment.weightKg.toStringAsFixed(0)}kg'
                           : 'Complete your assessment',
-                      style: const TextStyle(
-                          color: AppColors.textSecondary, fontSize: 12),
+                      style: TextStyle(
+                          color: AppColors.txtSecondary(context), fontSize: 12),
                     ),
                   ],
                 ),
@@ -269,7 +268,7 @@ class DashboardScreen extends ConsumerWidget {
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
@@ -280,8 +279,8 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 Text(
                   AppLocalizations.of(context)!.noCompletedExercises,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
+                  style: TextStyle(
+                    color: AppColors.txtPrimary(context),
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -290,7 +289,7 @@ class DashboardScreen extends ConsumerWidget {
                 Text(
                   AppLocalizations.of(context)!.completeExercisesToSee,
                   style:
-                      const TextStyle(color: AppColors.textMuted, fontSize: 13),
+                      TextStyle(color: AppColors.txtMuted(context), fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -307,8 +306,8 @@ class DashboardScreen extends ConsumerWidget {
                 title: AppLocalizations.of(context)!.yourGoals(goals.length)),
             const SizedBox(height: 12),
             ...goals.map((goal) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _buildGoalCard(goal),
+                  padding: EdgeInsets.only(bottom: 12),
+                  child: _buildGoalCard(context, goal),
                 )),
           ],
         );
@@ -316,7 +315,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildGoalCard(GoalProgress goal) {
+  Widget _buildGoalCard(BuildContext context, GoalProgress goal) {
     final accuracy = goal.averageAccuracy;
     Color accColor;
     if (accuracy >= 80) {
@@ -343,7 +342,7 @@ class DashboardScreen extends ConsumerWidget {
                 child: Center(
                   child: Text(
                     _getGoalEmoji(goal.goal),
-                    style: const TextStyle(fontSize: 24),
+                    style: TextStyle(fontSize: 24),
                   ),
                 ),
               ),
@@ -354,8 +353,8 @@ class DashboardScreen extends ConsumerWidget {
                   children: [
                     Text(
                       goal.goal,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
+                      style: TextStyle(
+                        color: AppColors.txtPrimary(context),
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -363,8 +362,8 @@ class DashboardScreen extends ConsumerWidget {
                     const SizedBox(height: 2),
                     Text(
                       '${goal.poses.length} exercise${goal.poses.length != 1 ? 's' : ''}',
-                      style: const TextStyle(
-                          color: AppColors.textMuted, fontSize: 12),
+                      style: TextStyle(
+                          color: AppColors.txtMuted(context), fontSize: 12),
                     ),
                   ],
                 ),
@@ -380,10 +379,10 @@ class DashboardScreen extends ConsumerWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Text(
+                  Text(
                     'sessions',
                     style:
-                        TextStyle(color: AppColors.textMuted, fontSize: 11),
+                        TextStyle(color: AppColors.txtMuted(context), fontSize: 11),
                   ),
                 ],
               ),
@@ -396,10 +395,10 @@ class DashboardScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Accuracy',
                       style: TextStyle(
-                          color: AppColors.textMuted, fontSize: 11),
+                          color: AppColors.txtMuted(context), fontSize: 11),
                     ),
                     const SizedBox(height: 4),
                     AppProgressBar(
@@ -427,17 +426,17 @@ class DashboardScreen extends ConsumerWidget {
             runSpacing: 4,
             children: goal.poses
                 .map((p) => Container(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: AppColors.surf(context),
                         borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: AppColors.bdr(context)),
                       ),
                       child: Text(
                         '${p.poseName} (${p.successCount}x)',
-                        style: const TextStyle(
-                            color: AppColors.textSecondary, fontSize: 11),
+                        style: TextStyle(
+                            color: AppColors.txtSecondary(context), fontSize: 11),
                       ),
                     ))
                 .toList(),
@@ -487,7 +486,7 @@ class DashboardScreen extends ConsumerWidget {
                         const SizedBox(width: 8),
                         Text(
                           AppLocalizations.of(context)!.strengthsLabel,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.success,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -497,11 +496,11 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     ...strengths.map((s) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
+                          padding: EdgeInsets.only(bottom: 4),
                           child: Text(
                             '• $s',
-                            style: const TextStyle(
-                                color: AppColors.textSecondary,
+                            style: TextStyle(
+                                color: AppColors.txtSecondary(context),
                                 fontSize: 13),
                           ),
                         )),
@@ -515,7 +514,7 @@ class DashboardScreen extends ConsumerWidget {
                         const SizedBox(width: 8),
                         Text(
                           AppLocalizations.of(context)!.needsPractice,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.warning,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -525,11 +524,11 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     ...improvements.map((s) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
+                          padding: EdgeInsets.only(bottom: 4),
                           child: Text(
                             '• $s',
-                            style: const TextStyle(
-                                color: AppColors.textSecondary,
+                            style: TextStyle(
+                                color: AppColors.txtSecondary(context),
                                 fontSize: 13),
                           ),
                         )),
@@ -569,8 +568,8 @@ class DashboardScreen extends ConsumerWidget {
                       const SizedBox(width: 8),
                       Text(
                         AppLocalizations.of(context)!.practiceTheseExercises,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
+                        style: TextStyle(
+                          color: AppColors.txtPrimary(context),
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
@@ -579,7 +578,7 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   ...recs.map((rec) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: EdgeInsets.only(bottom: 8),
                         child: Row(
                           children: [
                             Container(
@@ -600,16 +599,16 @@ class DashboardScreen extends ConsumerWidget {
                                 children: [
                                   Text(
                                     rec.poseName,
-                                    style: const TextStyle(
-                                      color: AppColors.textPrimary,
+                                    style: TextStyle(
+                                      color: AppColors.txtPrimary(context),
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                   Text(
                                     '${rec.goal} • ${rec.successCount} completed',
-                                    style: const TextStyle(
-                                        color: AppColors.textMuted,
+                                    style: TextStyle(
+                                        color: AppColors.txtMuted(context),
                                         fontSize: 12),
                                   ),
                                 ],
@@ -680,7 +679,7 @@ class DashboardScreen extends ConsumerWidget {
                 children: completions.map((item) {
                   final ratio = maxCount > 0 ? item.count / maxCount : 0.0;
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
+                    padding: EdgeInsets.only(bottom: 14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -688,14 +687,14 @@ class DashboardScreen extends ConsumerWidget {
                           children: [
                             Text(
                               _getGoalEmoji(item.typeName),
-                              style: const TextStyle(fontSize: 18),
+                              style: TextStyle(fontSize: 18),
                             ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
                                 item.typeName,
-                                style: const TextStyle(
-                                  color: AppColors.textPrimary,
+                                style: TextStyle(
+                                  color: AppColors.txtPrimary(context),
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -703,7 +702,7 @@ class DashboardScreen extends ConsumerWidget {
                             ),
                             Text(
                               '${item.count}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.primary,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -717,7 +716,7 @@ class DashboardScreen extends ConsumerWidget {
                           child: LinearProgressIndicator(
                             value: ratio,
                             minHeight: 10,
-                            backgroundColor: AppColors.border,
+                            backgroundColor: AppColors.bdr(context),
                             valueColor: AlwaysStoppedAnimation(
                               item.count >= 10
                                   ? AppColors.success

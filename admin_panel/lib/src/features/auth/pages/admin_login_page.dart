@@ -71,7 +71,7 @@ class _AdminLoginPageState extends ConsumerState<AdminLoginPage> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AdminColors.background, AdminColors.surface],
               ),
             ),
           ),

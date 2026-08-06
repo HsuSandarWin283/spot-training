@@ -611,4 +611,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fitnessRequirement => 'Fitness Requirement';
+
+  @override
+  String get injuryPreventionAndTreatment => 'Injury Prevention & Treatment';
+
+  @override
+  String get manageInjuryDataDescription =>
+      'Manage injury prevention tips and treatment guidelines';
+
+  @override
+  String get prevention => 'Prevention';
+
+  @override
+  String get treatment => 'Treatment';
+
+  @override
+  String get noPreventionAvailable => 'No Prevention Available';
+
+  @override
+  String get noTreatmentAvailable => 'No Treatment Available';
 }

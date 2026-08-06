@@ -19,11 +19,10 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
@@ -34,11 +33,11 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
                 CustomAppBar(title: AppLocalizations.of(context)!.exerciseStepPoses, showBack: false),
                 const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
                     AppLocalizations.of(context)!.followStepByStepGuides,
                     style: TextStyle(
-                      color: AppColors.textSecondary.withOpacity(0.8),
+                      color: AppColors.txtSecondary(context).withOpacity(0.8),
                       fontSize: 14,
                     ),
                   ),
@@ -51,7 +50,7 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
                         return _buildEmptyState(context);
                       }
                       return ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.symmetric(horizontal: 20),
                         itemCount: posts.length,
                         itemBuilder: (context, index) {
                           final post = posts[index];
@@ -66,7 +65,7 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
                         },
                       );
                     },
-                    loading: () => const Center(
+                    loading: () => Center(
                       child:
                           CircularProgressIndicator(color: AppColors.primary),
                     ),
@@ -87,22 +86,22 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.textMuted.withOpacity(0.1),
+              color: AppColors.txtMuted(context).withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.photo_library_outlined,
               size: 48,
-              color: AppColors.textMuted,
+              color: AppColors.txtMuted(context),
             ),
           ),
           const SizedBox(height: 20),
           Text(
             AppLocalizations.of(context)!.noPosesAvailable,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: AppColors.txtPrimary(context),
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -111,7 +110,7 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
           Text(
             AppLocalizations.of(context)!.exerciseStepPosesWillAppear,
             style: TextStyle(
-              color: AppColors.textMuted,
+              color: AppColors.txtMuted(context),
               fontSize: 14,
             ),
           ),
@@ -126,7 +125,7 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: AppColors.error.withOpacity(0.1),
               shape: BoxShape.circle,
@@ -141,7 +140,7 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
           Text(
             AppLocalizations.of(context)!.failedToLoadPoses,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: AppColors.txtPrimary(context),
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -149,8 +148,8 @@ class ExerciseStepPosesScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             error.toString(),
-            style: const TextStyle(
-              color: AppColors.textMuted,
+            style: TextStyle(
+              color: AppColors.txtMuted(context),
               fontSize: 13,
             ),
             textAlign: TextAlign.center,
@@ -213,7 +212,7 @@ class _PostCardState extends State<_PostCard>
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: GlassCard(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: EdgeInsets.only(bottom: 12),
           child: Row(
             children: [
               Container(
@@ -236,8 +235,8 @@ class _PostCardState extends State<_PostCard>
                   children: [
                     Text(
                       widget.title,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
+                      style: TextStyle(
+                        color: AppColors.txtPrimary(context),
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -249,7 +248,7 @@ class _PostCardState extends State<_PostCard>
                       children: [
                         if (widget.type.isNotEmpty) ...[
                           Container(
-                            padding: const EdgeInsets.symmetric(
+                            padding: EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
                               color: AppColors.secondary.withOpacity(0.15),
@@ -257,7 +256,7 @@ class _PostCardState extends State<_PostCard>
                             ),
                             child: Text(
                               widget.type,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.secondary,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
@@ -268,8 +267,8 @@ class _PostCardState extends State<_PostCard>
                         ],
                         Text(
                           AppLocalizations.of(context)!.stepsCount(widget.itemCount),
-                          style: const TextStyle(
-                            color: AppColors.textMuted,
+                          style: TextStyle(
+                            color: AppColors.txtMuted(context),
                             fontSize: 12,
                           ),
                         ),
@@ -278,9 +277,9 @@ class _PostCardState extends State<_PostCard>
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right,
-                color: AppColors.textMuted,
+                color: AppColors.txtMuted(context),
                 size: 22,
               ),
             ],

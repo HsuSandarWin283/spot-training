@@ -20,11 +20,10 @@ class SportsSelectionScreen extends ConsumerWidget {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            decoration: BoxDecoration(gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFF0A0E21), Color(0xFF151A30)],
+                colors: [AppColors.bg(context), AppColors.surf(context)],
               ),
             ),
           ),
@@ -35,11 +34,11 @@ class SportsSelectionScreen extends ConsumerWidget {
                 CustomAppBar(title: AppLocalizations.of(context)!.selectYourSport, showBack: false),
                 const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
                     AppLocalizations.of(context)!.chooseSportDescription,
                     style: TextStyle(
-                      color: AppColors.textSecondary.withOpacity(0.8),
+                      color: AppColors.txtSecondary(context).withOpacity(0.8),
                       fontSize: 14,
                     ),
                   ),
@@ -52,7 +51,7 @@ class SportsSelectionScreen extends ConsumerWidget {
                         return _buildEmptyState(context);
                       }
                       return GridView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.symmetric(horizontal: 20),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
@@ -84,7 +83,7 @@ class SportsSelectionScreen extends ConsumerWidget {
                         },
                       );
                     },
-                    loading: () => const Center(
+                    loading: () => Center(
                       child:
                           CircularProgressIndicator(color: AppColors.primary),
                     ),
@@ -114,22 +113,22 @@ class SportsSelectionScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.textMuted.withOpacity(0.1),
+              color: AppColors.txtMuted(context).withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.sports_soccer_outlined,
               size: 48,
-              color: AppColors.textMuted,
+              color: AppColors.txtMuted(context),
             ),
           ),
           const SizedBox(height: 20),
           Text(
             AppLocalizations.of(context)!.noSportsAvailable,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: AppColors.txtPrimary(context),
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -138,7 +137,7 @@ class SportsSelectionScreen extends ConsumerWidget {
           Text(
             AppLocalizations.of(context)!.sportsWillAppear,
             style: TextStyle(
-              color: AppColors.textMuted,
+              color: AppColors.txtMuted(context),
               fontSize: 14,
             ),
           ),
@@ -153,7 +152,7 @@ class SportsSelectionScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: AppColors.error.withOpacity(0.1),
               shape: BoxShape.circle,
@@ -168,7 +167,7 @@ class SportsSelectionScreen extends ConsumerWidget {
           Text(
             AppLocalizations.of(context)!.failedToLoadSports,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: AppColors.txtPrimary(context),
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -176,8 +175,8 @@ class SportsSelectionScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             error.toString(),
-            style: const TextStyle(
-              color: AppColors.textMuted,
+            style: TextStyle(
+              color: AppColors.txtMuted(context),
               fontSize: 13,
             ),
             textAlign: TextAlign.center,
@@ -247,7 +246,7 @@ class _SportCardState extends State<_SportCard>
         scale: _scaleAnimation,
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: AppColors.crd(context),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: sportColor.withOpacity(0.3),
@@ -281,22 +280,22 @@ class _SportCardState extends State<_SportCard>
               const SizedBox(height: 14),
               Text(
                 widget.name,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
+                style: TextStyle(
+                  color: AppColors.txtPrimary(context),
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 4),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Text(
                   widget.description,
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
+                  style: TextStyle(
+                    color: AppColors.txtMuted(context),
                     fontSize: 11,
                   ),
                 ),
@@ -317,7 +316,7 @@ class _SportCardState extends State<_SportCard>
         borderRadius: BorderRadius.circular(16),
       ),
       child: Center(
-        child: Text(widget.icon, style: const TextStyle(fontSize: 36)),
+        child: Text(widget.icon, style: TextStyle(fontSize: 36)),
       ),
     );
   }

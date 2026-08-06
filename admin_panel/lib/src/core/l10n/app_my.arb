@@ -187,5 +187,12 @@
   "rule": "စည်းမျဉ်း",
   "trainingMethod": "လေ့ကျင့်နည်းလမ်း",
   "injuryPreventionSingular": "ဒဏ်ရာ ကာကွယ်မှု",
-  "fitnessRequirement": "ကျန်းမာရေး လိုအပ်ချက်"
+  "fitnessRequirement": "ကျန်းမာရေး လိုအပ်ချက်",
+
+  "injuryPreventionAndTreatment": "ဒဏ်ရာ ကာကွယ်မှုနှင့် ကုသမှု",
+  "manageInjuryDataDescription": "ဒဏ်ရာ ကာကွယ်မှု အကြံပြုချက်များနှင့် ကုသမှု လမ်းညွှန်များကို စီမံခန့်ခွဲပါ",
+  "prevention": "ကာကွယ်မှု",
+  "treatment": "ကုသမှု",
+  "noPreventionAvailable": "ကာကွယ်မှု မရှိသေးပါ",
+  "noTreatmentAvailable": "ကုသမှု မရှိသေးပါ"
 }
