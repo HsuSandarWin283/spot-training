@@ -3,25 +3,35 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class SportDetailItem {
   final String id;
   final String sportId;
-  final String title;
-  final String description;
+  final String titleEn;
+  final String titleMm;
+  final String descriptionEn;
+  final String descriptionMm;
   final DateTime createdAt;
 
   SportDetailItem({
     required this.id,
     required this.sportId,
-    required this.title,
-    required this.description,
+    required this.titleEn,
+    required this.titleMm,
+    required this.descriptionEn,
+    required this.descriptionMm,
     required this.createdAt,
   });
 
   factory SportDetailItem.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final titleEn = data['titleEn'] ?? data['title'] ?? '';
+    final titleMm = data['titleMm'] ?? data['title'] ?? '';
+    final descriptionEn = data['descriptionEn'] ?? data['description'] ?? '';
+    final descriptionMm = data['descriptionMm'] ?? data['description'] ?? '';
     return SportDetailItem(
       id: doc.id,
       sportId: data['sportId'] ?? '',
-      title: data['title'] ?? '',
-      description: data['description'] ?? '',
+      titleEn: titleEn,
+      titleMm: titleMm,
+      descriptionEn: descriptionEn,
+      descriptionMm: descriptionMm,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -29,8 +39,10 @@ class SportDetailItem {
   Map<String, dynamic> toMap() {
     return {
       'sportId': sportId,
-      'title': title,
-      'description': description,
+      'titleEn': titleEn,
+      'titleMm': titleMm,
+      'descriptionEn': descriptionEn,
+      'descriptionMm': descriptionMm,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
@@ -38,18 +50,35 @@ class SportDetailItem {
   SportDetailItem copyWith({
     String? id,
     String? sportId,
-    String? title,
-    String? description,
+    String? titleEn,
+    String? titleMm,
+    String? descriptionEn,
+    String? descriptionMm,
     DateTime? createdAt,
   }) {
     return SportDetailItem(
       id: id ?? this.id,
       sportId: sportId ?? this.sportId,
-      title: title ?? this.title,
-      description: description ?? this.description,
+      titleEn: titleEn ?? this.titleEn,
+      titleMm: titleMm ?? this.titleMm,
+      descriptionEn: descriptionEn ?? this.descriptionEn,
+      descriptionMm: descriptionMm ?? this.descriptionMm,
       createdAt: createdAt ?? this.createdAt,
     );
   }
+
+  String localizedTitle(String languageCode) {
+    if (languageCode == 'my') return titleMm.isNotEmpty ? titleMm : titleEn;
+    return titleEn.isNotEmpty ? titleEn : titleMm;
+  }
+
+  String localizedDescription(String languageCode) {
+    if (languageCode == 'my') return descriptionMm.isNotEmpty ? descriptionMm : descriptionEn;
+    return descriptionEn.isNotEmpty ? descriptionEn : descriptionMm;
+  }
+
+  String get title => titleEn;
+  String get description => descriptionEn;
 }
 
 enum SportDetailType {
@@ -73,7 +102,7 @@ extension SportDetailTypeExtension on SportDetailType {
     }
   }
 
-  String get label {
+  String get labelEn {
     switch (this) {
       case SportDetailType.rules:
         return 'Rules';
@@ -86,7 +115,20 @@ extension SportDetailTypeExtension on SportDetailType {
     }
   }
 
-  String get singularLabel {
+  String get labelMm {
+    switch (this) {
+      case SportDetailType.rules:
+        return 'နည်းဥပဒေ';
+      case SportDetailType.trainingMethods:
+        return 'လေ့ကျင့်နည်းများ';
+      case SportDetailType.injuryPreventions:
+        return 'ဒဏ်ခံမှုဆိုင်ရာ';
+      case SportDetailType.fitnessRequirements:
+        return 'ကျန်းမာရေး အခန်းကဏ္ဍများ';
+    }
+  }
+
+  String get singularLabelEn {
     switch (this) {
       case SportDetailType.rules:
         return 'Rule';
@@ -98,4 +140,20 @@ extension SportDetailTypeExtension on SportDetailType {
         return 'Fitness Requirement';
     }
   }
+
+  String get singularLabelMm {
+    switch (this) {
+      case SportDetailType.rules:
+        return 'နည်းဥပဒေ';
+      case SportDetailType.trainingMethods:
+        return 'လေ့ကျင့်နည်း';
+      case SportDetailType.injuryPreventions:
+        return 'ဒဏ်ခံမှုဆိုင်ရာ';
+      case SportDetailType.fitnessRequirements:
+        return 'ကျန်းမာရေး အခန်းကဏ္ဍ';
+    }
+  }
+
+  String get label => '$labelEn / $labelMm';
+  String get singularLabel => '$singularLabelEn / $singularLabelMm';
 }

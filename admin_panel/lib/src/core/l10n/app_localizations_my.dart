@@ -111,13 +111,16 @@ class AppLocalizationsMy extends AppLocalizations {
   String get totalSports => 'စုစုပေါင်း အားကစား';
 
   @override
-  String get trainingPoses => 'လေ့ကျင့်မှု အနေအထားများ';
-
-  @override
   String get exerciseStepPoses => 'လေ့ကျင့်ခန်း အဆင့် အနေအထားများ';
 
   @override
   String get registeredUsers => 'စာရင်းသွင်းထားသော သုံးစွဲသူများ';
+
+  @override
+  String get injuryPreventionCount => 'ဒဏ်ခံမှုဆိုင်ရာ အရေအတွက်';
+
+  @override
+  String get injuryTreatmentCount => 'ကုသမှု အရေအတွက်';
 
   @override
   String get addNewSport => 'အားကစားအသစ် ထည့်ရန်';

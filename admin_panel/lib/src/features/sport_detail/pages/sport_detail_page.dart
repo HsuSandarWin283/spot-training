@@ -23,7 +23,6 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
   final List<SportDetailType> _tabs = [
     SportDetailType.rules,
     SportDetailType.trainingMethods,
-    SportDetailType.injuryPreventions,
     SportDetailType.fitnessRequirements,
   ];
 
@@ -129,7 +128,13 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
                           children: [
                             Icon(_tabIcon(type), size: 16),
                             const SizedBox(width: 6),
-                            Text(type.label),
+                            Flexible(
+                              child: Text(
+                                type.label,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                       ))
@@ -209,10 +214,10 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
         return Icons.gavel;
       case SportDetailType.trainingMethods:
         return Icons.fitness_center;
-      case SportDetailType.injuryPreventions:
-        return Icons.health_and_safety;
       case SportDetailType.fitnessRequirements:
         return Icons.directions_run;
+      default:
+        return Icons.help_outline;
     }
   }
 

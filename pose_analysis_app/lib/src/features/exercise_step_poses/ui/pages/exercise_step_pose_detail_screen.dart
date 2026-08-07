@@ -16,6 +16,7 @@ import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/features/exercise_step_poses/data/services/exercise_completion_service.dart';
 import 'package:ai_sports_training/src/features/auth/data/auth_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ai_sports_training/src/core/services/locale_provider.dart';
 
 class ExerciseStepPoseDetailScreen extends ConsumerWidget {
   final String postId;
@@ -25,6 +26,7 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final itemsAsync = ref.watch(exerciseStepImageItemsProvider(postId));
+    final langCode = ref.read(localeProvider).languageCode;
 
     return Scaffold(
       body: Stack(
@@ -56,7 +58,7 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
                           return _StepCard(
                             stepOrder: item.stepOrder,
                             imageUrl: item.imageUrl,
-                            description: item.description,
+                            description: item.localizedDescription(langCode),
                             isLast: index == items.length - 1,
                           );
                         },

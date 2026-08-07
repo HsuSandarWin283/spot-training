@@ -5,8 +5,10 @@ import 'package:admin_panel/src/core/services/image_upload_service.dart';
 
 class SportModel {
   final String id;
-  final String name;
-  final String description;
+  final String nameEn;
+  final String nameMm;
+  final String descriptionEn;
+  final String descriptionMm;
   final String difficultyLevel;
   final String thumbnailUrl;
   final DateTime createdAt;
@@ -14,8 +16,10 @@ class SportModel {
 
   SportModel({
     required this.id,
-    required this.name,
-    required this.description,
+    required this.nameEn,
+    required this.nameMm,
+    required this.descriptionEn,
+    required this.descriptionMm,
     required this.difficultyLevel,
     required this.thumbnailUrl,
     required this.createdAt,
@@ -24,10 +28,16 @@ class SportModel {
 
   factory SportModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final nameEn = data['nameEn'] ?? data['name'] ?? '';
+    final nameMm = data['nameMm'] ?? data['name'] ?? '';
+    final descriptionEn = data['descriptionEn'] ?? data['description'] ?? '';
+    final descriptionMm = data['descriptionMm'] ?? data['description'] ?? '';
     return SportModel(
       id: doc.id,
-      name: data['name'] ?? '',
-      description: data['description'] ?? '',
+      nameEn: nameEn,
+      nameMm: nameMm,
+      descriptionEn: descriptionEn,
+      descriptionMm: descriptionMm,
       difficultyLevel: data['difficultyLevel'] ?? 'Beginner',
       thumbnailUrl: data['thumbnailUrl'] ?? '',
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -37,8 +47,10 @@ class SportModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'name': name,
-      'description': description,
+      'nameEn': nameEn,
+      'nameMm': nameMm,
+      'descriptionEn': descriptionEn,
+      'descriptionMm': descriptionMm,
       'difficultyLevel': difficultyLevel,
       'thumbnailUrl': thumbnailUrl,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -48,8 +60,10 @@ class SportModel {
 
   SportModel copyWith({
     String? id,
-    String? name,
-    String? description,
+    String? nameEn,
+    String? nameMm,
+    String? descriptionEn,
+    String? descriptionMm,
     String? difficultyLevel,
     String? thumbnailUrl,
     DateTime? createdAt,
@@ -57,14 +71,29 @@ class SportModel {
   }) {
     return SportModel(
       id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
+      nameEn: nameEn ?? this.nameEn,
+      nameMm: nameMm ?? this.nameMm,
+      descriptionEn: descriptionEn ?? this.descriptionEn,
+      descriptionMm: descriptionMm ?? this.descriptionMm,
       difficultyLevel: difficultyLevel ?? this.difficultyLevel,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
+  String localizedName(String languageCode) {
+    if (languageCode == 'my') return nameMm.isNotEmpty ? nameMm : nameEn;
+    return nameEn.isNotEmpty ? nameEn : nameMm;
+  }
+
+  String localizedDescription(String languageCode) {
+    if (languageCode == 'my') return descriptionMm.isNotEmpty ? descriptionMm : descriptionEn;
+    return descriptionEn.isNotEmpty ? descriptionEn : descriptionMm;
+  }
+
+  String get name => nameEn;
+  String get description => descriptionEn;
 }
 
 class SportService {
@@ -104,6 +133,13 @@ class SportService {
     if (photoUrl != null) {
       await user.updatePhotoURL(photoUrl);
     }
+    final updates = <String, dynamic>{};
+    if (displayName != null) updates['fullName'] = displayName;
+    if (email != null && email.isNotEmpty) updates['email'] = email;
+    if (photoUrl != null) updates['photoUrl'] = photoUrl;
+    if (updates.isNotEmpty) {
+      await _firestore.collection('users').doc(user.uid).set(updates, SetOptions(merge: true));
+    }
   }
 
   Future<void> changePassword(String newPassword) async {
@@ -130,14 +166,18 @@ class SportService {
   }
 
   Future<String> addSport({
-    required String name,
-    required String description,
+    required String nameEn,
+    required String nameMm,
+    required String descriptionEn,
+    required String descriptionMm,
     required String difficultyLevel,
     required String thumbnailUrl,
   }) async {
     final docRef = await _sportsCollection.add({
-      'name': name,
-      'description': description,
+      'nameEn': nameEn,
+      'nameMm': nameMm,
+      'descriptionEn': descriptionEn,
+      'descriptionMm': descriptionMm,
       'difficultyLevel': difficultyLevel,
       'thumbnailUrl': thumbnailUrl,
       'createdAt': Timestamp.now(),
@@ -149,14 +189,18 @@ class SportService {
 
   Future<void> updateSport({
     required String id,
-    required String name,
-    required String description,
+    required String nameEn,
+    required String nameMm,
+    required String descriptionEn,
+    required String descriptionMm,
     required String difficultyLevel,
     required String thumbnailUrl,
   }) async {
     await _sportsCollection.doc(id).update({
-      'name': name,
-      'description': description,
+      'nameEn': nameEn,
+      'nameMm': nameMm,
+      'descriptionEn': descriptionEn,
+      'descriptionMm': descriptionMm,
       'difficultyLevel': difficultyLevel,
       'thumbnailUrl': thumbnailUrl,
       'updatedAt': Timestamp.now(),
@@ -183,19 +227,26 @@ class SportService {
       final usersSnapshot = await _firestore.collection('users').get();
       final exerciseStepSnapshot =
           await _firestore.collection('exercise_step_image_posts').get();
+      final injurySnapshot = await _firestore.collection('injury_data').get();
 
-      int totalPoses = 0;
-      for (final sportDoc in sportsSnapshot.docs) {
-        final posesSnapshot = await sportDoc.reference.collection('poses').get();
-        totalPoses += posesSnapshot.size;
+      int totalInjuryPreventions = 0;
+      int totalInjuryTreatments = 0;
+      for (final doc in injurySnapshot.docs) {
+        final type = doc['type'] as String? ?? '';
+        if (type == 'prevention') {
+          totalInjuryPreventions++;
+        } else if (type == 'treatment') {
+          totalInjuryTreatments++;
+        }
       }
 
       if (!controller.isClosed) {
         controller.add({
           'totalSports': sportsSnapshot.size,
-          'totalPoses': totalPoses,
           'totalExerciseStepImages': exerciseStepSnapshot.size,
           'totalUsers': usersSnapshot.size,
+          'totalInjuryPreventions': totalInjuryPreventions,
+          'totalInjuryTreatments': totalInjuryTreatments,
         });
       }
     }
@@ -204,6 +255,7 @@ class SportService {
       _sportsCollection.snapshots().listen((_) => computeAndEmit()),
       _firestore.collection('users').snapshots().listen((_) => computeAndEmit()),
       _firestore.collection('exercise_step_image_posts').snapshots().listen((_) => computeAndEmit()),
+      _firestore.collection('injury_data').snapshots().listen((_) => computeAndEmit()),
     ];
 
     controller.onCancel = () {

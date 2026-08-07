@@ -106,13 +106,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalSports => 'Total Sports';
 
   @override
-  String get trainingPoses => 'Training Poses';
-
-  @override
   String get exerciseStepPoses => 'Exercise Step Poses';
 
   @override
   String get registeredUsers => 'Registered Users';
+
+  @override
+  String get injuryPreventionCount => 'Injury Prevention Count';
+
+  @override
+  String get injuryTreatmentCount => 'Injury Treatment Count';
 
   @override
   String get addNewSport => 'Add New Sport';

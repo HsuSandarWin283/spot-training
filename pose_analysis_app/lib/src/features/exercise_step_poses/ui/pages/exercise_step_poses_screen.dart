@@ -7,6 +7,7 @@ import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
 import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/features/exercise_step_poses/providers/exercise_step_image_providers.dart';
+import 'package:ai_sports_training/src/core/services/locale_provider.dart';
 
 class ExerciseStepPosesScreen extends ConsumerStatefulWidget {
   const ExerciseStepPosesScreen({super.key});
@@ -80,16 +81,18 @@ class _ExerciseStepPosesScreenState
                   ),
                 ),
                 const SizedBox(height: 16),
-                Expanded(
+                 Expanded(
                   child: postsAsync.when(
                     data: (posts) {
+                      final langCode = ref.read(localeProvider).languageCode;
                       final filtered = _searchQuery.isEmpty
                           ? posts
                           : posts.where((p) {
-                              final title = p.title.toLowerCase();
+                              final titleEn = p.titleEn.toLowerCase();
+                              final titleMm = p.titleMm.toLowerCase();
                               final type = p.type.toLowerCase();
                               final q = _searchQuery.toLowerCase();
-                              return title.contains(q) || type.contains(q);
+                              return titleEn.contains(q) || titleMm.contains(q) || type.contains(q);
                             }).toList();
                       if (filtered.isEmpty) {
                         return _buildEmptyState(context);
@@ -100,7 +103,7 @@ class _ExerciseStepPosesScreenState
                         itemBuilder: (context, index) {
                           final post = filtered[index];
                           return _PostCard(
-                            title: post.title,
+                            title: post.localizedTitle(langCode),
                             type: post.type,
                             itemCount: post.itemCount,
                             onTap: () {

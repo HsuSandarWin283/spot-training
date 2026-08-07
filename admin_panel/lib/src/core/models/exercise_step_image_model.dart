@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ExerciseStepImageItem {
   final String id;
   final String imageUrl;
-  final String description;
+  final String descriptionEn;
+  final String descriptionMm;
   final int stepOrder;
   final int stepNumber;
   final Map<String, List<double>> poseLandmarks;
@@ -12,7 +13,8 @@ class ExerciseStepImageItem {
   ExerciseStepImageItem({
     required this.id,
     required this.imageUrl,
-    required this.description,
+    required this.descriptionEn,
+    required this.descriptionMm,
     required this.stepOrder,
     this.stepNumber = 1,
     this.poseLandmarks = const {},
@@ -39,10 +41,13 @@ class ExerciseStepImageItem {
       }
     }
 
+    final descriptionEn = data['descriptionEn'] ?? data['description'] ?? '';
+    final descriptionMm = data['descriptionMm'] ?? data['description'] ?? '';
     return ExerciseStepImageItem(
       id: doc.id,
       imageUrl: data['imageUrl'] ?? '',
-      description: data['description'] ?? '',
+      descriptionEn: descriptionEn,
+      descriptionMm: descriptionMm,
       stepOrder: data['stepOrder'] ?? 0,
       stepNumber: data['stepNumber'] ?? 1,
       poseLandmarks: landmarks,
@@ -53,18 +58,27 @@ class ExerciseStepImageItem {
   Map<String, dynamic> toMap() {
     return {
       'imageUrl': imageUrl,
-      'description': description,
+      'descriptionEn': descriptionEn,
+      'descriptionMm': descriptionMm,
       'stepOrder': stepOrder,
       'stepNumber': stepNumber,
       'poseLandmarks': poseLandmarks,
       'poseAngles': poseAngles,
     };
   }
+
+  String localizedDescription(String languageCode) {
+    if (languageCode == 'my') return descriptionMm.isNotEmpty ? descriptionMm : descriptionEn;
+    return descriptionEn.isNotEmpty ? descriptionEn : descriptionMm;
+  }
+
+  String get description => descriptionEn;
 }
 
 class ExerciseStepImagePost {
   final String id;
-  final String title;
+  final String titleEn;
+  final String titleMm;
   final String type;
   final String sportId;
   final int itemCount;
@@ -72,7 +86,8 @@ class ExerciseStepImagePost {
 
   ExerciseStepImagePost({
     required this.id,
-    required this.title,
+    required this.titleEn,
+    required this.titleMm,
     required this.type,
     required this.sportId,
     required this.itemCount,
@@ -81,9 +96,12 @@ class ExerciseStepImagePost {
 
   factory ExerciseStepImagePost.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final titleEn = data['titleEn'] ?? data['title'] ?? '';
+    final titleMm = data['titleMm'] ?? data['title'] ?? '';
     return ExerciseStepImagePost(
       id: doc.id,
-      title: data['title'] ?? '',
+      titleEn: titleEn,
+      titleMm: titleMm,
       type: data['type'] ?? '',
       sportId: data['sportId'] ?? '',
       itemCount: data['itemCount'] ?? 0,
@@ -93,7 +111,8 @@ class ExerciseStepImagePost {
 
   Map<String, dynamic> toMap() {
     return {
-      'title': title,
+      'titleEn': titleEn,
+      'titleMm': titleMm,
       'type': type,
       'sportId': sportId,
       'itemCount': itemCount,
@@ -103,7 +122,8 @@ class ExerciseStepImagePost {
 
   ExerciseStepImagePost copyWith({
     String? id,
-    String? title,
+    String? titleEn,
+    String? titleMm,
     String? type,
     String? sportId,
     int? itemCount,
@@ -111,11 +131,19 @@ class ExerciseStepImagePost {
   }) {
     return ExerciseStepImagePost(
       id: id ?? this.id,
-      title: title ?? this.title,
+      titleEn: titleEn ?? this.titleEn,
+      titleMm: titleMm ?? this.titleMm,
       type: type ?? this.type,
       sportId: sportId ?? this.sportId,
       itemCount: itemCount ?? this.itemCount,
       createdAt: createdAt ?? this.createdAt,
     );
   }
+
+  String localizedTitle(String languageCode) {
+    if (languageCode == 'my') return titleMm.isNotEmpty ? titleMm : titleEn;
+    return titleEn.isNotEmpty ? titleEn : titleMm;
+  }
+
+  String get title => titleEn;
 }

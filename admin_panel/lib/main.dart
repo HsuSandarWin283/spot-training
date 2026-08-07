@@ -27,9 +27,9 @@ class AdminApp extends ConsumerWidget {
 
     return MaterialApp(
       title: 'AI Sports Training - Admin Panel',
-      theme: AdminTheme.lightTheme,
-      darkTheme: AdminTheme.lightTheme,
-      themeMode: ThemeMode.light,
+      theme: AdminTheme.darkTheme,
+      darkTheme: AdminTheme.darkTheme,
+      themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,

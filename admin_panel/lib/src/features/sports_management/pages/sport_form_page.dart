@@ -14,16 +14,26 @@ import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_pro
 import 'package:admin_panel/src/core/l10n/app_localizations.dart';
 
 class _DetailEntry {
-  final TextEditingController titleController;
-  final TextEditingController descriptionController;
+  final TextEditingController titleEnController;
+  final TextEditingController titleMmController;
+  final TextEditingController descriptionEnController;
+  final TextEditingController descriptionMmController;
 
-  _DetailEntry({String title = '', String description = ''})
-      : titleController = TextEditingController(text: title),
-        descriptionController = TextEditingController(text: description);
+  _DetailEntry({
+    String titleEn = '',
+    String titleMm = '',
+    String descriptionEn = '',
+    String descriptionMm = '',
+  })  : titleEnController = TextEditingController(text: titleEn),
+        titleMmController = TextEditingController(text: titleMm),
+        descriptionEnController = TextEditingController(text: descriptionEn),
+        descriptionMmController = TextEditingController(text: descriptionMm);
 
   void dispose() {
-    titleController.dispose();
-    descriptionController.dispose();
+    titleEnController.dispose();
+    titleMmController.dispose();
+    descriptionEnController.dispose();
+    descriptionMmController.dispose();
   }
 }
 
@@ -38,8 +48,10 @@ class SportFormPage extends ConsumerStatefulWidget {
 
 class _SportFormPageState extends ConsumerState<SportFormPage> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nameController;
-  late TextEditingController _descriptionController;
+  late TextEditingController _nameEnController;
+  late TextEditingController _nameMmController;
+  late TextEditingController _descriptionEnController;
+  late TextEditingController _descriptionMmController;
   bool _isLoading = false;
   String? _existingThumbnailUrl;
   Uint8List? _selectedImageBytes;
@@ -62,9 +74,10 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.sport?.name ?? '');
-    _descriptionController =
-        TextEditingController(text: widget.sport?.description ?? '');
+    _nameEnController = TextEditingController(text: widget.sport?.nameEn ?? '');
+    _nameMmController = TextEditingController(text: widget.sport?.nameMm ?? '');
+    _descriptionEnController = TextEditingController(text: widget.sport?.descriptionEn ?? '');
+    _descriptionMmController = TextEditingController(text: widget.sport?.descriptionMm ?? '');
     _existingThumbnailUrl = widget.sport?.thumbnailUrl;
 
     if (_isEditing) {
@@ -83,8 +96,10 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
           setState(() {
             _detailEntries[type] = items
                 .map((item) => _DetailEntry(
-                      title: item.title,
-                      description: item.description,
+                      titleEn: item.titleEn,
+                      titleMm: item.titleMm,
+                      descriptionEn: item.descriptionEn,
+                      descriptionMm: item.descriptionMm,
                     ))
                 .toList();
           });
@@ -95,8 +110,10 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
+    _nameEnController.dispose();
+    _nameMmController.dispose();
+    _descriptionEnController.dispose();
+    _descriptionMmController.dispose();
     for (final entries in _detailEntries.values) {
       for (final entry in entries) {
         entry.dispose();
@@ -148,11 +165,18 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
         return '${type.label} requires at least one item.';
       }
       for (int i = 0; i < entries.length; i++) {
-        if (entries[i].titleController.text.trim().isEmpty) {
-          return '${type.label} - Item ${i + 1}: Title is required.';
+        final entry = entries[i];
+        if (entry.titleEnController.text.trim().isEmpty) {
+          return '${type.label} - Item ${i + 1}: English Title is required.';
         }
-        if (entries[i].descriptionController.text.trim().isEmpty) {
-          return '${type.label} - Item ${i + 1}: Description is required.';
+        if (entry.titleMmController.text.trim().isEmpty) {
+          return '${type.label} - Item ${i + 1}: Burmese Title is required.';
+        }
+        if (entry.descriptionEnController.text.trim().isEmpty) {
+          return '${type.label} - Item ${i + 1}: English Description is required.';
+        }
+        if (entry.descriptionMmController.text.trim().isEmpty) {
+          return '${type.label} - Item ${i + 1}: Burmese Description is required.';
         }
       }
     }
@@ -212,8 +236,10 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
         sportId = widget.sport!.id;
         await ref.read(sportServiceProvider).updateSport(
               id: sportId,
-              name: _nameController.text.trim(),
-              description: _descriptionController.text.trim(),
+              nameEn: _nameEnController.text.trim(),
+              nameMm: _nameMmController.text.trim(),
+              descriptionEn: _descriptionEnController.text.trim(),
+              descriptionMm: _descriptionMmController.text.trim(),
               difficultyLevel: 'Beginner',
               thumbnailUrl: thumbnailUrl,
             );
@@ -226,8 +252,10 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
         }
       } else {
         sportId = await ref.read(sportServiceProvider).addSport(
-              name: _nameController.text.trim(),
-              description: _descriptionController.text.trim(),
+              nameEn: _nameEnController.text.trim(),
+              nameMm: _nameMmController.text.trim(),
+              descriptionEn: _descriptionEnController.text.trim(),
+              descriptionMm: _descriptionMmController.text.trim(),
               difficultyLevel: 'Beginner',
               thumbnailUrl: thumbnailUrl,
             );
@@ -236,13 +264,17 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
       for (final type in SportDetailType.values.where((t) => t != SportDetailType.injuryPreventions)) {
         final entries = _detailEntries[type]!;
         for (final entry in entries) {
-          final title = entry.titleController.text.trim();
-          final desc = entry.descriptionController.text.trim();
-          if (title.isNotEmpty && desc.isNotEmpty) {
+          final titleEn = entry.titleEnController.text.trim();
+          final titleMm = entry.titleMmController.text.trim();
+          final descEn = entry.descriptionEnController.text.trim();
+          final descMm = entry.descriptionMmController.text.trim();
+          if (titleEn.isNotEmpty && titleMm.isNotEmpty && descEn.isNotEmpty && descMm.isNotEmpty) {
             await detailService.addItem(
               sportId: sportId,
-              title: title,
-              description: desc,
+              titleEn: titleEn,
+              titleMm: titleMm,
+              descriptionEn: descEn,
+              descriptionMm: descMm,
               type: type,
             );
           }
@@ -364,24 +396,39 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
           ),
           const SizedBox(height: 24),
           TextFormField(
-            controller: _nameController,
+            controller: _nameEnController,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.sportName,
+              labelText: 'Sport Name (English)',
               prefixIcon:
                   const Icon(Icons.sports, color: AdminColors.textMuted),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Sport name is required';
+                return 'English sport name is required';
               }
               return null;
             },
           ),
           const SizedBox(height: 16),
           TextFormField(
-            controller: _descriptionController,
+            controller: _nameMmController,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.description,
+              labelText: 'Sport Name (မြန်မာ)',
+              prefixIcon:
+                  const Icon(Icons.sports, color: AdminColors.textMuted),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Burmese sport name is required';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _descriptionEnController,
+            decoration: InputDecoration(
+              labelText: 'Description (English)',
               prefixIcon: const Icon(Icons.description_outlined,
                   color: AdminColors.textMuted),
               alignLabelWithHint: true,
@@ -389,7 +436,24 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
             maxLines: 3,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Description is required';
+                return 'English description is required';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _descriptionMmController,
+            decoration: InputDecoration(
+              labelText: 'Description (မြန်မာ)',
+              prefixIcon: const Icon(Icons.description_outlined,
+                  color: AdminColors.textMuted),
+              alignLabelWithHint: true,
+            ),
+            maxLines: 3,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Burmese description is required';
               }
               return null;
             },
@@ -639,25 +703,41 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
           ),
           const SizedBox(height: 8),
           TextFormField(
-            controller: entry.titleController,
+            controller: entry.titleEnController,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.title,
+              labelText: 'Title (English)',
               isDense: true,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Title is required.';
+                return 'English Title is required.';
               }
               return null;
             },
           ),
           const SizedBox(height: 8),
           TextFormField(
-            controller: entry.descriptionController,
+            controller: entry.titleMmController,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.descriptionLabel,
+              labelText: 'Title (မြန်မာ)',
+              isDense: true,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Burmese Title is required.';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: entry.descriptionEnController,
+            decoration: InputDecoration(
+              labelText: 'Description (English)',
               isDense: true,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -665,7 +745,24 @@ class _SportFormPageState extends ConsumerState<SportFormPage> {
             maxLines: 2,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Description is required.';
+                return 'English Description is required.';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: entry.descriptionMmController,
+            decoration: InputDecoration(
+              labelText: 'Description (မြန်မာ)',
+              isDense: true,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+            maxLines: 2,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Burmese Description is required.';
               }
               return null;
             },

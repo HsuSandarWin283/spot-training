@@ -4,20 +4,37 @@ import 'package:ai_sports_training/src/core/models/sport_detail_item.dart';
 class SportDetailService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Map<String, dynamic> _normalizeSportData(Map<String, dynamic> data, String id) {
+    final nameEn = (data['nameEn'] as String?)?.trim() ?? '';
+    final nameMm = (data['nameMm'] as String?)?.trim() ?? '';
+    final descriptionEn = (data['descriptionEn'] as String?)?.trim() ?? '';
+    final descriptionMm = (data['descriptionMm'] as String?)?.trim() ?? '';
+    final fallbackName = (data['name'] as String?)?.trim() ?? '';
+    final fallbackDesc = (data['description'] as String?)?.trim() ?? '';
+    return {
+      ...data,
+      'id': id,
+      'nameEn': nameEn.isNotEmpty ? nameEn : fallbackName,
+      'nameMm': nameMm.isNotEmpty ? nameMm : fallbackName,
+      'descriptionEn': descriptionEn.isNotEmpty ? descriptionEn : fallbackDesc,
+      'descriptionMm': descriptionMm.isNotEmpty ? descriptionMm : fallbackDesc,
+    };
+  }
+
   Stream<List<Map<String, dynamic>>> getSports() {
     return _firestore
         .collection('sports')
         .orderBy('name')
         .snapshots()
         .map((snapshot) => snapshot.docs
-            .map((doc) => {'id': doc.id, ...doc.data()})
+            .map((doc) => _normalizeSportData(doc.data(), doc.id))
             .toList());
   }
 
   Future<Map<String, dynamic>?> getSport(String sportId) async {
     final doc = await _firestore.collection('sports').doc(sportId).get();
     if (doc.exists) {
-      return {'id': doc.id, ...doc.data()!};
+      return _normalizeSportData(doc.data()!, doc.id);
     }
     return null;
   }
@@ -26,7 +43,7 @@ class SportDetailService {
     return _firestore.collection('sports').doc(sportId).snapshots().map(
       (doc) {
         if (doc.exists) {
-          return {'id': doc.id, ...doc.data()!};
+          return _normalizeSportData(doc.data()!, doc.id);
         }
         return null;
       },

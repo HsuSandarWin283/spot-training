@@ -16,7 +16,6 @@ class AdminProfilePage extends ConsumerStatefulWidget {
 class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
   late TextEditingController _nameController;
   late TextEditingController _emailController;
-  late TextEditingController _photoUrlController;
   bool _isLoading = false;
   bool _initialized = false;
 
@@ -28,7 +27,6 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
       final user = ref.read(currentUserProvider);
       _nameController = TextEditingController(text: user?.displayName ?? '');
       _emailController = TextEditingController(text: user?.email ?? '');
-      _photoUrlController = TextEditingController(text: user?.photoURL ?? '');
     }
   }
 
@@ -37,7 +35,6 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
     if (_initialized) {
       _nameController.dispose();
       _emailController.dispose();
-      _photoUrlController.dispose();
     }
     super.dispose();
   }
@@ -49,9 +46,6 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
             displayName: _nameController.text.trim(),
             email: _emailController.text.trim().isNotEmpty
                 ? _emailController.text.trim()
-                : null,
-            photoUrl: _photoUrlController.text.trim().isNotEmpty
-                ? _photoUrlController.text.trim()
                 : null,
           );
       ref.invalidate(authStateProvider);
@@ -215,25 +209,16 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
                                 color: AdminColors.textMuted),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _emailController,
-                          decoration: InputDecoration(
-                            labelText: AppLocalizations.of(context)!.email,
-                            prefixIcon: const Icon(Icons.email_outlined,
-                                color: AdminColors.textMuted),
-                          ),
-                          keyboardType: TextInputType.emailAddress,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _photoUrlController,
-                          decoration: InputDecoration(
-                            labelText: AppLocalizations.of(context)!.profilePhotoUrl,
-                            prefixIcon: const Icon(Icons.link,
-                                color: AdminColors.textMuted),
-                          ),
-                        ),
+                         const SizedBox(height: 16),
+                         TextFormField(
+                           controller: _emailController,
+                           decoration: InputDecoration(
+                             labelText: AppLocalizations.of(context)!.email,
+                             prefixIcon: const Icon(Icons.email_outlined,
+                                 color: AdminColors.textMuted),
+                           ),
+                           keyboardType: TextInputType.emailAddress,
+                         ),
                         const SizedBox(height: 24),
                         SizedBox(
                           width: double.infinity,

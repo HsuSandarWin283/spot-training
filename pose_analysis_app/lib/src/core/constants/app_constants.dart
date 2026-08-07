@@ -132,17 +132,31 @@ class AppConstants {
 class SportData {
   final String id;
   final String name;
+  final String nameMm;
   final String icon;
   final int color;
   final String description;
+  final String descriptionMm;
 
   const SportData({
     required this.id,
     required this.name,
+    this.nameMm = '',
     required this.icon,
     required this.color,
     required this.description,
+    this.descriptionMm = '',
   });
+
+  String localizedName(String languageCode) {
+    if (languageCode == 'my' && nameMm.isNotEmpty) return nameMm;
+    return name;
+  }
+
+  String localizedDescription(String languageCode) {
+    if (languageCode == 'my' && descriptionMm.isNotEmpty) return descriptionMm;
+    return description;
+  }
 }
 
 class TrainingDay {

@@ -7,6 +7,7 @@ import 'package:ai_sports_training/src/core/models/injury_item.dart';
 import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/features/injury_prevention/data/providers/injury_providers.dart';
+import 'package:ai_sports_training/src/core/services/locale_provider.dart';
 
 class InjuryPreventionScreen extends ConsumerStatefulWidget {
   const InjuryPreventionScreen({super.key});
@@ -171,14 +172,15 @@ class _InjuryPreventionScreenState extends ConsumerState<InjuryPreventionScreen>
 
   Widget _buildTabContent(InjuryDataType type) {
     final itemsAsync = ref.watch(injuryListProvider(type));
+    final langCode = ref.read(localeProvider).languageCode;
 
     return itemsAsync.when(
       data: (items) {
         final filtered = _searchQuery.isEmpty
             ? items
             : items.where((item) {
-                final title = item.title.toLowerCase();
-                final desc = item.description.toLowerCase();
+                final title = item.localizedTitle(langCode).toLowerCase();
+                final desc = item.localizedDescription(langCode).toLowerCase();
                 final q = _searchQuery.toLowerCase();
                 return title.contains(q) || desc.contains(q);
               }).toList();
@@ -251,6 +253,7 @@ class _InjuryPreventionScreenState extends ConsumerState<InjuryPreventionScreen>
 
   Widget _buildItemCard(InjuryItem item, InjuryDataType type) {
     final color = _typeColor(type);
+    final langCode = ref.read(localeProvider).languageCode;
 
     return GlassCard(
       child: Column(
@@ -274,7 +277,7 @@ class _InjuryPreventionScreenState extends ConsumerState<InjuryPreventionScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item.title,
+                      item.localizedTitle(langCode),
                       style: TextStyle(
                         color: AppColors.txtPrimary(context),
                         fontSize: 15,
@@ -283,7 +286,7 @@ class _InjuryPreventionScreenState extends ConsumerState<InjuryPreventionScreen>
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      item.description,
+                      item.localizedDescription(langCode),
                       style: TextStyle(
                         color: AppColors.txtSecondary(context),
                         fontSize: 13,

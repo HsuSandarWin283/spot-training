@@ -284,12 +284,6 @@ abstract class AppLocalizations {
   /// **'Total Sports'**
   String get totalSports;
 
-  /// No description provided for @trainingPoses.
-  ///
-  /// In en, this message translates to:
-  /// **'Training Poses'**
-  String get trainingPoses;
-
   /// No description provided for @exerciseStepPoses.
   ///
   /// In en, this message translates to:
@@ -301,6 +295,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Registered Users'**
   String get registeredUsers;
+
+  /// No description provided for @injuryPreventionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Injury Prevention Count'**
+  String get injuryPreventionCount;
+
+  /// No description provided for @injuryTreatmentCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Injury Treatment Count'**
+  String get injuryTreatmentCount;
 
   /// No description provided for @addNewSport.
   ///

@@ -18,7 +18,8 @@ const _kOthers = '__others__';
 enum _PoseStatus { idle, processing, success, failed }
 
 class _ItemEntry {
-  final TextEditingController descriptionController;
+  final TextEditingController descriptionEnController;
+  final TextEditingController descriptionMmController;
   String? existingImageUrl;
   Uint8List? imageBytes;
   String? fileName;
@@ -28,9 +29,14 @@ class _ItemEntry {
   String? poseError;
   int stepNumber;
 
-  _ItemEntry({String? imageUrl, String description = '', this.stepNumber = 1})
-      : existingImageUrl = imageUrl,
-        descriptionController = TextEditingController(text: description);
+  _ItemEntry({
+    String? imageUrl,
+    String descriptionEn = '',
+    String descriptionMm = '',
+    this.stepNumber = 1,
+  })  : existingImageUrl = imageUrl,
+        descriptionEnController = TextEditingController(text: descriptionEn),
+        descriptionMmController = TextEditingController(text: descriptionMm);
 
   bool get hasImage =>
       imageBytes != null ||
@@ -43,7 +49,8 @@ class _ItemEntry {
       poseAngles!.isNotEmpty;
 
   void dispose() {
-    descriptionController.dispose();
+    descriptionEnController.dispose();
+    descriptionMmController.dispose();
   }
 }
 
@@ -60,7 +67,8 @@ class ExerciseStepImageFormPage extends ConsumerStatefulWidget {
 class _ExerciseStepImageFormPageState
     extends ConsumerState<ExerciseStepImageFormPage> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _titleController;
+  late TextEditingController _titleEnController;
+  late TextEditingController _titleMmController;
   late TextEditingController _customTypeController;
   bool _isLoading = false;
   String? _selectedType;
@@ -73,7 +81,8 @@ class _ExerciseStepImageFormPageState
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: widget.post?.title ?? '');
+    _titleEnController = TextEditingController(text: widget.post?.titleEn ?? '');
+    _titleMmController = TextEditingController(text: widget.post?.titleMm ?? '');
     _customTypeController = TextEditingController();
     _selectedType = widget.post?.type;
     if (!_isEditing) {
@@ -102,7 +111,8 @@ class _ExerciseStepImageFormPageState
         for (final item in items) {
           final entry = _ItemEntry(
             imageUrl: item.imageUrl,
-            description: item.description,
+            descriptionEn: item.descriptionEn,
+            descriptionMm: item.descriptionMm,
             stepNumber: item.stepNumber,
           );
           if (item.poseLandmarks.isNotEmpty) {
@@ -121,7 +131,8 @@ class _ExerciseStepImageFormPageState
 
   @override
   void dispose() {
-    _titleController.dispose();
+    _titleEnController.dispose();
+    _titleMmController.dispose();
     _customTypeController.dispose();
     for (final entry in _itemEntries) {
       entry.dispose();
@@ -235,12 +246,13 @@ class _ExerciseStepImageFormPageState
       return;
     }
 
-    final title = _titleController.text.trim();
-    if (title.isEmpty) {
+    final titleEn = _titleEnController.text.trim();
+    final titleMm = _titleMmController.text.trim();
+    if (titleEn.isEmpty || titleMm.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Title is required.'),
+            content: Text('Post title in both English and Burmese is required.'),
             backgroundColor: AdminColors.error,
           ),
         );
@@ -249,10 +261,12 @@ class _ExerciseStepImageFormPageState
     }
 
     for (int i = 0; i < _itemEntries.length; i++) {
-      if (_itemEntries[i].descriptionController.text.trim().isEmpty) {
+      final entry = _itemEntries[i];
+      if (entry.descriptionEnController.text.trim().isEmpty ||
+          entry.descriptionMmController.text.trim().isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Item ${i + 1}: Description is required.'),
+            content: Text('Item ${i + 1}: Description in both English and Burmese is required.'),
             backgroundColor: AdminColors.error,
           ),
         );
@@ -325,7 +339,8 @@ class _ExerciseStepImageFormPageState
                       e.imageBytes == null ? e.existingImageUrl : null,
                   imageBytes: e.imageBytes,
                   fileName: e.fileName,
-                  description: e.descriptionController.text.trim(),
+                  descriptionEn: e.descriptionEnController.text.trim(),
+                  descriptionMm: e.descriptionMmController.text.trim(),
                   stepNumber: e.stepNumber,
                   poseLandmarks: e.poseLandmarks,
                   poseAngles: e.poseAngles,
@@ -334,7 +349,8 @@ class _ExerciseStepImageFormPageState
 
         await service.updatePost(
           postId: widget.post!.id,
-          title: title,
+          titleEn: titleEn,
+          titleMm: titleMm,
           type: resolvedType,
           pendingItems: pendingItems,
         );
@@ -347,7 +363,8 @@ class _ExerciseStepImageFormPageState
             .map((e) => PendingExerciseStepItem(
                   imageBytes: e.imageBytes,
                   fileName: e.fileName,
-                  description: e.descriptionController.text.trim(),
+                  descriptionEn: e.descriptionEnController.text.trim(),
+                  descriptionMm: e.descriptionMmController.text.trim(),
                   stepNumber: e.stepNumber,
                   poseLandmarks: e.poseLandmarks,
                   poseAngles: e.poseAngles,
@@ -355,7 +372,8 @@ class _ExerciseStepImageFormPageState
             .toList();
 
         await service.createPost(
-          title: title,
+          titleEn: titleEn,
+          titleMm: titleMm,
           type: resolvedType,
           sportId: sportId,
           pendingItems: pendingItems,
@@ -418,15 +436,15 @@ class _ExerciseStepImageFormPageState
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      _isEditing
-                          ? widget.post!.title
-                          : 'Add exercise step images with pose detection',
-                      style: const TextStyle(
-                        color: AdminColors.textSecondary,
-                        fontSize: 14,
-                      ),
-                    ),
+                     Text(
+                       _isEditing
+                           ? widget.post!.localizedTitle('en')
+                           : 'Add exercise step images with pose detection',
+                       style: const TextStyle(
+                         color: AdminColors.textSecondary,
+                         fontSize: 14,
+                       ),
+                     ),
                   ],
                 ),
               ),
@@ -462,24 +480,44 @@ class _ExerciseStepImageFormPageState
                         ),
                       ),
                     ],
-                    const SizedBox(height: 16),
-                    AdminCard(
-                      child: TextFormField(
-                        controller: _titleController,
-                        decoration: const InputDecoration(
-                          labelText: 'Post Title',
-                          prefixIcon:
-                              Icon(Icons.title, color: AdminColors.textMuted),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Title is required.';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    _buildItemsSection(),
+                     const SizedBox(height: 16),
+                     AdminCard(
+                       child: Column(
+                         crossAxisAlignment: CrossAxisAlignment.start,
+                         children: [
+                           TextFormField(
+                             controller: _titleEnController,
+                             decoration: const InputDecoration(
+                               labelText: 'Post Title (English)',
+                               prefixIcon:
+                                   Icon(Icons.title, color: AdminColors.textMuted),
+                             ),
+                             validator: (value) {
+                               if (value == null || value.trim().isEmpty) {
+                                 return 'English title is required.';
+                               }
+                               return null;
+                             },
+                           ),
+                           const SizedBox(height: 16),
+                           TextFormField(
+                             controller: _titleMmController,
+                             decoration: const InputDecoration(
+                               labelText: 'Post Title (မြန်မာ)',
+                               prefixIcon:
+                                   Icon(Icons.title, color: AdminColors.textMuted),
+                             ),
+                             validator: (value) {
+                               if (value == null || value.trim().isEmpty) {
+                                 return 'Burmese title is required.';
+                               }
+                               return null;
+                             },
+                           ),
+                         ],
+                       ),
+                     ),
+                     _buildItemsSection(),
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
@@ -861,9 +899,9 @@ class _ExerciseStepImageFormPageState
             ),
           const SizedBox(height: 12),
           TextFormField(
-            controller: entry.descriptionController,
+            controller: entry.descriptionEnController,
             decoration: const InputDecoration(
-              labelText: 'Description',
+              labelText: 'Description (English)',
               isDense: true,
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -871,7 +909,24 @@ class _ExerciseStepImageFormPageState
             maxLines: 2,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Description is required.';
+                return 'English description is required.';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: entry.descriptionMmController,
+            decoration: const InputDecoration(
+              labelText: 'Description (မြန်မာ)',
+              isDense: true,
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+            maxLines: 2,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Burmese description is required.';
               }
               return null;
             },

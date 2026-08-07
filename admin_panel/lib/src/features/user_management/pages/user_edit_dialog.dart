@@ -15,6 +15,7 @@ class UserEditDialog extends ConsumerStatefulWidget {
 
 class _UserEditDialogState extends ConsumerState<UserEditDialog> {
   late final TextEditingController _fullNameController;
+  late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
   late final TextEditingController _bioController;
   final _formKey = GlobalKey<FormState>();
@@ -25,6 +26,8 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
     super.initState();
     _fullNameController =
         TextEditingController(text: widget.user['fullName'] as String? ?? '');
+    _emailController =
+        TextEditingController(text: widget.user['email'] as String? ?? '');
     _phoneController =
         TextEditingController(text: widget.user['phone'] as String? ?? '');
     _bioController =
@@ -34,6 +37,7 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
   @override
   void dispose() {
     _fullNameController.dispose();
+    _emailController.dispose();
     _phoneController.dispose();
     _bioController.dispose();
     super.dispose();
@@ -62,6 +66,15 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
                   labelText: AppLocalizations.of(context)!.fullName,
                   prefixIcon: const Icon(Icons.person_outline),
                 ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.email,
+                  prefixIcon: const Icon(Icons.email_outlined),
+                ),
+                keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -118,6 +131,7 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
     try {
       await ref.read(userServiceProvider).updateUser(widget.user['uid'] as String, {
         'fullName': _fullNameController.text.trim(),
+        'email': _emailController.text.trim(),
         'phone': _phoneController.text.trim(),
         'bio': _bioController.text.trim(),
       });

@@ -45,13 +45,15 @@ class ExerciseStepImageService {
   }
 
   Future<String> createPost({
-    required String title,
+    required String titleEn,
+    required String titleMm,
     required String type,
     required List<PendingExerciseStepItem> pendingItems,
     String sportId = '',
   }) async {
     final docRef = await _postsCollection.add({
-      'title': title,
+      'titleEn': titleEn,
+      'titleMm': titleMm,
       'type': type,
       'sportId': sportId,
       'itemCount': pendingItems.length,
@@ -63,7 +65,8 @@ class ExerciseStepImageService {
       final imageUrl = await _uploadImage(pending);
       await _itemsCollection(docRef.id).add({
         'imageUrl': imageUrl,
-        'description': pending.description,
+        'descriptionEn': pending.descriptionEn,
+        'descriptionMm': pending.descriptionMm,
         'stepOrder': i + 1,
         'stepNumber': pending.stepNumber,
         'poseLandmarks': pending.poseLandmarks ?? {},
@@ -76,7 +79,8 @@ class ExerciseStepImageService {
 
   Future<void> updatePost({
     required String postId,
-    required String title,
+    required String titleEn,
+    required String titleMm,
     required String type,
     required List<PendingExerciseStepItem> pendingItems,
   }) async {
@@ -99,7 +103,8 @@ class ExerciseStepImageService {
           : pending.existingImageUrl ?? '';
       await _itemsCollection(postId).add({
         'imageUrl': imageUrl,
-        'description': pending.description,
+        'descriptionEn': pending.descriptionEn,
+        'descriptionMm': pending.descriptionMm,
         'stepOrder': i + 1,
         'stepNumber': pending.stepNumber,
         'poseLandmarks': pending.poseLandmarks ?? {},
@@ -108,7 +113,8 @@ class ExerciseStepImageService {
     }
 
     await _postsCollection.doc(postId).update({
-      'title': title,
+      'titleEn': titleEn,
+      'titleMm': titleMm,
       'type': type,
       'itemCount': pendingItems.length,
     });
@@ -142,7 +148,8 @@ class PendingExerciseStepItem {
   final String? existingImageUrl;
   final Uint8List? imageBytes;
   final String? fileName;
-  final String description;
+  final String descriptionEn;
+  final String descriptionMm;
   final int stepNumber;
   final Map<String, List<double>>? poseLandmarks;
   final Map<String, double>? poseAngles;
@@ -151,7 +158,8 @@ class PendingExerciseStepItem {
     this.existingImageUrl,
     this.imageBytes,
     this.fileName,
-    required this.description,
+    required this.descriptionEn,
+    required this.descriptionMm,
     this.stepNumber = 1,
     this.poseLandmarks,
     this.poseAngles,

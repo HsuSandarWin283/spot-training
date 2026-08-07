@@ -29,14 +29,18 @@ class InjuryService {
 
   Future<String> addItem({
     required InjuryDataType type,
-    required String title,
-    required String description,
+    required String titleEn,
+    required String titleMm,
+    required String descriptionEn,
+    required String descriptionMm,
     String imageUrl = '',
   }) async {
     final docRef = await _collection.add({
       'type': type.label.toLowerCase(),
-      'title': title,
-      'description': description,
+      'titleEn': titleEn,
+      'titleMm': titleMm,
+      'descriptionEn': descriptionEn,
+      'descriptionMm': descriptionMm,
       'imageUrl': imageUrl,
       'createdAt': Timestamp.now(),
     });
@@ -46,14 +50,18 @@ class InjuryService {
   Future<void> updateItem({
     required String id,
     required InjuryDataType type,
-    required String title,
-    required String description,
+    required String titleEn,
+    required String titleMm,
+    required String descriptionEn,
+    required String descriptionMm,
     String imageUrl = '',
   }) async {
     await _collection.doc(id).update({
       'type': type.label.toLowerCase(),
-      'title': title,
-      'description': description,
+      'titleEn': titleEn,
+      'titleMm': titleMm,
+      'descriptionEn': descriptionEn,
+      'descriptionMm': descriptionMm,
       'imageUrl': imageUrl,
     });
   }

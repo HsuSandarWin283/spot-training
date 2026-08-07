@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AdminColors {
-  static const Color background = Color(0xFFF8F9FC);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color card = Color(0xFFFFFFFF);
-  static const Color primary = Color(0xFF6C63FF);
-  static const Color secondary = Color(0xFF00D4AA);
+  static const Color background = Color(0xFF0F0F1A);
+  static const Color surface = Color(0xFF1A1A2E);
+  static const Color card = Color(0xFF1E1E32);
+  static const Color primary = Color(0xFF7C7CFF);
+  static const Color secondary = Color(0xFF00E5B8);
   static const Color accent = Color(0xFFFF6B6B);
-  static const Color border = Color(0xFFE5E7EB);
-  static const Color textPrimary = Color(0xFF1A1A2E);
-  static const Color textSecondary = Color(0xFF4B5563);
-  static const Color textMuted = Color(0xFF9CA3AF);
+  static const Color border = Color(0xFF2D2D44);
+  static const Color textPrimary = Color(0xFFF1F1F5);
+  static const Color textSecondary = Color(0xFFB0B3C0);
+  static const Color textMuted = Color(0xFF6B7084);
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
   static const Color error = Color(0xFFEF4444);
   static const Color info = Color(0xFF3B82F6);
 
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF6C63FF), Color(0xFF9D4EDD)],
+    colors: [Color(0xFF7C7CFF), Color(0xFFB14EFF)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -43,18 +43,18 @@ class AdminColors {
 }
 
 class AdminTheme {
-  static ThemeData get lightTheme {
+  static ThemeData get darkTheme {
     return ThemeData(
-      brightness: Brightness.light,
+      brightness: Brightness.dark,
       scaffoldBackgroundColor: AdminColors.background,
       primaryColor: AdminColors.primary,
-      colorScheme: const ColorScheme.light(
+      colorScheme: const ColorScheme.dark(
         primary: AdminColors.primary,
         secondary: AdminColors.secondary,
         surface: AdminColors.surface,
         error: AdminColors.error,
       ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
+      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
       appBarTheme: const AppBarTheme(
         backgroundColor: AdminColors.surface,
         elevation: 0,
@@ -122,7 +122,7 @@ class AdminTheme {
         ),
       ),
       dataTableTheme: DataTableThemeData(
-        headingRowColor: WidgetStateProperty.all(AdminColors.background),
+        headingRowColor: WidgetStateProperty.all(AdminColors.surface),
         dataRowColor: WidgetStateProperty.all(Colors.transparent),
         headingTextStyle: const TextStyle(
           color: AdminColors.textSecondary,

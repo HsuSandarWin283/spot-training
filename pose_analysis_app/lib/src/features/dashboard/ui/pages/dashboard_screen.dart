@@ -32,6 +32,8 @@ class DashboardScreen extends ConsumerWidget {
             user?.fullName ??
             'Athlete';
 
+    final photoUrl = userProfile.whenOrNull(data: (u) => u?.photoUrl) ?? user?.photoUrl;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -46,7 +48,7 @@ class DashboardScreen extends ConsumerWidget {
           SafeArea(
             child: Column(
               children: [
-                _buildHeader(context, displayName, user),
+                 _buildHeader(context, displayName, photoUrl),
                 const SizedBox(height: 16),
                 Expanded(
                   child: SingleChildScrollView(
@@ -83,7 +85,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildHeader(
-      BuildContext context, String displayName, dynamic user) {
+      BuildContext context, String displayName, String? photoUrl) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Row(
@@ -110,7 +112,7 @@ class DashboardScreen extends ConsumerWidget {
           const Spacer(),
           GestureDetector(
             onTap: onProfileTap,
-            child: user?.photoUrl != null
+            child: photoUrl != null && photoUrl.isNotEmpty
                 ? Container(
                     width: 42,
                     height: 42,
@@ -118,7 +120,7 @@ class DashboardScreen extends ConsumerWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.primary, width: 2),
                       image: DecorationImage(
-                        image: NetworkImage(user!.photoUrl!),
+                        image: NetworkImage(photoUrl),
                         fit: BoxFit.cover,
                       ),
                     ),

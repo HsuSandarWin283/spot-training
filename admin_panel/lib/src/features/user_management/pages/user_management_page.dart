@@ -5,6 +5,7 @@ import 'package:admin_panel/src/core/theme/admin_theme.dart';
 import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/user_management/providers/user_providers.dart';
 import 'package:admin_panel/src/features/user_management/pages/user_edit_dialog.dart';
+import 'package:admin_panel/src/features/auth/providers/admin_auth_provider.dart';
 import 'package:admin_panel/src/core/l10n/app_localizations.dart';
 
 class UserManagementPage extends ConsumerStatefulWidget {
@@ -27,6 +28,8 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
   @override
   Widget build(BuildContext context) {
     final usersAsync = ref.watch(usersProvider);
+    final currentUser = ref.read(currentUserProvider);
+    final currentUid = currentUser?.uid;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -105,7 +108,11 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
                           email.contains(_searchQuery);
                     }).toList();
 
-              if (filtered.isEmpty) {
+              final displayUsers = currentUid != null
+                  ? filtered.where((u) => u['uid'] != currentUid).toList()
+                  : filtered;
+
+              if (displayUsers.isEmpty) {
                 return EmptyState(
                   icon: Icons.search_off,
                   title: AppLocalizations.of(context)!.noResults,
@@ -113,7 +120,7 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
                 );
               }
 
-              return _buildUsersTable(context, filtered);
+              return _buildUsersTable(context, displayUsers);
             },
             loading: () => const Center(
               child: Padding(

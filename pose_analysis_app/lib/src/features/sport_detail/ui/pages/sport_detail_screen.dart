@@ -8,6 +8,7 @@ import 'package:ai_sports_training/src/core/constants/app_constants.dart';
 import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/features/sport_detail/providers/sport_detail_providers.dart';
+import 'package:ai_sports_training/src/core/services/locale_provider.dart';
 
 class SportDetailScreen extends ConsumerStatefulWidget {
   final String sportId;
@@ -87,11 +88,15 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
 
   Widget _buildHeader(
       AsyncValue<Map<String, dynamic>?> sportAsync, Color sportColor) {
+    final langCode = ref.watch(localeProvider).languageCode;
     return sportAsync.when(
       data: (sportData) {
-        final name = sportData?['name'] ?? _fallbackSport.name;
-        final description =
-            sportData?['description'] ?? _fallbackSport.description;
+        final nameEn = sportData?['nameEn'] as String? ?? '';
+        final nameMm = sportData?['nameMm'] as String? ?? '';
+        final descEn = sportData?['descriptionEn'] as String? ?? '';
+        final descMm = sportData?['descriptionMm'] as String? ?? '';
+        final name = langCode == 'my' && nameMm.isNotEmpty ? nameMm : (nameEn.isNotEmpty ? nameEn : _fallbackSport.name);
+        final description = langCode == 'my' && descMm.isNotEmpty ? descMm : (descEn.isNotEmpty ? descEn : _fallbackSport.description);
         final thumbnailUrl = sportData?['thumbnailUrl'] ?? '';
         final icon = _fallbackSport.icon;
 
@@ -103,20 +108,26 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
           sportColor: sportColor,
         );
       },
-      loading: () => _buildHeaderContent(
-        name: _fallbackSport.name,
-        description: _fallbackSport.description,
-        imageUrl: '',
-        icon: _fallbackSport.icon,
-        sportColor: sportColor,
-      ),
-      error: (_, __) => _buildHeaderContent(
-        name: _fallbackSport.name,
-        description: _fallbackSport.description,
-        imageUrl: '',
-        icon: _fallbackSport.icon,
-        sportColor: sportColor,
-      ),
+      loading: () {
+        final langCode = ref.read(localeProvider).languageCode;
+        return _buildHeaderContent(
+          name: _fallbackSport.localizedName(langCode),
+          description: _fallbackSport.localizedDescription(langCode),
+          imageUrl: '',
+          icon: _fallbackSport.icon,
+          sportColor: sportColor,
+        );
+      },
+      error: (_, __) {
+        final langCode = ref.read(localeProvider).languageCode;
+        return _buildHeaderContent(
+          name: _fallbackSport.localizedName(langCode),
+          description: _fallbackSport.localizedDescription(langCode),
+          imageUrl: '',
+          icon: _fallbackSport.icon,
+          sportColor: sportColor,
+        );
+      },
     );
   }
 
@@ -229,6 +240,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
   }
 
   Widget _buildTabBar() {
+    final langCode = ref.watch(localeProvider).languageCode;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surf(context),
@@ -252,7 +264,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
                     children: [
                       Icon(_tabIcon(type), size: 16),
                       const SizedBox(width: 6),
-                      Text(type.label),
+                      Text(type.labelFor(langCode)),
                     ],
                   ),
                 ))
@@ -267,10 +279,23 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
         return Icons.gavel;
       case SportDetailType.trainingMethods:
         return Icons.fitness_center;
+      case SportDetailType.injuryPreventions:
+        return Icons.health_and_safety;
       case SportDetailType.fitnessRequirements:
         return Icons.directions_run;
-      default:
-        return Icons.help_outline;
+    }
+  }
+
+  Color _typeColor(SportDetailType type) {
+    switch (type) {
+      case SportDetailType.rules:
+        return AppColors.primary;
+      case SportDetailType.trainingMethods:
+        return AppColors.secondary;
+      case SportDetailType.injuryPreventions:
+        return AppColors.error;
+      case SportDetailType.fitnessRequirements:
+        return AppColors.warning;
     }
   }
 
@@ -292,6 +317,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
   }
 
   Widget _buildDetailList(List<SportDetailItem> items, SportDetailType type) {
+    final langCode = ref.watch(localeProvider).languageCode;
     return SingleChildScrollView(
       padding: EdgeInsets.all(20),
       child: Column(
@@ -310,7 +336,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
               ),
               const SizedBox(width: 12),
               Text(
-                type.label,
+                type.labelFor(langCode),
                 style: TextStyle(
                   color: AppColors.txtPrimary(context),
                   fontSize: 16,
@@ -348,6 +374,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
 
   Widget _buildItemCard(SportDetailItem item, SportDetailType type) {
     final color = _typeColor(type);
+    final langCode = ref.watch(localeProvider).languageCode;
 
     return GlassCard(
       child: Column(
@@ -371,7 +398,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item.title,
+                      item.localizedTitle(langCode),
                       style: TextStyle(
                         color: AppColors.txtPrimary(context),
                         fontSize: 15,
@@ -380,7 +407,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      item.description,
+                      item.localizedDescription(langCode),
                       style: TextStyle(
                         color: AppColors.txtSecondary(context),
                         fontSize: 13,
@@ -397,20 +424,8 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
     );
   }
 
-  Color _typeColor(SportDetailType type) {
-    switch (type) {
-      case SportDetailType.rules:
-        return AppColors.primary;
-      case SportDetailType.trainingMethods:
-        return AppColors.secondary;
-      case SportDetailType.fitnessRequirements:
-        return AppColors.warning;
-      default:
-        return AppColors.primary;
-    }
-  }
-
   Widget _buildEmptyState(SportDetailType type) {
+    final langCode = ref.watch(localeProvider).languageCode;
     return Center(
       child: Padding(
         padding: EdgeInsets.all(40),
@@ -431,7 +446,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
             ),
             const SizedBox(height: 20),
             Text(
-              'No ${type.label} Available',
+              AppLocalizations.of(context)!.noTypeAvailable(type.labelFor(langCode)),
               style: TextStyle(
                 color: AppColors.txtPrimary(context),
                 fontSize: 18,

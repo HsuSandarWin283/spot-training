@@ -8,6 +8,7 @@ import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/core/utils/app_router.dart';
 import 'package:ai_sports_training/src/features/sport_detail/providers/sport_detail_providers.dart';
+import 'package:ai_sports_training/src/core/services/locale_provider.dart';
 
 class SportsSelectionScreen extends ConsumerStatefulWidget {
   const SportsSelectionScreen({super.key});
@@ -30,6 +31,7 @@ class _SportsSelectionScreenState extends ConsumerState<SportsSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     final sportsAsync = ref.watch(sportsListProvider);
+    final langCode = ref.watch(localeProvider).languageCode;
 
     return Scaffold(
       body: Stack(
@@ -82,50 +84,55 @@ class _SportsSelectionScreenState extends ConsumerState<SportsSelectionScreen> {
                 const SizedBox(height: 16),
                 Expanded(
                   child: sportsAsync.when(
-                    data: (sports) {
+                     data: (sports) {
                       final filtered = _searchQuery.isEmpty
                           ? sports
                           : sports.where((s) {
-                              final name = (s['name'] as String? ?? '').toLowerCase();
-                              final desc = (s['description'] as String? ?? '').toLowerCase();
+                              final nameEn = (s['nameEn'] as String? ?? '').toLowerCase();
+                              final nameMm = (s['nameMm'] as String? ?? '').toLowerCase();
+                              final descEn = (s['descriptionEn'] as String? ?? '').toLowerCase();
+                              final descMm = (s['descriptionMm'] as String? ?? '').toLowerCase();
                               final q = _searchQuery.toLowerCase();
-                              return name.contains(q) || desc.contains(q);
+                              return nameEn.contains(q) || nameMm.contains(q) || descEn.contains(q) || descMm.contains(q);
                             }).toList();
-                      if (filtered.isEmpty) {
-                        return _buildEmptyState(context);
-                      }
-                      return GridView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.85,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                        ),
-                        itemCount: filtered.length,
-                        itemBuilder: (context, index) {
-                          final sport = filtered[index];
-                          final sportId = sport['id'] as String;
-                          final name = sport['name'] as String? ?? '';
-                          final description =
-                              sport['description'] as String? ?? '';
-                          final imageUrl = sport['thumbnailUrl'] as String? ?? '';
+                       if (filtered.isEmpty) {
+                         return _buildEmptyState(context);
+                       }
+                       return GridView.builder(
+                         padding: EdgeInsets.symmetric(horizontal: 20),
+                         gridDelegate:
+                             const SliverGridDelegateWithFixedCrossAxisCount(
+                           crossAxisCount: 2,
+                           childAspectRatio: 0.85,
+                           crossAxisSpacing: 16,
+                           mainAxisSpacing: 16,
+                         ),
+                         itemCount: filtered.length,
+                         itemBuilder: (context, index) {
+                           final sport = filtered[index];
+                           final sportId = sport['id'] as String;
+                           final nameEn = sport['nameEn'] as String? ?? '';
+                           final nameMm = sport['nameMm'] as String? ?? '';
+                           final descEn = sport['descriptionEn'] as String? ?? '';
+                           final descMm = sport['descriptionMm'] as String? ?? '';
+                           final name = langCode == 'my' && nameMm.isNotEmpty ? nameMm : nameEn;
+                           final description = langCode == 'my' && descMm.isNotEmpty ? descMm : descEn;
+                           final imageUrl = sport['thumbnailUrl'] as String? ?? '';
 
-                          final fallback = _findFallback(sportId);
+                           final fallback = _findFallback(sportId);
 
-                          return _SportCard(
-                            name: name,
-                            description: description,
-                            imageUrl: imageUrl,
-                            icon: fallback?['icon'] ?? '🏅',
-                            colorValue: fallback?['color'] ?? 0xFF6C63FF,
-                            onTap: () {
-                              context.goToSportDetail(sportId);
-                            },
-                          );
-                        },
-                      );
+                           return _SportCard(
+                             name: name,
+                             description: description,
+                             imageUrl: imageUrl,
+                             icon: fallback?['icon'] ?? '🏅',
+                             colorValue: fallback?['color'] ?? 0xFF6C63FF,
+                             onTap: () {
+                               context.goToSportDetail(sportId);
+                             },
+                           );
+                         },
+                       );
                     },
                     loading: () => Center(
                       child:

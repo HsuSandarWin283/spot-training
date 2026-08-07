@@ -30,14 +30,18 @@ class SportDetailService {
 
   Future<String> addItem({
     required String sportId,
-    required String title,
-    required String description,
+    required String titleEn,
+    required String titleMm,
+    required String descriptionEn,
+    required String descriptionMm,
     required SportDetailType type,
   }) async {
     final docRef = await _collection(type).add({
       'sportId': sportId,
-      'title': title,
-      'description': description,
+      'titleEn': titleEn,
+      'titleMm': titleMm,
+      'descriptionEn': descriptionEn,
+      'descriptionMm': descriptionMm,
       'createdAt': Timestamp.now(),
     });
     return docRef.id;
@@ -45,13 +49,17 @@ class SportDetailService {
 
   Future<void> updateItem({
     required String id,
-    required String title,
-    required String description,
+    required String titleEn,
+    required String titleMm,
+    required String descriptionEn,
+    required String descriptionMm,
     required SportDetailType type,
   }) async {
     await _collection(type).doc(id).update({
-      'title': title,
-      'description': description,
+      'titleEn': titleEn,
+      'titleMm': titleMm,
+      'descriptionEn': descriptionEn,
+      'descriptionMm': descriptionMm,
     });
   }
 

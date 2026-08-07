@@ -121,7 +121,13 @@ class _InjuryManagementPageState extends ConsumerState<InjuryManagementPage>
                           children: [
                             Icon(_tabIcon(type), size: 16),
                             const SizedBox(width: 6),
-                            Text(_tabLabel(type)),
+                            Flexible(
+                              child: Text(
+                                _tabLabel(type),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                       ))
