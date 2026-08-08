@@ -55,10 +55,12 @@ class DashboardScreen extends ConsumerWidget {
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildCompletionBarChart(context, completionsAsync),
-                        const SizedBox(height: 20),
-                        _buildGoalProgressSection(context, goalsAsync, completionsAsync),
+                    children: [
+                         _buildCompletionBarChart(context, completionsAsync),
+                         const SizedBox(height: 20),
+                         _buildPersonalizedFeedback(context, completionsAsync),
+                         const SizedBox(height: 20),
+                         _buildGoalProgressSection(context, goalsAsync, completionsAsync),
                         const SizedBox(height: 20),
                         _buildFeedbackSection(context, goalsAsync),
                         const SizedBox(height: 20),
@@ -732,6 +734,169 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                   );
                 }).toList(),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildPersonalizedFeedback(
+      BuildContext context, AsyncValue<List<TypeCompletionCount>> completionsAsync) {
+    return completionsAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (completions) {
+        if (completions.isEmpty) return const SizedBox.shrink();
+
+        final topType = completions.first.typeName;
+        final topCount = completions.first.count;
+        final langCode = Localizations.localeOf(context).languageCode;
+
+        String message;
+        String? tip;
+
+        final typeLower = topType.toLowerCase();
+
+        if (typeLower.contains('weight loss') || typeLower.contains('weight_gain')) {
+          message = langCode == 'my'
+              ? '$topType အတွက် လေ့ကျင့်နေတယ်!'
+              : "You're training for $topType!";
+          tip = typeLower.contains('weight loss')
+              ? AppLocalizations.of(context)!.weightLossTip
+              : AppLocalizations.of(context)!.weightGainTip;
+        } else if (typeLower.contains('football')) {
+          message = langCode == 'my' ? 'ဘောလုံးအားကစားအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Football!";
+          tip = AppLocalizations.of(context)!.sportTipFootball;
+        } else if (typeLower.contains('basketball')) {
+          message = langCode == 'my' ? 'ဘက်စကလ်ဘောလုံးအားကစားအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Basketball!";
+          tip = AppLocalizations.of(context)!.sportTipBasketball;
+        } else if (typeLower.contains('volleyball')) {
+          message = langCode == 'my' ? 'ဗိုလ်ဘောလုံးအားကစားအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Volleyball!";
+          tip = AppLocalizations.of(context)!.sportTipVolleyball;
+        } else if (typeLower.contains('badminton')) {
+          message = langCode == 'my' ? 'ဘာတမ်းမက်အားကစားအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Badminton!";
+          tip = AppLocalizations.of(context)!.sportTipBadminton;
+        } else if (typeLower.contains('yoga')) {
+          message = langCode == 'my' ? 'ယိုဂါအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Yoga!";
+          tip = AppLocalizations.of(context)!.sportTipYoga;
+        } else if (typeLower.contains('stretching')) {
+          message = langCode == 'my' ? 'ဆန့်ကျင်မှုအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Stretching!";
+          tip = AppLocalizations.of(context)!.sportTipStretching;
+        } else {
+          message = langCode == 'my'
+              ? '$topType အတွက် လေ့ကျင့်နေတယ်!'
+              : "You're training for $topType!";
+        }
+
+        final recommendedSessions = topCount < 3 ? 3 : (topCount < 5 ? 4 : 5);
+        final recommendation = langCode == 'my'
+            ? AppLocalizations.of(context)!.practiceRecommendation(topType, recommendedSessions)
+            : AppLocalizations.of(context)!.practiceRecommendation(topType, recommendedSessions);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SectionHeader(title: AppLocalizations.of(context)!.yourTrainingFocus),
+            const SizedBox(height: 12),
+            GlassCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          gradient: AppColors.primaryGradient,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            _getGoalEmoji(topType),
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              message,
+                              style: TextStyle(
+                                color: AppColors.txtPrimary(context),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '$topCount sessions completed',
+                              style: TextStyle(
+                                color: AppColors.txtMuted(context),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.primary.withOpacity(0.15)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.lightbulb_outline,
+                                color: AppColors.primary, size: 18),
+                            const SizedBox(width: 8),
+                            Text(
+                              langCode == 'my' ? 'အကြံပြုချက်' : 'Recommendation',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          recommendation,
+                          style: TextStyle(
+                            color: AppColors.txtSecondary(context),
+                            fontSize: 13,
+                            height: 1.5,
+                          ),
+                        ),
+                        if (tip != null) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            tip,
+                            style: TextStyle(
+                              color: AppColors.txtSecondary(context),
+                              fontSize: 13,
+                              height: 1.5,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

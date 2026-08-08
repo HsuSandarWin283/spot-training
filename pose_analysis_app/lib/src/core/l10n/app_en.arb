@@ -331,5 +331,23 @@
   "searchPosesHint": "Search poses...",
   "searchInjuryHint": "Search prevention & treatment...",
   "noResults": "No Results",
-  "tryDifferentSearch": "Try a different search term"
+  "tryDifferentSearch": "Try a different search term",
+
+  "yourTrainingFocus": "Your Training Focus",
+  "trainingForType": "You're training for {type}!",
+  "@trainingForType": { "type": { "description": "The exercise type name" } },
+  "practiceRecommendation": "Practice {type} poses at least {count} times a week to improve your skills.",
+  "@practiceRecommendation": {
+    "type": { "description": "The exercise type name" },
+    "count": { "description": "Number of times per week" }
+  },
+  "keepPracticing": "Keep practicing to see better results!",
+  "weightLossTip": "Combine regular exercise with a balanced diet for effective weight loss.",
+  "weightGainTip": "Focus on strength training and protein-rich nutrition for healthy weight gain.",
+  "sportTipFootball": "Focus on agility drills, sprint intervals, and ball control exercises.",
+  "sportTipBasketball": "Work on jump shots, defensive slides, and passing accuracy.",
+  "sportTipVolleyball": "Practice serving precision, spike timing, and court positioning.",
+  "sportTipBadminton": "Improve footwork, racket swings, and net play techniques.",
+  "sportTipYoga": "Hold poses longer, focus on breathing, and improve flexibility gradually.",
+  "sportTipStretching": "Increase stretch duration gradually and maintain consistent daily practice."
 }

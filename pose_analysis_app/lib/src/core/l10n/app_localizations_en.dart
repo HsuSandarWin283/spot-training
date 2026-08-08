@@ -919,4 +919,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tryDifferentSearch => 'Try a different search term';
+
+  @override
+  String get yourTrainingFocus => 'Your Training Focus';
+
+  @override
+  String trainingForType(Object type) {
+    return 'You\'re training for $type!';
+  }
+
+  @override
+  String practiceRecommendation(Object count, Object type) {
+    return 'Practice $type poses at least $count times a week to improve your skills.';
+  }
+
+  @override
+  String get keepPracticing => 'Keep practicing to see better results!';
+
+  @override
+  String get weightLossTip =>
+      'Combine regular exercise with a balanced diet for effective weight loss.';
+
+  @override
+  String get weightGainTip =>
+      'Focus on strength training and protein-rich nutrition for healthy weight gain.';
+
+  @override
+  String get sportTipFootball =>
+      'Focus on agility drills, sprint intervals, and ball control exercises.';
+
+  @override
+  String get sportTipBasketball =>
+      'Work on jump shots, defensive slides, and passing accuracy.';
+
+  @override
+  String get sportTipVolleyball =>
+      'Practice serving precision, spike timing, and court positioning.';
+
+  @override
+  String get sportTipBadminton =>
+      'Improve footwork, racket swings, and net play techniques.';
+
+  @override
+  String get sportTipYoga =>
+      'Hold poses longer, focus on breathing, and improve flexibility gradually.';
+
+  @override
+  String get sportTipStretching =>
+      'Increase stretch duration gradually and maintain consistent daily practice.';
 }

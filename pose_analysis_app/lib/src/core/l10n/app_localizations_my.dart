@@ -935,4 +935,53 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get tryDifferentSearch => 'အခြား ရှာဖွေစကား သုံးကြည့်ပါ';
+
+  @override
+  String get yourTrainingFocus => 'သင်၏ လေ့ကျင့်မှု အာရုံစိုက်';
+
+  @override
+  String trainingForType(Object type) {
+    return '$type အတွက် လေ့ကျင့်နေတယ်!';
+  }
+
+  @override
+  String practiceRecommendation(Object count, Object type) {
+    return '$type အနေအထားများကို တစ်ပတ်တွင် အနည်းဆုံး $count ကြိမ် လေ့ကျင့်ပါ။';
+  }
+
+  @override
+  String get keepPracticing =>
+      'ပိုကောင်းသော ရလဒ်များကြည့်ရနု ဆက်လက်လေ့ကျင့်ပါ!';
+
+  @override
+  String get weightLossTip =>
+      'အလေးချိန် လျှော့ချရန် လေ့ကျင့်မှုနှင့်အညီ အကျားပြီး စားသောက်မှုကို ပေါင်းစပ်ပါ။';
+
+  @override
+  String get weightGainTip =>
+      'ကျန်းမာရေး ကောင်းမွန်သော အလေးချိန် တိုးရန် အားလေ့ကျင့်မှုနှင့် ပရိုတိန် အစားအစာ ကို အာရုံစိုက်ပါ။';
+
+  @override
+  String get sportTipFootball =>
+      'လျင်မြန်သောလုပ်ဆောင်မှု လေ့ကျင့်ခန်းများ၊ အေးအေးကြိတ်တိုက်ခန်း၊ နှင့် ဘောလုံး ထိန်းချုပ်မှုကို အာရုံစိုက်ပါ။';
+
+  @override
+  String get sportTipBasketball =>
+      'ခုန်ဆင်းမှု လေ့ကျင့်မှု၊ ကာကွယ်မှု လှုပ်ရှားမှုနှင့် ပေးပို့မှု တိကျမှုကို လေ့ကျင့်ပါ။';
+
+  @override
+  String get sportTipVolleyball =>
+      'ချယ်ပါတ်ခြင်း တိကျမှု၊ ထိုးမှု အချိန်နှင့် ခြေလှမ်းအမှတ်အသားကို လေ့ကျင့်ပါ။';
+
+  @override
+  String get sportTipBadminton =>
+      'ခြေလှမ်းလှုပ်ရှားမှု၊ ရက်စ်ရွှေ့ခြင်း နှင့် ကွန်းမျဉ်း လေ့ကျင့်မှုကို တိုးတက်အောင်လုပ်ပါ။';
+
+  @override
+  String get sportTipYoga =>
+      'အနေအထားများကို ပိုမိုကြာမြစ်ထားပါ၊ ခြံဝှစ်ခြင်းကို အာရုံစိုက်ပါ၊ နှင့် အသင့်တော်အဆင့်တိုင်း အရည်အသွေးကို တိုးတက်အောင်လုပ်ပါ။';
+
+  @override
+  String get sportTipStretching =>
+      'ဆန့်ကျင်မှု အချိန်ကို ဖြည့်တင်းစွာ တိုးမြှင့်ပါ နှင့် နေ့စဉ် တစ်နေ့မျှ မတူညီခြင်း မရှိဘဲ လေ့ကျင့်ပါ။';
 }

@@ -1843,6 +1843,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try a different search term'**
   String get tryDifferentSearch;
+
+  /// No description provided for @yourTrainingFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Training Focus'**
+  String get yourTrainingFocus;
+
+  /// No description provided for @trainingForType.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re training for {type}!'**
+  String trainingForType(Object type);
+
+  /// No description provided for @practiceRecommendation.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice {type} poses at least {count} times a week to improve your skills.'**
+  String practiceRecommendation(Object count, Object type);
+
+  /// No description provided for @keepPracticing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep practicing to see better results!'**
+  String get keepPracticing;
+
+  /// No description provided for @weightLossTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Combine regular exercise with a balanced diet for effective weight loss.'**
+  String get weightLossTip;
+
+  /// No description provided for @weightGainTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus on strength training and protein-rich nutrition for healthy weight gain.'**
+  String get weightGainTip;
+
+  /// No description provided for @sportTipFootball.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus on agility drills, sprint intervals, and ball control exercises.'**
+  String get sportTipFootball;
+
+  /// No description provided for @sportTipBasketball.
+  ///
+  /// In en, this message translates to:
+  /// **'Work on jump shots, defensive slides, and passing accuracy.'**
+  String get sportTipBasketball;
+
+  /// No description provided for @sportTipVolleyball.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice serving precision, spike timing, and court positioning.'**
+  String get sportTipVolleyball;
+
+  /// No description provided for @sportTipBadminton.
+  ///
+  /// In en, this message translates to:
+  /// **'Improve footwork, racket swings, and net play techniques.'**
+  String get sportTipBadminton;
+
+  /// No description provided for @sportTipYoga.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold poses longer, focus on breathing, and improve flexibility gradually.'**
+  String get sportTipYoga;
+
+  /// No description provided for @sportTipStretching.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase stretch duration gradually and maintain consistent daily practice.'**
+  String get sportTipStretching;
 }
 
 class _AppLocalizationsDelegate
