@@ -269,13 +269,13 @@ abstract class AppLocalizations {
   /// No description provided for @training.
   ///
   /// In en, this message translates to:
-  /// **'Training'**
+  /// **'Sports'**
   String get training;
 
   /// No description provided for @poses.
   ///
   /// In en, this message translates to:
-  /// **'Poses'**
+  /// **'Training'**
   String get poses;
 
   /// No description provided for @profile.

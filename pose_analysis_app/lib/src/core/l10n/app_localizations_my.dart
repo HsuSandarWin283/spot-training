@@ -97,10 +97,10 @@ class AppLocalizationsMy extends AppLocalizations {
   String get home => 'ပင်မ';
 
   @override
-  String get training => 'လေ့ကျင့်မှု';
+  String get training => 'အားကစား';
 
   @override
-  String get poses => 'အနေအထားများ';
+  String get poses => 'လေ့ကျင့်မှု';
 
   @override
   String get profile => 'ပရိုဖိုင်';

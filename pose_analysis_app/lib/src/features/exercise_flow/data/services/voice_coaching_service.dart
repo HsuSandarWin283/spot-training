@@ -34,7 +34,18 @@ class VoiceCoachingService {
 
   bool get isSpeaking => _cloudTts.isPlaying;
 
-  Future<void> speakFeedback(List<String> corrections) async {
+  Future<void> speakDescription(String description, {required String languageCode}) async {
+    if (!_enabled || description.trim().isEmpty || !_initialized) return;
+    if (_cloudTts.isPlaying) {
+      await _cloudTts.stop();
+    }
+    _lastSpokenMessage = '';
+    final ttsLang = languageCode == 'my' ? 'my-MM' : 'en-US';
+    debugPrint('VoiceCoaching: speaking description "$description"');
+    await _cloudTts.speak(text: description, languageCode: ttsLang);
+  }
+
+  Future<void> speakFeedback(List<String> corrections, {String languageCode = 'my'}) async {
     if (!_enabled || _cloudTts.isPlaying || corrections.isEmpty || !_initialized) return;
 
     final newMessage = corrections.first;
@@ -42,39 +53,37 @@ class VoiceCoachingService {
 
     _lastSpokenMessage = newMessage;
 
-    final text = _toMyanmar(newMessage);
+    final text = languageCode == 'my' ? _toMyanmar(newMessage) : newMessage;
+    final ttsLang = languageCode == 'my' ? 'my-MM' : 'en-US';
     debugPrint('VoiceCoaching: speaking "$text"');
-    await _cloudTts.speak(text: text, languageCode: 'my-MM');
+    await _cloudTts.speak(text: text, languageCode: ttsLang);
   }
 
-  Future<void> speakSuccess() async {
+  Future<void> speakSuccess({String languageCode = 'my'}) async {
     if (!_enabled || _cloudTts.isPlaying || !_initialized) return;
     _lastSpokenMessage = '';
+    final text = languageCode == 'my' ? 'အလွန်ကောင်းပါသည်' : 'Excellent!';
+    final ttsLang = languageCode == 'my' ? 'my-MM' : 'en-US';
     debugPrint('VoiceCoaching: speaking success');
-    await _cloudTts.speak(
-      text: 'အလွန်ကောင်းပါသည်',
-      languageCode: 'my-MM',
-    );
+    await _cloudTts.speak(text: text, languageCode: ttsLang);
   }
 
-  Future<void> speakStepComplete(int stepNumber) async {
+  Future<void> speakStepComplete(int stepNumber, {String languageCode = 'my'}) async {
     if (!_enabled || _cloudTts.isPlaying || !_initialized) return;
     _lastSpokenMessage = '';
+    final text = languageCode == 'my' ? 'နောက်တစ်ဆင့်သို့ ဆက်သွားနိုင်ပါပြီ' : 'You can continue to the next step';
+    final ttsLang = languageCode == 'my' ? 'my-MM' : 'en-US';
     debugPrint('VoiceCoaching: speaking step complete');
-    await _cloudTts.speak(
-      text: 'နောက်တစ်ဆင့်သို့ ဆက်သွားနိုင်ပါပြီ',
-      languageCode: 'my-MM',
-    );
+    await _cloudTts.speak(text: text, languageCode: ttsLang);
   }
 
-  Future<void> speakExerciseComplete() async {
+  Future<void> speakExerciseComplete({String languageCode = 'my'}) async {
     if (!_enabled || _cloudTts.isPlaying || !_initialized) return;
     _lastSpokenMessage = '';
+    final text = languageCode == 'my' ? 'လေ့ကျင့်ခန်း ပြီးဆုံးပါပြီ။ ကျေးဇူးတင်ပါသည်' : 'Exercise complete. Thank you.';
+    final ttsLang = languageCode == 'my' ? 'my-MM' : 'en-US';
     debugPrint('VoiceCoaching: speaking exercise complete');
-    await _cloudTts.speak(
-      text: 'လေ့ကျင့်ခန်း ပြီးဆုံးပါပြီ။ ကျေးဇူးတင်ပါသည်',
-      languageCode: 'my-MM',
-    );
+    await _cloudTts.speak(text: text, languageCode: ttsLang);
   }
 
   String _toMyanmar(String english) {

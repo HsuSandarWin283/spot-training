@@ -9,6 +9,7 @@ import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/data/models/exercise.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/data/providers/exercise_flow_providers.dart';
 import 'package:ai_sports_training/src/features/exercise_flow/ui/pages/exercise_completion_screen.dart';
+import 'package:ai_sports_training/src/core/services/locale_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ExerciseFlowScreen extends ConsumerStatefulWidget {
@@ -124,12 +125,13 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
 
           final voiceService = ref.read(voiceCoachingServiceProvider);
           voiceService.setEnabled(_voiceEnabled);
+          final langCode = ref.read(localeProvider).languageCode;
 
           if (result.isSuccessful) {
             ref.read(stepControllerProvider(widget.exercise.steps).notifier)
                 .onStepSuccess(result.accuracy, result.angleDifferences);
 
-            voiceService.speakSuccess();
+            voiceService.speakSuccess(languageCode: langCode);
 
             if (mounted) {
               setState(() => _currentFeedback = AppLocalizations.of(context)!.stepComplete);
@@ -148,7 +150,7 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                   refAngles: stepState.currentStep!.poseAngles,
                 );
 
-            voiceService.speakFeedback(corrections);
+            voiceService.speakFeedback(corrections, languageCode: langCode);
 
             if (mounted && corrections.isNotEmpty) {
               setState(() => _currentFeedback = corrections.first);
@@ -193,7 +195,9 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
 
   void _finishExercise() {
     _cameraController?.stopImageStream();
-    ref.read(voiceCoachingServiceProvider).speakExerciseComplete();
+    ref.read(voiceCoachingServiceProvider).speakExerciseComplete(
+      languageCode: ref.read(localeProvider).languageCode,
+    );
 
     final stepNotifier =
         ref.read(stepControllerProvider(widget.exercise.steps).notifier);

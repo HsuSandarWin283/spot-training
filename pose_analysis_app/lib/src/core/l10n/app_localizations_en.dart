@@ -95,10 +95,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get training => 'Training';
+  String get training => 'Sports';
 
   @override
-  String get poses => 'Poses';
+  String get poses => 'Training';
 
   @override
   String get profile => 'Profile';

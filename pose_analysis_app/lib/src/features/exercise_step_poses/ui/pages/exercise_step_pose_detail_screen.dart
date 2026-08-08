@@ -85,6 +85,7 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
                               builder: (_) => PosePracticeScreen(
                                 items: items,
                                 postId: postId,
+                                langCode: langCode,
                                 onDone: () async {
                                   final user = ref.read(currentUserProvider);
                                   if (user != null) {
@@ -331,8 +332,9 @@ class PosePracticeScreen extends StatefulWidget {
   final List<ExerciseStepImageItem> items;
   final String postId;
   final VoidCallback? onDone;
+  final String langCode;
 
-  const PosePracticeScreen({super.key, required this.items, required this.postId, this.onDone});
+  const PosePracticeScreen({super.key, required this.items, required this.postId, this.onDone, this.langCode = 'en'});
 
   @override
   State<PosePracticeScreen> createState() => _PosePracticeScreenState();
@@ -349,6 +351,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
   bool _permissionChecked = false;
   bool _autoAdvancing = false;
   Timer? _autoAdvanceTimer;
+  int _retryCount = 0;
 
   late List<List<ExerciseStepImageItem>> _steps;
 
@@ -457,10 +460,13 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          PoseCameraView(
-            key: ValueKey('$_currentStepIndex-$_currentItemIndexInStep'),
-            stepAngles: _currentItem.poseAngles,
-            onResult: (accuracy, feedback) {
+           PoseCameraView(
+             key: ValueKey('$_currentStepIndex-$_currentItemIndexInStep-$_retryCount'),
+             stepAngles: _currentItem.poseAngles,
+             langCode: widget.langCode,
+             description: _currentItem.localizedDescription(widget.langCode),
+             isComplete: _stepComplete,
+             onResult: (accuracy, feedback) {
               if (mounted && !_stepComplete) {
                 setState(() {
                   _accuracy = accuracy;
@@ -913,6 +919,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                           _stepComplete = false;
                           _allDone = false;
                           _feedback = '';
+                          _retryCount++;
                         });
                       },
                     ),
@@ -930,11 +937,17 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
 class PoseCameraView extends StatefulWidget {
   final Map<String, double> stepAngles;
   final Function(double accuracy, String feedback) onResult;
+  final String langCode;
+  final String description;
+  final bool isComplete;
 
   const PoseCameraView({
     super.key,
     required this.stepAngles,
     required this.onResult,
+    this.langCode = 'en',
+    this.description = '',
+    this.isComplete = false,
   });
 
   @override
@@ -949,12 +962,29 @@ class _PoseCameraViewState extends State<PoseCameraView> {
   String _error = '';
   final CloudTtsService _cloudTts = CloudTtsService();
   String _lastFeedback = '';
+  bool _descriptionSpoken = false;
+  bool _hasReached90 = false;
+
+  String get _ttsLangCode => widget.langCode == 'my' ? 'my-MM' : 'en-US';
 
   @override
   void initState() {
     super.initState();
     _initTts();
     _initCamera();
+  }
+
+  @override
+  void didUpdateWidget(covariant PoseCameraView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.description != widget.description) {
+      _descriptionSpoken = false;
+      _hasReached90 = false;
+      Future.microtask(() => _speakDescriptionOnce());
+    }
+    if (!oldWidget.isComplete && widget.isComplete) {
+      _cloudTts.stop();
+    }
   }
 
   Future<void> _initTts() async {
@@ -966,11 +996,23 @@ class _PoseCameraViewState extends State<PoseCameraView> {
     }
   }
 
-  Future<void> _speakMyanmar(String english) async {
-    final text = _toMyanmar(english);
+  void _speakDescriptionOnce() {
+    if (_descriptionSpoken) return;
+    if (widget.description.trim().isEmpty) return;
+    _descriptionSpoken = true;
+    _speak(widget.description);
+  }
+
+  Future<void> _speak(String text) async {
+    if (text.trim().isEmpty || _cloudTts.isPlaying) return;
+    await _cloudTts.speak(text: text, languageCode: _ttsLangCode);
+  }
+
+  Future<void> _speakFeedback(String english) async {
+    final text = widget.langCode == 'my' ? _toMyanmar(english) : english;
     if (text == _lastFeedback || _cloudTts.isPlaying) return;
     _lastFeedback = text;
-    await _cloudTts.speak(text: text, languageCode: 'my-MM');
+    await _cloudTts.speak(text: text, languageCode: _ttsLangCode);
   }
 
   String _toMyanmar(String english) {
@@ -1020,6 +1062,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
       if (mounted) {
         setState(() => _isInitialized = true);
         _startImageStream();
+        _speakDescriptionOnce();
       }
     } catch (e) {
       if (mounted) {
@@ -1064,7 +1107,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
 
           if (detectedCount < 8) {
             widget.onResult(0, AppLocalizations.of(context)!.stepBackToShowFullBody);
-            _speakMyanmar('Step back to show full body');
+            _speakFeedback('Step back to show full body');
             _isProcessing = false;
             return;
           }
@@ -1074,13 +1117,14 @@ class _PoseCameraViewState extends State<PoseCameraView> {
           widget.onResult(result.$1, result.$2);
 
           if (result.$1 >= 90) {
-            _speakMyanmar('Excellent alignment!');
-          } else if (result.$1 >= 0 && result.$2.isNotEmpty) {
-            _speakMyanmar(result.$2);
+            _hasReached90 = true;
+            _cloudTts.stop();
+          } else if (!_hasReached90 && result.$1 >= 0 && result.$2.isNotEmpty) {
+            _speakFeedback(result.$2);
           }
         } else if (mounted) {
           widget.onResult(0, AppLocalizations.of(context)!.noPersonDetected);
-          _speakMyanmar('Match the reference pose');
+          _speakFeedback('Match the reference pose');
         }
       } catch (_) {}
 
