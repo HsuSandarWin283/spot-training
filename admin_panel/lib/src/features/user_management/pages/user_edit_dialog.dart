@@ -17,7 +17,6 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
   late final TextEditingController _fullNameController;
   late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
-  late final TextEditingController _bioController;
   final _formKey = GlobalKey<FormState>();
   bool _isSaving = false;
 
@@ -30,8 +29,6 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
         TextEditingController(text: widget.user['email'] as String? ?? '');
     _phoneController =
         TextEditingController(text: widget.user['phone'] as String? ?? '');
-    _bioController =
-        TextEditingController(text: widget.user['bio'] as String? ?? '');
   }
 
   @override
@@ -39,7 +36,6 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
     _fullNameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _bioController.dispose();
     super.dispose();
   }
 
@@ -84,15 +80,6 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
                   prefixIcon: const Icon(Icons.phone_outlined),
                 ),
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _bioController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.bio,
-                  prefixIcon: const Icon(Icons.info_outline),
-                ),
-                maxLines: 3,
-              ),
             ],
           ),
         ),
@@ -133,7 +120,6 @@ class _UserEditDialogState extends ConsumerState<UserEditDialog> {
         'fullName': _fullNameController.text.trim(),
         'email': _emailController.text.trim(),
         'phone': _phoneController.text.trim(),
-        'bio': _bioController.text.trim(),
       });
 
       if (mounted) {

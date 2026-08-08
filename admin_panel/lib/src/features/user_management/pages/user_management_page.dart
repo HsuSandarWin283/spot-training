@@ -155,7 +155,6 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
                     DataColumn(label: Text(AppLocalizations.of(context)!.user)),
                     DataColumn(label: Text(AppLocalizations.of(context)!.email)),
                     DataColumn(label: Text(AppLocalizations.of(context)!.phone)),
-                    DataColumn(label: Text(AppLocalizations.of(context)!.joined)),
                     DataColumn(label: Text(AppLocalizations.of(context)!.actions)),
                   ],
                   rows: users.map((user) {
@@ -163,20 +162,6 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
                     final fullName = user['fullName'] as String? ?? 'Unknown';
                     final email = user['email'] as String? ?? '';
                     final phone = user['phone'] as String? ?? '-';
-                    final createdAt = user['createdAt'];
-
-                    String joinedDate = '-';
-                    if (createdAt != null) {
-                      DateTime? date;
-                      if (createdAt is DateTime) {
-                        date = createdAt;
-                      } else if (createdAt is String) {
-                        date = DateTime.tryParse(createdAt);
-                      }
-                      if (date != null) {
-                        joinedDate = '${date.day}/${date.month}/${date.year}';
-                      }
-                    }
 
                     return DataRow(
                       cells: [
@@ -232,12 +217,6 @@ class _UserManagementPageState extends ConsumerState<UserManagementPage> {
                             phone,
                             style: const TextStyle(
                                 color: AdminColors.textSecondary, fontSize: 13),
-                          ),
-                        ),
-                        DataCell(
-                          Text(
-                            joinedDate,
-                            style: const TextStyle(color: AdminColors.textMuted),
                           ),
                         ),
                         DataCell(
