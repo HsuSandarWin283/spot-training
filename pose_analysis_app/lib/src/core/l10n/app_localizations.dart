@@ -1915,6 +1915,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Increase stretch duration gradually and maintain consistent daily practice.'**
   String get sportTipStretching;
+
+  /// No description provided for @trainingInsight.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Training Insight'**
+  String get trainingInsight;
+
+  /// No description provided for @completedExercisesRecently.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve completed {count} {type} exercises recently.'**
+  String completedExercisesRecently(Object count, Object type);
+
+  /// No description provided for @mainActivitySuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'It looks like {type} is one of your main activities.'**
+  String mainActivitySuggestion(Object type);
+
+  /// No description provided for @recommendedTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Training'**
+  String get recommendedTraining;
+
+  /// No description provided for @trainSessionsPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Train around {count} times per week.'**
+  String trainSessionsPerWeek(Object count);
+
+  /// No description provided for @focusAreas.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus Areas'**
+  String get focusAreas;
+
+  /// No description provided for @yourGoalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Goal: {goal}'**
+  String yourGoalLabel(Object goal);
+
+  /// No description provided for @focusLowerBodyStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower-body strength'**
+  String get focusLowerBodyStrength;
+
+  /// No description provided for @focusBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get focusBalance;
+
+  /// No description provided for @focusAgility.
+  ///
+  /// In en, this message translates to:
+  /// **'Agility'**
+  String get focusAgility;
+
+  /// No description provided for @focusCoordination.
+  ///
+  /// In en, this message translates to:
+  /// **'Coordination'**
+  String get focusCoordination;
+
+  /// No description provided for @focusUpperBodyStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Upper-body strength'**
+  String get focusUpperBodyStrength;
+
+  /// No description provided for @focusCoreStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Core strength'**
+  String get focusCoreStrength;
+
+  /// No description provided for @focusCardio.
+  ///
+  /// In en, this message translates to:
+  /// **'Cardio endurance'**
+  String get focusCardio;
+
+  /// No description provided for @focusFlexibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Flexibility'**
+  String get focusFlexibility;
+
+  /// No description provided for @focusEndurance.
+  ///
+  /// In en, this message translates to:
+  /// **'Endurance'**
+  String get focusEndurance;
+
+  /// No description provided for @focusFullBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Full-body training'**
+  String get focusFullBody;
+
+  /// No description provided for @goalWeightLossAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'Add cardio and full-body exercises to complement your {type} training.'**
+  String goalWeightLossAdvice(Object type);
+
+  /// No description provided for @goalWeightGainAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'Add strength and resistance training to complement your {type} training.'**
+  String goalWeightGainAdvice(Object type);
+
+  /// No description provided for @goalGeneralFitnessAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintain a balanced mix of cardio, strength, and flexibility training.'**
+  String get goalGeneralFitnessAdvice;
+
+  /// No description provided for @goalStrengthAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus on progressive overload and compound movements for maximum strength gains.'**
+  String get goalStrengthAdvice;
+
+  /// No description provided for @goalEnduranceAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'Include interval training and gradually increase workout duration.'**
+  String get goalEnduranceAdvice;
+
+  /// No description provided for @goalFlexibilityAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'Add daily stretching and mobility work to your routine.'**
+  String get goalFlexibilityAdvice;
+
+  /// No description provided for @bmiGoalWeightLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on your BMI, consider focusing on fat-burning cardio combined with your sport.'**
+  String get bmiGoalWeightLoss;
+
+  /// No description provided for @bmiGoalWeightGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on your BMI, consider adding strength training with calorie-surplus nutrition.'**
+  String get bmiGoalWeightGain;
+
+  /// No description provided for @goalFromAssessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal based on your fitness profile'**
+  String get goalFromAssessment;
 }
 
 class _AppLocalizationsDelegate

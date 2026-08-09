@@ -984,4 +984,101 @@ class AppLocalizationsMy extends AppLocalizations {
   @override
   String get sportTipStretching =>
       'ဆန့်ကျင်မှု အချိန်ကို ဖြည့်တင်းစွာ တိုးမြှင့်ပါ နှင့် နေ့စဉ် တစ်နေ့မျှ မတူညီခြင်း မရှိဘဲ လေ့ကျင့်ပါ။';
+
+  @override
+  String get trainingInsight => 'သင်၏ လေ့ကျင့်မှု ထိုးထွင်းသိမြင်ချက်';
+
+  @override
+  String completedExercisesRecently(Object count, Object type) {
+    return 'သင်သည် မကြာသေးမီက $type လေ့ကျင့်ခန်း $count ခု ပြီးဆုံးခဲ့သည်။';
+  }
+
+  @override
+  String mainActivitySuggestion(Object type) {
+    return '$type သည် သင်၏ အဓိက လှုပ်ရှားမှုများထဲမှ တစ်ခုဖြစ်ပုံရသည်။';
+  }
+
+  @override
+  String get recommendedTraining => 'အကြံပြုထားသော လေ့ကျင့်မှု';
+
+  @override
+  String trainSessionsPerWeek(Object count) {
+    return 'တစ်ပတ်လျှင် $count ကြိမ်ခန့် လေ့ကျင့်ပါ။';
+  }
+
+  @override
+  String get focusAreas => 'အာရုံစိုက်ရမည့် နေရာများ';
+
+  @override
+  String yourGoalLabel(Object goal) {
+    return 'သင်၏ ပန်းတိုင်: $goal';
+  }
+
+  @override
+  String get focusLowerBodyStrength => 'အောက်ပိုင်း ခွန်အား';
+
+  @override
+  String get focusBalance => 'ဟန်ချက်ညီမှု';
+
+  @override
+  String get focusAgility => 'လျင်မြန်မှု';
+
+  @override
+  String get focusCoordination => 'ညှိနှိုင်းမှု';
+
+  @override
+  String get focusUpperBodyStrength => 'အပေါ်ပိုင်း ခွန်အား';
+
+  @override
+  String get focusCoreStrength => 'အလယ်ပိုင်း ခွန်အား';
+
+  @override
+  String get focusCardio => 'နှလုံး သွေးကြော ကြံ့ခိုင်မှု';
+
+  @override
+  String get focusFlexibility => 'ပျော့ပျောင်းမှု';
+
+  @override
+  String get focusEndurance => 'သက်လုံ';
+
+  @override
+  String get focusFullBody => 'ခန္ဓာကိုယ် အပြည့်အစုံ လေ့ကျင့်မှု';
+
+  @override
+  String goalWeightLossAdvice(Object type) {
+    return 'သင်၏ $type လေ့ကျင့်မှုကို ဖြည့်စွက်ရန် နှလုံးသွေးကြော လေ့ကျင့်ခန်းနှင့် ခန္ဓာကိုယ် အပြည့်အစုံ လေ့ကျင့်ခန်းများ ထည့်သွင်းပါ။';
+  }
+
+  @override
+  String goalWeightGainAdvice(Object type) {
+    return 'သင်၏ $type လေ့ကျင့်မှုကို ဖြည့်စွက်ရန် အားလေ့ကျင့်မှုနှင့် ခုခံလေ့ကျင့်မှု ထည့်သွင်းပါ။';
+  }
+
+  @override
+  String get goalGeneralFitnessAdvice =>
+      'နှလုံးသွေးကြော၊ ခွန်အားနှင့် ပျော့ပျောင်းမှု လေ့ကျင့်မှု ရောနှောထိန်းသိမ်းပါ။';
+
+  @override
+  String get goalStrengthAdvice =>
+      'အမြင့်ဆုံး ခွန်အား ရရှိရန် တိုးတက်သော ဝန်နှင့် ပေါင်းစပ်လှုပ်ရှားမှုများကို အာရုံစိုက်ပါ။';
+
+  @override
+  String get goalEnduranceAdvice =>
+      'အချိန်ပိုင်း လေ့ကျင့်မှု ထည့်သွင်းပြီး လေ့ကျင့်ခန်း ကြာချိန်ကို တဖြည်းဖြည်း တိုးမြှင့်ပါ။';
+
+  @override
+  String get goalFlexibilityAdvice =>
+      'နေ့စဉ် ဆန့်ကျင်မှုနှင့် လှုပ်ရှားနိုင်မှု လေ့ကျင့်ခန်း ထည့်သွင်းပါ။';
+
+  @override
+  String get bmiGoalWeightLoss =>
+      'သင်၏ BMI အရ၊ အဆီချ နှလုံးသွေးကြော လေ့ကျင့်ခန်းကို သင်၏ အားကစားနှင့် ပေါင်းစပ် အာရုံစိုက်ပါ။';
+
+  @override
+  String get bmiGoalWeightGain =>
+      'သင်၏ BMI အရ၊ ကယ်လိုရီ ပိုမိုစားသုံးမှုနှင့် အားလေ့ကျင့်မှု ထည့်သွင်းပါ။';
+
+  @override
+  String get goalFromAssessment =>
+      'သင်၏ ကျန်းမာရေး ပရိုဖိုင်အပေါ် အခြေခံသော ပန်းတိုင်';
 }

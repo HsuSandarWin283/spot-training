@@ -967,4 +967,100 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get sportTipStretching =>
       'Increase stretch duration gradually and maintain consistent daily practice.';
+
+  @override
+  String get trainingInsight => 'Your Training Insight';
+
+  @override
+  String completedExercisesRecently(Object count, Object type) {
+    return 'You\'ve completed $count $type exercises recently.';
+  }
+
+  @override
+  String mainActivitySuggestion(Object type) {
+    return 'It looks like $type is one of your main activities.';
+  }
+
+  @override
+  String get recommendedTraining => 'Recommended Training';
+
+  @override
+  String trainSessionsPerWeek(Object count) {
+    return 'Train around $count times per week.';
+  }
+
+  @override
+  String get focusAreas => 'Focus Areas';
+
+  @override
+  String yourGoalLabel(Object goal) {
+    return 'Your Goal: $goal';
+  }
+
+  @override
+  String get focusLowerBodyStrength => 'Lower-body strength';
+
+  @override
+  String get focusBalance => 'Balance';
+
+  @override
+  String get focusAgility => 'Agility';
+
+  @override
+  String get focusCoordination => 'Coordination';
+
+  @override
+  String get focusUpperBodyStrength => 'Upper-body strength';
+
+  @override
+  String get focusCoreStrength => 'Core strength';
+
+  @override
+  String get focusCardio => 'Cardio endurance';
+
+  @override
+  String get focusFlexibility => 'Flexibility';
+
+  @override
+  String get focusEndurance => 'Endurance';
+
+  @override
+  String get focusFullBody => 'Full-body training';
+
+  @override
+  String goalWeightLossAdvice(Object type) {
+    return 'Add cardio and full-body exercises to complement your $type training.';
+  }
+
+  @override
+  String goalWeightGainAdvice(Object type) {
+    return 'Add strength and resistance training to complement your $type training.';
+  }
+
+  @override
+  String get goalGeneralFitnessAdvice =>
+      'Maintain a balanced mix of cardio, strength, and flexibility training.';
+
+  @override
+  String get goalStrengthAdvice =>
+      'Focus on progressive overload and compound movements for maximum strength gains.';
+
+  @override
+  String get goalEnduranceAdvice =>
+      'Include interval training and gradually increase workout duration.';
+
+  @override
+  String get goalFlexibilityAdvice =>
+      'Add daily stretching and mobility work to your routine.';
+
+  @override
+  String get bmiGoalWeightLoss =>
+      'Based on your BMI, consider focusing on fat-burning cardio combined with your sport.';
+
+  @override
+  String get bmiGoalWeightGain =>
+      'Based on your BMI, consider adding strength training with calorie-surplus nutrition.';
+
+  @override
+  String get goalFromAssessment => 'Goal based on your fitness profile';
 }
