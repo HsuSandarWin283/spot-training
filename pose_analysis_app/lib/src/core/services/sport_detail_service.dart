@@ -24,7 +24,7 @@ class SportDetailService {
   Stream<List<Map<String, dynamic>>> getSports() {
     return _firestore
         .collection('sports')
-        .orderBy('name')
+        .orderBy('nameEn')
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => _normalizeSportData(doc.data(), doc.id))

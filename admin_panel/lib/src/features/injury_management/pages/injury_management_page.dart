@@ -7,6 +7,7 @@ import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/injury_management/providers/injury_providers.dart';
 import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart';
 import 'package:admin_panel/src/core/l10n/app_localizations.dart';
+import 'package:admin_panel/src/core/services/locale_provider.dart';
 
 class InjuryManagementPage extends ConsumerStatefulWidget {
   const InjuryManagementPage({super.key});
@@ -253,6 +254,7 @@ class _InjuryManagementPageState extends ConsumerState<InjuryManagementPage>
 
   Widget _buildDataTable(BuildContext context, WidgetRef ref,
       List<InjuryItem> items, InjuryDataType type) {
+    final currentLocale = ref.read(localeProvider);
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
@@ -277,29 +279,29 @@ class _InjuryManagementPageState extends ConsumerState<InjuryManagementPage>
                       DataCell(
                         ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 200),
-                          child: Text(
-                            item.title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: AdminColors.textPrimary,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 350),
-                          child: Text(
-                            item.description,
-                            style: const TextStyle(
-                                color: AdminColors.textSecondary),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
+                           child: Text(
+                             item.localizedTitle(currentLocale.languageCode),
+                             style: const TextStyle(
+                               fontWeight: FontWeight.w600,
+                               color: AdminColors.textPrimary,
+                             ),
+                             maxLines: 2,
+                             overflow: TextOverflow.ellipsis,
+                           ),
+                         ),
+                       ),
+                       DataCell(
+                         ConstrainedBox(
+                           constraints: const BoxConstraints(maxWidth: 350),
+                           child: Text(
+                             item.localizedDescription(currentLocale.languageCode),
+                             style: const TextStyle(
+                                 color: AdminColors.textSecondary),
+                             maxLines: 2,
+                             overflow: TextOverflow.ellipsis,
+                           ),
+                         ),
+                       ),
                       DataCell(
                         Text(
                           '${item.createdAt.day}/${item.createdAt.month}/${item.createdAt.year}',
@@ -350,13 +352,15 @@ class _InjuryManagementPageState extends ConsumerState<InjuryManagementPage>
 
   void _confirmDelete(BuildContext context, WidgetRef ref,
       InjuryItem item, InjuryDataType type) {
+    final currentLocale = ref.read(localeProvider);
+    final itemTitle = item.localizedTitle(currentLocale.languageCode);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(
             AppLocalizations.of(context)!.deleteType(_singularLabel(type))),
         content: Text(
-            AppLocalizations.of(context)!.areYouSureDeleteItem(item.title)),
+            AppLocalizations.of(context)!.areYouSureDeleteItem(itemTitle)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),

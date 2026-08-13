@@ -7,6 +7,7 @@ import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_providers.dart';
 import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart';
 import 'package:admin_panel/src/core/l10n/app_localizations.dart';
+import 'package:admin_panel/src/core/services/locale_provider.dart';
 
 class SportDetailPage extends ConsumerStatefulWidget {
   const SportDetailPage({super.key});
@@ -50,6 +51,7 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
     final sportId = ref.watch(selectedSportIdProvider);
     final sportName = ref.watch(selectedSportNameProvider);
     final searchQuery = ref.watch(sportDetailSearchQueryProvider);
+    final currentLocale = ref.read(localeProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,7 +132,7 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
                             const SizedBox(width: 6),
                             Flexible(
                               child: Text(
-                                type.label,
+                                _tabLabel(type, currentLocale.languageCode),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -208,6 +210,19 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
     );
   }
 
+  String _tabLabel(SportDetailType type, String languageCode) {
+    switch (type) {
+      case SportDetailType.rules:
+        return languageCode == 'my' ? 'စည်းမျဉ်းများ' : 'Rules';
+      case SportDetailType.trainingMethods:
+        return languageCode == 'my' ? 'လေ့ကျင့်နည်းများ' : 'Training Methods';
+      case SportDetailType.injuryPreventions:
+        return languageCode == 'my' ? 'ဒဏ်ခံမှုဆိုင်ရာ' : 'Injury Prevention';
+      case SportDetailType.fitnessRequirements:
+        return languageCode == 'my' ? 'ကျန်းမာရေး အခန်းကဏ္ဍများ' : 'Fitness Requirements';
+    }
+  }
+
   IconData _tabIcon(SportDetailType type) {
     switch (type) {
       case SportDetailType.rules:
@@ -226,19 +241,19 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
     final itemsAsync = ref.watch(
       sportDetailListProvider((sportId, type)),
     );
+    final currentLocale = ref.read(localeProvider);
 
     return itemsAsync.when(
       data: (items) {
         final filtered = searchQuery.isEmpty
             ? items
             : items
-                .where((item) =>
-                    item.title
-                        .toLowerCase()
-                        .contains(searchQuery.toLowerCase()) ||
-                    item.description
-                        .toLowerCase()
-                        .contains(searchQuery.toLowerCase()))
+                .where((item) {
+                  final title = item.localizedTitle(currentLocale.languageCode);
+                  final description = item.localizedDescription(currentLocale.languageCode);
+                  return title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+                      description.toLowerCase().contains(searchQuery.toLowerCase());
+                })
                 .toList();
 
         if (filtered.isEmpty) {
@@ -285,6 +300,7 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
 
   Widget _buildDataTable(BuildContext context, WidgetRef ref,
       List<SportDetailItem> items, SportDetailType type) {
+    final currentLocale = ref.read(localeProvider);
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
@@ -305,29 +321,29 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
                       DataCell(
                         ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 200),
-                          child: Text(
-                            item.title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: AdminColors.textPrimary,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 350),
-                          child: Text(
-                            item.description,
-                            style:
-                                const TextStyle(color: AdminColors.textSecondary),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
+                           child: Text(
+                             item.localizedTitle(currentLocale.languageCode),
+                             style: const TextStyle(
+                               fontWeight: FontWeight.w600,
+                               color: AdminColors.textPrimary,
+                             ),
+                             maxLines: 2,
+                             overflow: TextOverflow.ellipsis,
+                           ),
+                         ),
+                       ),
+                       DataCell(
+                         ConstrainedBox(
+                           constraints: const BoxConstraints(maxWidth: 350),
+                           child: Text(
+                             item.localizedDescription(currentLocale.languageCode),
+                             style:
+                                 const TextStyle(color: AdminColors.textSecondary),
+                             maxLines: 2,
+                             overflow: TextOverflow.ellipsis,
+                           ),
+                         ),
+                       ),
                       DataCell(
                         Text(
                           '${item.createdAt.day}/${item.createdAt.month}/${item.createdAt.year}',
@@ -380,12 +396,14 @@ class _SportDetailPageState extends ConsumerState<SportDetailPage>
 
   void _confirmDelete(BuildContext context, WidgetRef ref,
       SportDetailItem item, SportDetailType type) {
+    final currentLocale = ref.read(localeProvider);
+    final itemTitle = item.localizedTitle(currentLocale.languageCode);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('Delete ${type.singularLabel}'),
         content: Text(
-            'Are you sure you want to delete "${item.title}"?'),
+            'Are you sure you want to delete "$itemTitle"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),

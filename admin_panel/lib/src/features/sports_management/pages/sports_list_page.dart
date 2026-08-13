@@ -9,6 +9,7 @@ import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart
 import 'package:admin_panel/src/features/auth/providers/admin_auth_provider.dart';
 import 'package:admin_panel/src/features/sport_detail/providers/sport_detail_providers.dart';
 import 'package:admin_panel/src/core/l10n/app_localizations.dart';
+import 'package:admin_panel/src/core/services/locale_provider.dart';
 
 class SportsListPage extends ConsumerWidget {
   const SportsListPage({super.key});
@@ -16,6 +17,7 @@ class SportsListPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sportsAsync = ref.watch(sportsListProvider);
+    final currentLocale = ref.watch(localeProvider);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -66,7 +68,7 @@ class SportsListPage extends ConsumerWidget {
                   subtitle: AppLocalizations.of(context)!.addFirstSport,
                 );
               }
-              return _buildSportsTable(context, ref, sports);
+               return _buildSportsTable(context, ref, sports, currentLocale);
             },
             loading: () => const Center(
               child: Padding(
@@ -86,8 +88,8 @@ class SportsListPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildSportsTable(
-      BuildContext context, WidgetRef ref, List<SportModel> sports) {
+  Widget _buildSportsTable(BuildContext context, WidgetRef ref,
+      List<SportModel> sports, Locale currentLocale) {
     return AdminCard(
       padding: EdgeInsets.zero,
       child: SingleChildScrollView(
@@ -144,13 +146,13 @@ class SportsListPage extends ConsumerWidget {
                           ),
                         ),
                       const SizedBox(width: 12),
-                      Text(
-                        sport.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AdminColors.textPrimary,
-                        ),
-                      ),
+                       Text(
+                         sport.localizedName(currentLocale.languageCode),
+                         style: const TextStyle(
+                           fontWeight: FontWeight.w600,
+                           color: AdminColors.textPrimary,
+                         ),
+                       ),
                     ],
                   ),
                 ),
@@ -158,7 +160,7 @@ class SportsListPage extends ConsumerWidget {
                   SizedBox(
                     width: 200,
                     child: Text(
-                      sport.description,
+                      sport.localizedDescription(currentLocale.languageCode),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(color: AdminColors.textSecondary),
@@ -182,7 +184,7 @@ class SportsListPage extends ConsumerWidget {
                           ref.read(selectedSportIdProvider.notifier).state =
                               sport.id;
                           ref.read(selectedSportNameProvider.notifier).state =
-                              sport.name;
+                              sport.localizedName(currentLocale.languageCode);
                           ref.read(adminViewProvider.notifier).state =
                               AdminView.sportDetail;
                         },
@@ -218,11 +220,13 @@ class SportsListPage extends ConsumerWidget {
 
   void _confirmDelete(
       BuildContext context, WidgetRef ref, SportModel sport) {
+    final currentLocale = ref.read(localeProvider);
+    final sportName = sport.localizedName(currentLocale.languageCode);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.deleteSport),
-        content: Text('Are you sure you want to delete "${sport.name}"?'),
+        content: Text('Are you sure you want to delete "$sportName"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
@@ -235,12 +239,12 @@ class SportsListPage extends ConsumerWidget {
                 await ref.read(sportServiceProvider).deleteSport(sport.id);
                 ref.invalidate(sportsListProvider);
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${sport.name} deleted successfully'),
-                      backgroundColor: AdminColors.success,
-                    ),
-                  );
+                   ScaffoldMessenger.of(context).showSnackBar(
+                     SnackBar(
+                       content: Text('$sportName deleted successfully'),
+                       backgroundColor: AdminColors.success,
+                     ),
+                   );
                 }
               } catch (e) {
                 if (context.mounted) {

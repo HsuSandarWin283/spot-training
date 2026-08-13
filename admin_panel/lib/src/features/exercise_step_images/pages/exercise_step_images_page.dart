@@ -7,6 +7,7 @@ import 'package:admin_panel/src/core/widgets/admin_widgets.dart';
 import 'package:admin_panel/src/features/exercise_step_images/providers/exercise_step_image_providers.dart';
 import 'package:admin_panel/src/features/admin_shell/pages/admin_shell_page.dart';
 import 'package:admin_panel/src/core/l10n/app_localizations.dart';
+import 'package:admin_panel/src/core/services/locale_provider.dart';
 
 class ExerciseStepImagesPage extends ConsumerWidget {
   const ExerciseStepImagesPage({super.key});
@@ -14,6 +15,7 @@ class ExerciseStepImagesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final postsAsync = ref.watch(exerciseStepImagePostsProvider);
+    final currentLocale = ref.watch(localeProvider);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -67,7 +69,7 @@ class ExerciseStepImagesPage extends ConsumerWidget {
                   subtitle: AppLocalizations.of(context)!.createFirstPost,
                 );
               }
-              return _buildPostsTable(context, ref, posts);
+               return _buildPostsTable(context, ref, posts, currentLocale);
             },
             loading: () => const Center(
               child: Padding(
@@ -87,7 +89,7 @@ class ExerciseStepImagesPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildPostsTable(BuildContext context, WidgetRef ref, List<ExerciseStepImagePost> posts) {
+  Widget _buildPostsTable(BuildContext context, WidgetRef ref, List<ExerciseStepImagePost> posts, Locale currentLocale) {
     return AdminCard(
       padding: EdgeInsets.zero,
       child: LayoutBuilder(
@@ -112,7 +114,7 @@ class ExerciseStepImagesPage extends ConsumerWidget {
                           ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 200),
                             child: Text(
-                              post.title,
+                              post.localizedTitle(currentLocale.languageCode),
                               style: const TextStyle(
                                 color: AdminColors.textPrimary,
                                 fontSize: 13,
@@ -206,12 +208,14 @@ class ExerciseStepImagesPage extends ConsumerWidget {
 
   void _confirmDelete(
       BuildContext context, WidgetRef ref, ExerciseStepImagePost post) {
+    final currentLocale = ref.read(localeProvider);
+    final postTitle = post.localizedTitle(currentLocale.languageCode);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.deletePost),
         content: Text(
-            'Are you sure you want to delete "${post.title}" (${post.type}) with ${post.itemCount} image(s)? This cannot be undone.'),
+            'Are you sure you want to delete "$postTitle" (${post.type}) with ${post.itemCount} image(s)? This cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
