@@ -825,7 +825,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get dailyActivityQuestion => 'သင်၏ နေ့စဉ် လှုပ်ရှားမှု အဆင့်က ဘာလဲ?';
 
   @override
-  String get sedentary => 'ထိုင်နေထသာ';
+  String get sedentary => 'အထိုင်များ';
 
   @override
   String get light => 'အနည်းငယ်';
@@ -1081,4 +1081,10 @@ class AppLocalizationsMy extends AppLocalizations {
   @override
   String get goalFromAssessment =>
       'သင်၏ ကျန်းမာရေး ပရိုဖိုင်အပေါ် အခြေခံသော ပန်းတိုင်';
+
+  @override
+  String get seeMore => 'ပိုမိုကြည့်ရန်';
+
+  @override
+  String get seeLess => 'ပိုငယ်';
 }

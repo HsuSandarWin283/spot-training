@@ -285,15 +285,15 @@ class _PostCardState extends State<_PostCard>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      widget.title,
-                      style: TextStyle(
-                        color: AppColors.txtPrimary(context),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                     Text(
+                       widget.title,
+                       style: TextStyle(
+                         color: AppColors.txtPrimary(context),
+                         fontSize: 16,
+                         fontWeight: FontWeight.w600,
+                       ),
+                       maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
                     Row(

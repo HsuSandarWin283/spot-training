@@ -1063,4 +1063,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get goalFromAssessment => 'Goal based on your fitness profile';
+
+  @override
+  String get seeMore => 'See more';
+
+  @override
+  String get seeLess => 'See less';
 }

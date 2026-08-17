@@ -100,7 +100,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
         final thumbnailUrl = sportData?['thumbnailUrl'] ?? '';
         final icon = _fallbackSport.icon;
 
-        return _buildHeaderContent(
+        return _SportHeaderContent(
           name: name,
           description: description,
           imageUrl: thumbnailUrl,
@@ -110,7 +110,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
       },
       loading: () {
         final langCode = ref.read(localeProvider).languageCode;
-        return _buildHeaderContent(
+        return _SportHeaderContent(
           name: _fallbackSport.localizedName(langCode),
           description: _fallbackSport.localizedDescription(langCode),
           imageUrl: '',
@@ -120,7 +120,7 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
       },
       error: (_, __) {
         final langCode = ref.read(localeProvider).languageCode;
-        return _buildHeaderContent(
+        return _SportHeaderContent(
           name: _fallbackSport.localizedName(langCode),
           description: _fallbackSport.localizedDescription(langCode),
           imageUrl: '',
@@ -128,114 +128,6 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
           sportColor: sportColor,
         );
       },
-    );
-  }
-
-  Widget _buildHeaderContent({
-    required String name,
-    required String description,
-    required String imageUrl,
-    required String icon,
-    required Color sportColor,
-  }) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [sportColor.withOpacity(0.4), AppColors.background],
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 48,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon:
-                            const Icon(Icons.arrow_back_ios_new, size: 20),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                      const Spacer(),
-                      Text(
-                        name,
-                        style: TextStyle(
-                          color: AppColors.txtPrimary(context),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const Spacer(),
-                      const SizedBox(width: 48),
-                    ],
-                  ),
-                ),
-              ),
-              if (imageUrl.isNotEmpty)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.network(
-                    imageUrl,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) =>
-                        _buildSportIcon(icon, sportColor),
-                  ),
-                )
-              else
-                _buildSportIcon(icon, sportColor),
-              const SizedBox(height: 8),
-              Text(
-                name,
-                style: TextStyle(
-                  color: AppColors.txtPrimary(context),
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 32),
-                child: Text(
-                  description,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: AppColors.txtSecondary(context),
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSportIcon(String icon, Color sportColor) {
-    return Container(
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        color: sportColor.withOpacity(0.2),
-        shape: BoxShape.circle,
-        border: Border.all(color: sportColor.withOpacity(0.4), width: 2),
-      ),
-      child: Center(
-        child: Text(icon, style: TextStyle(fontSize: 32)),
-      ),
     );
   }
 
@@ -507,6 +399,151 @@ class _SportDetailScreenState extends ConsumerState<SportDetailScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SportHeaderContent extends StatefulWidget {
+  final String name;
+  final String description;
+  final String imageUrl;
+  final String icon;
+  final Color sportColor;
+
+  const _SportHeaderContent({
+    required this.name,
+    required this.description,
+    required this.imageUrl,
+    required this.icon,
+    required this.sportColor,
+  });
+
+  @override
+  State<_SportHeaderContent> createState() => _SportHeaderContentState();
+}
+
+class _SportHeaderContentState extends State<_SportHeaderContent> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [widget.sportColor.withOpacity(0.4), AppColors.background],
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 48,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                      const Spacer(),
+                      Text(
+                        widget.name,
+                        style: TextStyle(
+                          color: AppColors.txtPrimary(context),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Spacer(),
+                      const SizedBox(width: 48),
+                    ],
+                  ),
+                ),
+              ),
+              if (widget.imageUrl.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    widget.imageUrl,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildSportIcon(
+                      widget.icon,
+                      widget.sportColor,
+                    ),
+                  ),
+                )
+              else
+                _buildSportIcon(widget.icon, widget.sportColor),
+              const SizedBox(height: 8),
+              Text(
+                widget.name,
+                style: TextStyle(
+                  color: AppColors.txtPrimary(context),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  children: [
+                    Text(
+                      widget.description,
+                      textAlign: TextAlign.center,
+                      maxLines: _expanded ? null : 2,
+                      overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppColors.txtSecondary(context),
+                        fontSize: 12,
+                      ),
+                    ),
+                    if (widget.description.isNotEmpty)
+                      GestureDetector(
+                        onTap: () => setState(() => _expanded = !_expanded),
+                        child: Text(
+                          _expanded
+                              ? AppLocalizations.of(context)!.seeLess
+                              : AppLocalizations.of(context)!.seeMore,
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSportIcon(String icon, Color sportColor) {
+    return Container(
+      width: 64,
+      height: 64,
+      decoration: BoxDecoration(
+        color: sportColor.withOpacity(0.2),
+        shape: BoxShape.circle,
+        border: Border.all(color: sportColor.withOpacity(0.4), width: 2),
+      ),
+      child: Center(
+        child: Text(icon, style: TextStyle(fontSize: 32)),
       ),
     );
   }

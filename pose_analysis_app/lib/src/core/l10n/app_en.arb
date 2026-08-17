@@ -382,5 +382,7 @@
   "goalFlexibilityAdvice": "Add daily stretching and mobility work to your routine.",
   "bmiGoalWeightLoss": "Based on your BMI, consider focusing on fat-burning cardio combined with your sport.",
   "bmiGoalWeightGain": "Based on your BMI, consider adding strength training with calorie-surplus nutrition.",
-  "goalFromAssessment": "Goal based on your fitness profile"
+  "goalFromAssessment": "Goal based on your fitness profile",
+  "seeMore": "See more",
+  "seeLess": "See less"
 }

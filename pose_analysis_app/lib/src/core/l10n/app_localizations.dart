@@ -2071,6 +2071,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Goal based on your fitness profile'**
   String get goalFromAssessment;
+
+  /// No description provided for @seeMore.
+  ///
+  /// In en, this message translates to:
+  /// **'See more'**
+  String get seeMore;
+
+  /// No description provided for @seeLess.
+  ///
+  /// In en, this message translates to:
+  /// **'See less'**
+  String get seeLess;
 }
 
 class _AppLocalizationsDelegate

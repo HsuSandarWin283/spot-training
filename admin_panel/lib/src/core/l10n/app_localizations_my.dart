@@ -9,7 +9,7 @@ class AppLocalizationsMy extends AppLocalizations {
   AppLocalizationsMy([String locale = 'my']) : super(locale);
 
   @override
-  String get adminPanel => 'အုပ်ချုပ်ရေး ပြား';
+  String get adminPanel => 'အက်ဒမင် ဘုတ်';
 
   @override
   String get aiSportsTraining => 'AI Sports Training';
@@ -27,7 +27,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get users => 'သုံးစွဲသူများ';
 
   @override
-  String get admin => 'အုပ်ချုပ်ရေးမှူး';
+  String get admin => 'အက်ဒမင်';
 
   @override
   String get confirmLogout => 'ထွက်မှု အတည်ပြုရန်';
@@ -72,7 +72,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get manageAdminAccount =>
-      'သင်၏ အုပ်ချုပ်ရေးမှူး အကောင့်ကို စီမံခန့်ခွဲပါ';
+      'သင်၏ အက်ဒမင် အကောင့်ကို စီမံခန့်ခွဲပါ';
 
   @override
   String get editProfile => 'ပရိုဖိုင် ပြင်ဆင်ရန်';
@@ -389,7 +389,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get type => 'အမျိုးအစား';
 
   @override
-  String get items => 'ခုတင်များ';
+  String get items => 'အချက်များ';
 
   @override
   String imageCount(Object count, Object plural) {
