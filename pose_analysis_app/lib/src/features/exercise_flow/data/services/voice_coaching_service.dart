@@ -46,7 +46,7 @@ class VoiceCoachingService {
   }
 
   Future<void> speakFeedback(List<String> corrections, {String languageCode = 'my'}) async {
-    if (!_enabled || _cloudTts.isPlaying || corrections.isEmpty || !_initialized) return;
+    if (!_enabled || corrections.isEmpty || !_initialized) return;
 
     final newMessage = corrections.first;
     if (newMessage == _lastSpokenMessage) return;
@@ -88,34 +88,52 @@ class VoiceCoachingService {
 
   String _toMyanmar(String english) {
     switch (english) {
-      case 'Raise your left arm':
-        return 'ဘယ်ဘက်လက်ကို အပေါ်ဘက် မြှောက်ပါ';
-      case 'Lower your left arm':
-        return 'ဘယ်ဘက်လက်ကို အောက်ချပါ';
-      case 'Raise your right arm':
-        return 'ညာဘက်လက်ကို အပေါ်ဘက် မြှောက်ပါ';
-      case 'Lower your right arm':
-        return 'ညာဘက်လက်ကို အောက်ချပါ';
-      case 'Bend your left knee':
-        return 'ဘယ်ဘက်ဒူးကို အနည်းငယ် ကွေးပါ';
-      case 'Straighten your left leg':
-        return 'ဘယ်ဘက်ဒူးကို ဆန့်တန်းပါ';
-      case 'Bend your right knee':
-        return 'ညာဘက်ဒူးကို အနည်းငယ် ကွေးပါ';
-      case 'Straighten your right leg':
-        return 'ညာဘက်ဒူးကို ဆန့်တန်းပါ';
-      case 'Straighten your back':
-        return 'ကျောကို တည့်တည့်ထားပါ';
+      case 'Raise your left arm slightly':
+        return 'ဘယ်လက် အပေါ် နည်းနည်းမြှောက်ပါ';
+      case 'Lower your left arm slightly':
+        return 'ဘယ်လက် အောက် နည်းနည်းချပါ';
+      case 'Raise your right arm slightly':
+        return 'ညာလက် အပေါ် နည်းနည်းမြှောက်ပါ';
+      case 'Lower your right arm slightly':
+        return 'ညာလက် အောက် နည်းနည်းချပါ';
+      case 'Bend your left knee slightly more':
+        return 'ဘယ်ဒူး နည်းနည်းပိုကွေးပါ';
+      case 'Straighten your left leg slightly':
+        return 'ဘယ်ဘက်ခြေထောက်ကို အနည်းငယ်ဖြောင့်ထားပါ';
+      case 'Bend your right knee slightly more':
+        return 'ညာဒူး နည်းနည်းပိုကွေးပါ';
+      case 'Straighten your right leg slightly':
+        return 'ညာဘက်ခြေထောက်ကို အနည်းငယ်ဖြောင့်ထားပါ';
+      case 'Lean backward slightly':
+        return 'ကိုယ်ခန္ဓာ နောက် နည်းနည်းဆုတ်ပါ';
       case 'Lean forward slightly':
-        return 'ခန္ဓာကိုယ်ကို အနည်းငယ် ရှေ့ဘက် ညွတ်ပါ';
+        return 'ကိုယ်ခန္ဓာ ရှေ့ နည်းနည်းစောင်းပါ';
+      case 'Move your left foot slightly left':
+        return 'ဘယ်ခြေ ဘယ် နည်းနည်းရွှေ့ပါ';
+      case 'Move your left foot slightly right':
+        return 'ဘယ်ခြေ ညာ နည်းနည်းရွှေ့ပါ';
+      case 'Move your right foot slightly left':
+        return 'ညာခြေ ဘယ် နည်းနည်းရွှေ့ပါ';
+      case 'Move your right foot slightly right':
+        return 'ညာခြေ ညာ နည်းနည်းရွှေ့ပါ';
+      case 'Relax your shoulders slightly':
+        return 'ပခုံး နည်းနည်းဖြေလျှော့ပါ';
       case 'Match the reference pose':
         return 'ပုံတူကူးပါ';
       case 'Step back to show full body':
         return 'ခြေလှမ်းနောက်ဆုတ်ပါ';
+      case 'Full body not shown':
+        return 'ကိုယ်ခန္ဓာအပြည့်မပေါ်ပါ';
+      case 'No person found':
+        return 'လူမတွေ့ပါ';
       case 'No person detected':
         return 'လူတစ်ယောက် မတွေ့ပါ။ ကင်မရာရှေ့ ရပ်ပါ';
       case 'Not enough body visible':
         return 'ခန္ဓာကိုယ် အပြည့်အစုံ မပေါ်သေးပါ။ နောက်ဆုတ်ပါ';
+      case 'Successful, the next step will be displayed in 5 seconds.':
+        return 'အောင်မြင်သွားပါပြီ နောက်တဆင့်ကို ၅စက္ကန့်နေရင်ဖော်ပြပေးပါမည်';
+      case 'Successfully completed, press the button to proceed to the next step.':
+        return 'အောင်မြင်သွားပါပြီ နောက်တဆင့်တက်ဖိုအတွက် ခလုတ်ကိုနှိပ်ပါ';
       default:
         return english;
     }

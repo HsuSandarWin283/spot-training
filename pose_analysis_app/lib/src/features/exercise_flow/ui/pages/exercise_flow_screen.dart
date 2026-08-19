@@ -33,6 +33,44 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
   Timer? _autoNextTimer;
   String _currentFeedback = '';
 
+  String _translateFeedback(String english) {
+    if (ref.read(localeProvider).languageCode != 'my') return english;
+    switch (english) {
+      case 'Raise your left arm slightly':
+        return 'ဘယ်လက် အပေါ် နည်းနည်းမြှောက်ပါ';
+      case 'Lower your left arm slightly':
+        return 'ဘယ်လက် အောက် နည်းနည်းချပါ';
+      case 'Raise your right arm slightly':
+        return 'ညာလက် အပေါ် နည်းနည်းမြှောက်ပါ';
+      case 'Lower your right arm slightly':
+        return 'ညာလက် အောက် နည်းနည်းချပါ';
+      case 'Straighten your left leg slightly':
+        return 'ဘယ်ဘက်ခြေထောက်ကို အနည်းငယ်ဖြောင့်ထားပါ';
+      case 'Bend your left knee slightly more':
+        return 'ဘယ်ဒူး နည်းနည်းပိုကွေးပါ';
+      case 'Straighten your right leg slightly':
+        return 'ညာဘက်ခြေထောက်ကို အနည်းငယ်ဖြောင့်ထားပါ';
+      case 'Bend your right knee slightly more':
+        return 'ညာဒူး နည်းနည်းပိုကွေးပါ';
+      case 'Lean backward slightly':
+        return 'ကိုယ်ခန္ဓာ နောက် နည်းနည်းဆုတ်ပါ';
+      case 'Lean forward slightly':
+        return 'ကိုယ်ခန္ဓာ ရှေ့ နည်းနည်းစောင်းပါ';
+      case 'Move your left foot slightly left':
+        return 'ဘယ်ခြေ ဘယ် နည်းနည်းရွှေ့ပါ';
+      case 'Move your left foot slightly right':
+        return 'ဘယ်ခြေ ညာ နည်းနည်းရွှေ့ပါ';
+      case 'Move your right foot slightly left':
+        return 'ညာခြေ ဘယ် နည်းနည်းရွှေ့ပါ';
+      case 'Move your right foot slightly right':
+        return 'ညာခြေ ညာ နည်းနည်းရွှေ့ပါ';
+      case 'Relax your shoulders slightly':
+        return 'ပခုံး နည်းနည်းဖြေလျှော့ပါ';
+      default:
+        return english;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -127,19 +165,25 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
           voiceService.setEnabled(_voiceEnabled);
           final langCode = ref.read(localeProvider).languageCode;
 
-          if (result.isSuccessful) {
+          if (!result.isBodyVisible) {
+            if (mounted) {
+              setState(() => _currentFeedback = AppLocalizations.of(context)!.fullBodyNotShown);
+            }
+            voiceService.speakFeedback([AppLocalizations.of(context)!.fullBodyNotShown], languageCode: langCode);
+          } else if (result.isSuccessful) {
             ref.read(stepControllerProvider(widget.exercise.steps).notifier)
                 .onStepSuccess(result.accuracy, result.angleDifferences);
 
             voiceService.speakSuccess(languageCode: langCode);
 
             if (mounted) {
-              setState(() => _currentFeedback = AppLocalizations.of(context)!.stepComplete);
-
               if (stepState.isAutoNext) {
-                _autoNextTimer = Timer(const Duration(seconds: 1), () {
+                setState(() => _currentFeedback = AppLocalizations.of(context)!.successAutoNext);
+                _autoNextTimer = Timer(const Duration(seconds: 5), () {
                   _advanceStep();
                 });
+              } else {
+                setState(() => _currentFeedback = AppLocalizations.of(context)!.successManualNext);
               }
             }
           } else {
@@ -148,16 +192,17 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                 .detectRequiredCorrections(
                   userAngles: result.userAngles,
                   refAngles: stepState.currentStep!.poseAngles,
+                  userLandmarks: result.userLandmarks,
                 );
 
             voiceService.speakFeedback(corrections, languageCode: langCode);
 
             if (mounted && corrections.isNotEmpty) {
-              setState(() => _currentFeedback = corrections.first);
+              setState(() => _currentFeedback = _translateFeedback(corrections.first));
             }
           }
         } else if (mounted) {
-          setState(() => _currentFeedback = AppLocalizations.of(context)!.noPersonDetected);
+          setState(() => _currentFeedback = AppLocalizations.of(context)!.noPersonFound);
         }
       } catch (_) {}
 
@@ -536,11 +581,14 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
   }
 
   Widget _buildAccuracyBar(ExerciseStepState stepState) {
-    final color = stepState.accuracy >= 90
-        ? AppColors.success
-        : stepState.accuracy >= 50
-            ? AppColors.warning
-            : AppColors.error;
+    final isBodyNotVisible = _currentFeedback == AppLocalizations.of(context)!.fullBodyNotShown;
+    final color = isBodyNotVisible
+        ? AppColors.error
+        : (stepState.accuracy >= 90
+            ? AppColors.success
+            : stepState.accuracy >= 50
+                ? AppColors.warning
+                : AppColors.error);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -554,21 +602,22 @@ class _ExerciseFlowScreenState extends ConsumerState<ExerciseFlowScreen> {
                   : (_currentFeedback.isEmpty ? AppLocalizations.of(context)!.analyzing : _currentFeedback),
               style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12),
             ),
-            Text(
-              '${stepState.accuracy.toStringAsFixed(0)}%',
-              style: TextStyle(
-                color: color,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            if (!isBodyNotVisible)
+              Text(
+                '${stepState.accuracy.toStringAsFixed(0)}%',
+                style: TextStyle(
+                  color: color,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
           ],
         ),
         const SizedBox(height: 6),
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
-            value: stepState.accuracy / 100,
+            value: isBodyNotVisible ? null : (stepState.accuracy / 100),
             minHeight: 6,
             backgroundColor: Colors.white.withOpacity(0.15),
             valueColor: AlwaysStoppedAnimation<Color>(color),

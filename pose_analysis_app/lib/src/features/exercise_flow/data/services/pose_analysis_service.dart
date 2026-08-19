@@ -7,12 +7,16 @@ class PoseAnalysisResult {
   final double accuracy;
   final Map<String, double> angleDifferences;
   final bool isSuccessful;
+  final Map<String, List<double>>? userLandmarks;
+  final bool isBodyVisible;
 
   PoseAnalysisResult({
     required this.userAngles,
     required this.accuracy,
     required this.angleDifferences,
     required this.isSuccessful,
+    this.userLandmarks,
+    this.isBodyVisible = true,
   });
 }
 
@@ -25,7 +29,48 @@ class PoseAnalysisService {
   }) {
     final userAngles = _calculateAngles(pose);
     final result = _compareWithReference(userAngles, referenceStep.poseAngles);
-    return result;
+    final lm = <String, List<double>>{};
+    final mapping = {
+      PoseLandmarkType.nose: 'nose',
+      PoseLandmarkType.leftShoulder: 'leftShoulder',
+      PoseLandmarkType.rightShoulder: 'rightShoulder',
+      PoseLandmarkType.leftElbow: 'leftElbow',
+      PoseLandmarkType.rightElbow: 'rightElbow',
+      PoseLandmarkType.leftHip: 'leftHip',
+      PoseLandmarkType.rightHip: 'rightHip',
+      PoseLandmarkType.leftKnee: 'leftKnee',
+      PoseLandmarkType.rightKnee: 'rightKnee',
+      PoseLandmarkType.leftAnkle: 'leftAnkle',
+      PoseLandmarkType.rightAnkle: 'rightAnkle',
+      PoseLandmarkType.leftWrist: 'leftWrist',
+      PoseLandmarkType.rightWrist: 'rightWrist',
+    };
+    for (final entry in mapping.entries) {
+      final landmark = pose.landmarks[entry.key];
+      if (landmark != null) {
+        lm[entry.value] = [landmark.x, landmark.y];
+      }
+    }
+    final nose = pose.landmarks[PoseLandmarkType.nose];
+    final leftAnkle = pose.landmarks[PoseLandmarkType.leftAnkle];
+    final rightAnkle = pose.landmarks[PoseLandmarkType.rightAnkle];
+    final isBodyVisible = nose != null &&
+        nose.likelihood != null &&
+        nose.likelihood! > 0.5 &&
+        leftAnkle != null &&
+        leftAnkle.likelihood != null &&
+        leftAnkle.likelihood! > 0.5 &&
+        rightAnkle != null &&
+        rightAnkle.likelihood != null &&
+        rightAnkle.likelihood! > 0.5;
+    return PoseAnalysisResult(
+      userAngles: result.userAngles,
+      accuracy: isBodyVisible ? result.accuracy : 0,
+      angleDifferences: result.angleDifferences,
+      isSuccessful: isBodyVisible ? result.isSuccessful : false,
+      userLandmarks: lm,
+      isBodyVisible: isBodyVisible,
+    );
   }
 
   Map<String, double> _calculateAngles(Pose pose) {
@@ -146,6 +191,7 @@ class PoseAnalysisService {
   List<String> detectRequiredCorrections({
     required Map<String, double> userAngles,
     required Map<String, double> refAngles,
+    Map<String, List<double>>? userLandmarks,
   }) {
     final corrections = <String>[];
 
@@ -160,6 +206,10 @@ class PoseAnalysisService {
       if (correction != null) corrections.add(correction);
     }
 
+    if (userLandmarks != null) {
+      corrections.addAll(_getPositionCorrections(userLandmarks));
+    }
+
     return corrections;
   }
 
@@ -168,17 +218,48 @@ class PoseAnalysisService {
 
     switch (angleName) {
       case 'leftElbowAngle':
-        return direction == 'raise' ? 'Raise your left arm' : 'Lower your left arm';
+        return direction == 'raise' ? 'Lower your left arm slightly' : 'Raise your left arm slightly';
       case 'rightElbowAngle':
-        return direction == 'raise' ? 'Raise your right arm' : 'Lower your right arm';
+        return direction == 'raise' ? 'Lower your right arm slightly' : 'Raise your right arm slightly';
       case 'leftKneeAngle':
-        return direction == 'raise' ? 'Straighten your left leg' : 'Bend your left knee';
+        return direction == 'raise' ? 'Straighten your left leg slightly' : 'Bend your left knee slightly more';
       case 'rightKneeAngle':
-        return direction == 'raise' ? 'Straighten your right leg' : 'Bend your right knee';
+        return direction == 'raise' ? 'Straighten your right leg slightly' : 'Bend your right knee slightly more';
       case 'bodyTilt':
-        return user > ref ? 'Straighten your back' : 'Lean forward slightly';
+        return user > ref ? 'Lean backward slightly' : 'Lean forward slightly';
       default:
         return null;
     }
+  }
+
+  List<String> _getPositionCorrections(Map<String, List<double>> lm) {
+    final corrections = <String>[];
+
+    if (lm['leftHip'] != null && lm['leftAnkle'] != null) {
+      final offset = lm['leftAnkle']![0] - lm['leftHip']![0];
+      if (offset > 0.05) {
+        corrections.add('Move your left foot slightly right');
+      } else if (offset < -0.05) {
+        corrections.add('Move your left foot slightly left');
+      }
+    }
+
+    if (lm['rightHip'] != null && lm['rightAnkle'] != null) {
+      final offset = lm['rightAnkle']![0] - lm['rightHip']![0];
+      if (offset > 0.05) {
+        corrections.add('Move your right foot slightly right');
+      } else if (offset < -0.05) {
+        corrections.add('Move your right foot slightly left');
+      }
+    }
+
+    if (lm['leftShoulder'] != null && lm['rightShoulder'] != null) {
+      final diff = (lm['leftShoulder']![1] - lm['rightShoulder']![1]).abs();
+      if (diff > 0.04) {
+        corrections.add('Relax your shoulders slightly');
+      }
+    }
+
+    return corrections;
   }
 }

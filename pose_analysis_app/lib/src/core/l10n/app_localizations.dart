@@ -1262,6 +1262,18 @@ abstract class AppLocalizations {
   /// **'Not enough body visible'**
   String get notEnoughBodyVisible;
 
+  /// No description provided for @fullBodyNotShown.
+  ///
+  /// In en, this message translates to:
+  /// **'Full body not shown'**
+  String get fullBodyNotShown;
+
+  /// No description provided for @noPersonFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No person found'**
+  String get noPersonFound;
+
   /// No description provided for @excellentForm.
   ///
   /// In en, this message translates to:
@@ -1279,6 +1291,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Keep adjusting your pose'**
   String get keepAdjustingPose;
+
+  /// No description provided for @successAutoNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Successful, the next step will be displayed in 5 seconds.'**
+  String get successAutoNext;
+
+  /// No description provided for @successManualNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully completed, press the button to proceed to the next step.'**
+  String get successManualNext;
 
   /// No description provided for @trainingPlans.
   ///

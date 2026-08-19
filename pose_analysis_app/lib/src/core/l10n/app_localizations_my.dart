@@ -634,6 +634,12 @@ class AppLocalizationsMy extends AppLocalizations {
   String get notEnoughBodyVisible => 'ကိုယ်ခန္ဓာ လုံလောက်စွာ မမြင်ရပါ';
 
   @override
+  String get fullBodyNotShown => 'ကိုယ်ခန္ဓာအပြည့်မပေါ်ပါ';
+
+  @override
+  String get noPersonFound => 'လူမတွေ့ပါ';
+
+  @override
   String get excellentForm => 'အလွန်ကောင်းသော ပုံစံ!';
 
   @override
@@ -641,6 +647,14 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get keepAdjustingPose => 'အနေအထားကို ဆက်လက် ပြင်ဆင်ပါ';
+
+  @override
+  String get successAutoNext =>
+      'အောင်မြင်သွားပါပြီ နောက်တဆင့်ကို ၅စက္ကန့်နေရင်ဖော်ပြပေးပါမည်';
+
+  @override
+  String get successManualNext =>
+      'အောင်မြင်သွားပါပြီ နောက်တဆင့်တက်ဖိုအတွက် ခလုတ်ကိုနှိပ်ပါ';
 
   @override
   String get trainingPlans => 'လေ့ကျင့်မှု အစီအစဉ်များ';

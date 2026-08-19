@@ -221,9 +221,13 @@
   "noReferenceAngles": "No reference angles",
   "noMatchingAngles": "No matching angles",
   "notEnoughBodyVisible": "Not enough body visible",
+  "fullBodyNotShown": "Full body not shown",
+  "noPersonFound": "No person found",
   "excellentForm": "Excellent form!",
   "goodAdjustSlightly": "Good, adjust slightly",
   "keepAdjustingPose": "Keep adjusting your pose",
+  "successAutoNext": "Successful, the next step will be displayed in 5 seconds.",
+  "successManualNext": "Successfully completed, press the button to proceed to the next step.",
 
   "trainingPlans": "Training Plans",
   "weeksCount": "{count} weeks",

@@ -619,6 +619,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notEnoughBodyVisible => 'Not enough body visible';
 
   @override
+  String get fullBodyNotShown => 'Full body not shown';
+
+  @override
+  String get noPersonFound => 'No person found';
+
+  @override
   String get excellentForm => 'Excellent form!';
 
   @override
@@ -626,6 +632,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get keepAdjustingPose => 'Keep adjusting your pose';
+
+  @override
+  String get successAutoNext =>
+      'Successful, the next step will be displayed in 5 seconds.';
+
+  @override
+  String get successManualNext =>
+      'Successfully completed, press the button to proceed to the next step.';
 
   @override
   String get trainingPlans => 'Training Plans';

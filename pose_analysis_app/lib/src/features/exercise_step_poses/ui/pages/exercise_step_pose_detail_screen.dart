@@ -721,11 +721,14 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
   }
 
   Widget _buildAccuracyBar() {
-    final color = _accuracy >= 90
-        ? AppColors.success
-        : _accuracy >= 40
-            ? AppColors.warning
-            : AppColors.error;
+    final isBodyNotVisible = _feedback == AppLocalizations.of(context)!.fullBodyNotShown;
+    final color = isBodyNotVisible
+        ? AppColors.error
+        : (_accuracy >= 90
+            ? AppColors.success
+            : _accuracy >= 40
+                ? AppColors.warning
+                : AppColors.error);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -740,21 +743,22 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                 fontSize: 12,
               ),
             ),
-            Text(
-              '${_accuracy.toStringAsFixed(0)}%',
-              style: TextStyle(
-                color: color,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            if (!isBodyNotVisible)
+              Text(
+                '${_accuracy.toStringAsFixed(0)}%',
+                style: TextStyle(
+                  color: color,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
           ],
         ),
         const SizedBox(height: 6),
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
-            value: _accuracy / 100,
+            value: isBodyNotVisible ? null : (_accuracy / 100),
             minHeight: 6,
             backgroundColor: Colors.white.withOpacity(0.15),
             valueColor: AlwaysStoppedAnimation<Color>(color),
@@ -964,6 +968,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
   String _lastFeedback = '';
   bool _descriptionSpoken = false;
   bool _hasReached90 = false;
+  Pose? _currentPose;
 
   String get _ttsLangCode => widget.langCode == 'my' ? 'my-MM' : 'en-US';
 
@@ -1017,17 +1022,25 @@ class _PoseCameraViewState extends State<PoseCameraView> {
 
   String _toMyanmar(String english) {
     const map = {
-      'Raise your left arm': 'ဘယ်ဘက်လက်ကို အပေါ်ဘက် မြှောက်ပါ',
-      'Lower your left arm': 'ဘယ်ဘက်လက်ကို အောက်ချပါ',
-      'Raise your right arm': 'ညာဘက်လက်ကို အပေါ်ဘက် မြှောက်ပါ',
-      'Lower your right arm': 'ညာဘက်လက်ကို အောက်ချပါ',
-      'Straighten your left leg': 'ဘယ်ဘက်ဒူးကို ဆန့်တန်းပါ',
-      'Bend your left knee': 'ဘယ်ဘက်ဒူးကို ကွေးပါ',
-      'Straighten your right leg': 'ညာဘက်ဒူးကို ဆန့်တန်းပါ',
-      'Bend your right knee': 'ညာဘက်ဒူးကို ကွေးပါ',
-      'Straighten your back': 'ကျောကို တည့်တည့်ထားပါ',
+      'Raise your left arm slightly': 'ဘယ်လက် အပေါ် နည်းနည်းမြှောက်ပါ',
+      'Lower your left arm slightly': 'ဘယ်လက် အောက် နည်းနည်းချပါ',
+      'Raise your right arm slightly': 'ညာလက် အပေါ် နည်းနည်းမြှောက်ပါ',
+      'Lower your right arm slightly': 'ညာလက် အောက် နည်းနည်းချပါ',
+      'Straighten your left leg slightly': 'ဘယ်ဘက်ခြေထောက်ကို အနည်းငယ်ဖြောင့်ထားပါ',
+      'Bend your left knee slightly more': 'ဘယ်ဒူး နည်းနည်းပိုကွေးပါ',
+      'Straighten your right leg slightly': 'ညာဘက်ခြေထောက်ကို အနည်းငယ်ဖြောင့်ထားပါ',
+      'Bend your right knee slightly more': 'ညာဒူး နည်းနည်းပိုကွေးပါ',
+      'Lean backward slightly': 'ကိုယ်ခန္ဓာ နောက် နည်းနည်းဆုတ်ပါ',
+      'Lean forward slightly': 'ကိုယ်ခန္ဓာ ရှေ့ နည်းနည်းစောင်းပါ',
+      'Move your left foot slightly left': 'ဘယ်ခြေ ဘယ် နည်းနည်းရွှေ့ပါ',
+      'Move your left foot slightly right': 'ဘယ်ခြေ ညာ နည်းနည်းရွှေ့ပါ',
+      'Move your right foot slightly left': 'ညာခြေ ဘယ် နည်းနည်းရွှေ့ပါ',
+      'Move your right foot slightly right': 'ညာခြေ ညာ နည်းနည်းရွှေ့ပါ',
+      'Relax your shoulders slightly': 'ပခုံး နည်းနည်းဖြေလျှော့ပါ',
       'Match the reference pose': 'ပုံတူကူးပါ',
       'Step back to show full body': 'ခြေလှမ်းနောက်ဆုတ်ပါ',
+      'Full body not shown': 'ကိုယ်ခန္ဓာအပြည့်မပေါ်ပါ',
+      'No person found': 'လူမတွေ့ပါ',
       'No person detected': 'လူတစ်ယောက် မတွေ့ပါ။ ကင်မရာရှေ့ ရပ်ပါ',
       'Excellent alignment!': 'အလွန်ကောင်းပါသည်',
       'Step Complete!': 'ဆင့်ပြီးပါပြီ။ နောက်တစ်ဆင့်သို့ ဆက်သွားနိုင်ပါပြီ',
@@ -1072,6 +1085,7 @@ class _PoseCameraViewState extends State<PoseCameraView> {
   }
 
   static const _requiredLandmarks = [
+    PoseLandmarkType.nose,
     PoseLandmarkType.leftShoulder,
     PoseLandmarkType.rightShoulder,
     PoseLandmarkType.leftHip,
@@ -1100,14 +1114,18 @@ class _PoseCameraViewState extends State<PoseCameraView> {
 
         if (poses.isNotEmpty && mounted) {
           final pose = poses.first;
+          _currentPose = pose;
 
-          final detectedCount = _requiredLandmarks
-              .where((type) => pose.landmarks[type] != null)
-              .length;
+          final hasHead = pose.landmarks[PoseLandmarkType.nose]?.likelihood != null &&
+              pose.landmarks[PoseLandmarkType.nose]!.likelihood! > 0.5;
+          final leftAnkle = pose.landmarks[PoseLandmarkType.leftAnkle];
+          final rightAnkle = pose.landmarks[PoseLandmarkType.rightAnkle];
+          final hasLeftFoot = leftAnkle != null && leftAnkle.likelihood != null && leftAnkle.likelihood! > 0.5;
+          final hasRightFoot = rightAnkle != null && rightAnkle.likelihood != null && rightAnkle.likelihood! > 0.5;
 
-          if (detectedCount < 8) {
-            widget.onResult(0, AppLocalizations.of(context)!.stepBackToShowFullBody);
-            _speakFeedback('Step back to show full body');
+          if (!hasHead || !hasLeftFoot || !hasRightFoot) {
+            widget.onResult(0, AppLocalizations.of(context)!.fullBodyNotShown);
+            _speakFeedback('Full body not shown');
             _isProcessing = false;
             return;
           }
@@ -1123,8 +1141,8 @@ class _PoseCameraViewState extends State<PoseCameraView> {
             _speakFeedback(result.$2);
           }
         } else if (mounted) {
-          widget.onResult(0, AppLocalizations.of(context)!.noPersonDetected);
-          _speakFeedback('Match the reference pose');
+          widget.onResult(0, AppLocalizations.of(context)!.noPersonFound);
+          _speakFeedback('No person found');
         }
       } catch (_) {}
 
@@ -1233,6 +1251,17 @@ class _PoseCameraViewState extends State<PoseCameraView> {
   (double, String) _compareWithReference(Map<String, double> userAngles) {
     if (widget.stepAngles.isEmpty) return (0, AppLocalizations.of(context)!.noReferenceAngles);
 
+    final nose = _currentPose?.landmarks[PoseLandmarkType.nose];
+    final leftAnkle = _currentPose?.landmarks[PoseLandmarkType.leftAnkle];
+    final rightAnkle = _currentPose?.landmarks[PoseLandmarkType.rightAnkle];
+    final hasHead = nose != null && nose.likelihood != null && nose.likelihood! > 0.5;
+    final hasLeftFoot = leftAnkle != null && leftAnkle.likelihood != null && leftAnkle.likelihood! > 0.5;
+    final hasRightFoot = rightAnkle != null && rightAnkle.likelihood != null && rightAnkle.likelihood! > 0.5;
+
+    if (!hasHead || !hasLeftFoot || !hasRightFoot) {
+      return (0, AppLocalizations.of(context)!.fullBodyNotShown);
+    }
+
     double totalDiff = 0;
     int count = 0;
 
@@ -1247,28 +1276,117 @@ class _PoseCameraViewState extends State<PoseCameraView> {
 
     if (count == 0) return (0, AppLocalizations.of(context)!.noMatchingAngles);
 
-    if (count < widget.stepAngles.length) {
-      final matchRatio = count / widget.stepAngles.length;
-      if (matchRatio < 0.6) {
-        return (0, AppLocalizations.of(context)!.notEnoughBodyVisible);
-      }
-    }
-
     final avgDiff = totalDiff / count;
     final accuracy = max(0.0, 100 - (avgDiff / 45 * 100));
 
     String feedback;
     if (accuracy >= 90) {
       feedback = AppLocalizations.of(context)!.excellentForm;
-    } else if (accuracy >= 60) {
-      feedback = AppLocalizations.of(context)!.goodAdjustSlightly;
-    } else if (accuracy >= 40) {
-      feedback = AppLocalizations.of(context)!.keepAdjustingPose;
     } else {
-      feedback = AppLocalizations.of(context)!.matchTheReferencePose;
+      final corrections = <String>[];
+      for (final entry in widget.stepAngles.entries) {
+        final userAngle = userAngles[entry.key];
+        if (userAngle == null) continue;
+        final diff = (entry.value - userAngle).abs();
+        if (diff < 10) continue;
+        final correction = _getCorrection(entry.key, userAngle, entry.value);
+        if (correction != null) corrections.add(correction);
+      }
+      final lm = <String, List<double>>{};
+      final mapping = {
+        PoseLandmarkType.leftShoulder: 'leftShoulder',
+        PoseLandmarkType.rightShoulder: 'rightShoulder',
+        PoseLandmarkType.leftElbow: 'leftElbow',
+        PoseLandmarkType.rightElbow: 'rightElbow',
+        PoseLandmarkType.leftHip: 'leftHip',
+        PoseLandmarkType.rightHip: 'rightHip',
+        PoseLandmarkType.leftKnee: 'leftKnee',
+        PoseLandmarkType.rightKnee: 'rightKnee',
+        PoseLandmarkType.leftAnkle: 'leftAnkle',
+        PoseLandmarkType.rightAnkle: 'rightAnkle',
+      };
+      for (final entry in mapping.entries) {
+        final landmark = _currentPose?.landmarks[entry.key];
+        if (landmark != null) {
+          lm[entry.value] = [landmark.x, landmark.y];
+        }
+      }
+      corrections.addAll(_getPositionCorrections(lm));
+
+      if (corrections.isNotEmpty) {
+        feedback = corrections.first;
+      } else if (accuracy >= 60) {
+        feedback = AppLocalizations.of(context)!.goodAdjustSlightly;
+      } else if (accuracy >= 40) {
+        feedback = AppLocalizations.of(context)!.keepAdjustingPose;
+      } else {
+        feedback = AppLocalizations.of(context)!.matchTheReferencePose;
+      }
     }
 
     return (accuracy.roundToDouble(), feedback);
+  }
+
+  String? _getCorrection(String angleName, double user, double ref) {
+    final direction = user > ref ? 'lower' : 'raise';
+    final isMyanmar = widget.langCode == 'my';
+
+    switch (angleName) {
+      case 'leftElbowAngle':
+        return direction == 'raise'
+            ? (isMyanmar ? 'ဘယ်လက် အပေါ် နည်းနည်းမြှောက်ပါ' : 'Raise your left arm slightly')
+            : (isMyanmar ? 'ဘယ်လက် အောက် နည်းနည်းချပါ' : 'Lower your left arm slightly');
+      case 'rightElbowAngle':
+        return direction == 'raise'
+            ? (isMyanmar ? 'ညာလက် အပေါ် နည်းနည်းမြှောက်ပါ' : 'Raise your right arm slightly')
+            : (isMyanmar ? 'ညာလက် အောက် နည်းနည်းချပါ' : 'Lower your right arm slightly');
+      case 'leftKneeAngle':
+        return direction == 'raise'
+            ? (isMyanmar ? 'ဘယ်ဘက်ခြေထောက်ကို အနည်းငယ်ဖြောင့်ထားပါ' : 'Straighten your left leg slightly')
+            : (isMyanmar ? 'ဘယ်ဒူး နည်းနည်းပိုကွေးပါ' : 'Bend your left knee slightly more');
+      case 'rightKneeAngle':
+        return direction == 'raise'
+            ? (isMyanmar ? 'ညာဘက်ခြေထောက်ကို အနည်းငယ်ဖြောင့်ထားပါ' : 'Straighten your right leg slightly')
+            : (isMyanmar ? 'ညာဒူး နည်းနည်းပိုကွေးပါ' : 'Bend your right knee slightly more');
+      case 'bodyTilt':
+        return user > ref
+            ? (isMyanmar ? 'ကိုယ်ခန္ဓာ နောက် နည်းနည်းဆုတ်ပါ' : 'Lean backward slightly')
+            : (isMyanmar ? 'ကိုယ်ခန္ဓာ ရှေ့ နည်းနည်းစောင်းပါ' : 'Lean forward slightly');
+      default:
+        return null;
+    }
+  }
+
+  List<String> _getPositionCorrections(Map<String, List<double>> lm) {
+    final corrections = <String>[];
+    final isMyanmar = widget.langCode == 'my';
+
+    if (lm['leftHip'] != null && lm['leftAnkle'] != null) {
+      final offset = lm['leftAnkle']![0] - lm['leftHip']![0];
+      if (offset > 0.05) {
+        corrections.add(isMyanmar ? 'ဘယ်ခြေ ညာ နည်းနည်းရွှေ့ပါ' : 'Move your left foot slightly right');
+      } else if (offset < -0.05) {
+        corrections.add(isMyanmar ? 'ဘယ်ခြေ ဘယ် နည်းနည်းရွှေ့ပါ' : 'Move your left foot slightly left');
+      }
+    }
+
+    if (lm['rightHip'] != null && lm['rightAnkle'] != null) {
+      final offset = lm['rightAnkle']![0] - lm['rightHip']![0];
+      if (offset > 0.05) {
+        corrections.add(isMyanmar ? 'ညာခြေ ညာ နည်းနည်းရွှေ့ပါ' : 'Move your right foot slightly right');
+      } else if (offset < -0.05) {
+        corrections.add(isMyanmar ? 'ညာခြေ ဘယ် နည်းနည်းရွှေ့ပါ' : 'Move your right foot slightly left');
+      }
+    }
+
+    if (lm['leftShoulder'] != null && lm['rightShoulder'] != null) {
+      final diff = (lm['leftShoulder']![1] - lm['rightShoulder']![1]).abs();
+      if (diff > 0.04) {
+        corrections.add(isMyanmar ? 'ပခုံး နည်းနည်းဖြေလျှော့ပါ' : 'Relax your shoulders slightly');
+      }
+    }
+
+    return corrections;
   }
 
   @override
