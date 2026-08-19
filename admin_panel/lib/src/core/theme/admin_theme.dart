@@ -54,7 +54,8 @@ class AdminTheme {
         surface: AdminColors.surface,
         error: AdminColors.error,
       ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+      textTheme: GoogleFonts.notoSansTextTheme(ThemeData.dark().textTheme),
+      iconTheme: const IconThemeData(color: Colors.white),
       appBarTheme: const AppBarTheme(
         backgroundColor: AdminColors.surface,
         elevation: 0,
@@ -105,7 +106,7 @@ class AdminTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.notoSans(
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),

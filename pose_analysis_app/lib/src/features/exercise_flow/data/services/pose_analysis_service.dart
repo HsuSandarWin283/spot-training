@@ -56,13 +56,13 @@ class PoseAnalysisService {
     final rightAnkle = pose.landmarks[PoseLandmarkType.rightAnkle];
     final isBodyVisible = nose != null &&
         nose.likelihood != null &&
-        nose.likelihood! > 0.5 &&
+        nose.likelihood! > 0.3 &&
         leftAnkle != null &&
         leftAnkle.likelihood != null &&
-        leftAnkle.likelihood! > 0.5 &&
+        leftAnkle.likelihood! > 0.3 &&
         rightAnkle != null &&
         rightAnkle.likelihood != null &&
-        rightAnkle.likelihood! > 0.5;
+        rightAnkle.likelihood! > 0.3;
     return PoseAnalysisResult(
       userAngles: result.userAngles,
       accuracy: isBodyVisible ? result.accuracy : 0,

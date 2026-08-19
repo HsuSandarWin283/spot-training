@@ -1117,11 +1117,11 @@ class _PoseCameraViewState extends State<PoseCameraView> {
           _currentPose = pose;
 
           final hasHead = pose.landmarks[PoseLandmarkType.nose]?.likelihood != null &&
-              pose.landmarks[PoseLandmarkType.nose]!.likelihood! > 0.5;
+              pose.landmarks[PoseLandmarkType.nose]!.likelihood! > 0.3;
           final leftAnkle = pose.landmarks[PoseLandmarkType.leftAnkle];
           final rightAnkle = pose.landmarks[PoseLandmarkType.rightAnkle];
-          final hasLeftFoot = leftAnkle != null && leftAnkle.likelihood != null && leftAnkle.likelihood! > 0.5;
-          final hasRightFoot = rightAnkle != null && rightAnkle.likelihood != null && rightAnkle.likelihood! > 0.5;
+          final hasLeftFoot = leftAnkle != null && leftAnkle.likelihood != null && leftAnkle.likelihood! > 0.3;
+          final hasRightFoot = rightAnkle != null && rightAnkle.likelihood != null && rightAnkle.likelihood! > 0.3;
 
           if (!hasHead || !hasLeftFoot || !hasRightFoot) {
             widget.onResult(0, AppLocalizations.of(context)!.fullBodyNotShown);
@@ -1254,9 +1254,9 @@ class _PoseCameraViewState extends State<PoseCameraView> {
     final nose = _currentPose?.landmarks[PoseLandmarkType.nose];
     final leftAnkle = _currentPose?.landmarks[PoseLandmarkType.leftAnkle];
     final rightAnkle = _currentPose?.landmarks[PoseLandmarkType.rightAnkle];
-    final hasHead = nose != null && nose.likelihood != null && nose.likelihood! > 0.5;
-    final hasLeftFoot = leftAnkle != null && leftAnkle.likelihood != null && leftAnkle.likelihood! > 0.5;
-    final hasRightFoot = rightAnkle != null && rightAnkle.likelihood != null && rightAnkle.likelihood! > 0.5;
+    final hasHead = nose != null && nose.likelihood != null && nose.likelihood! > 0.3;
+    final hasLeftFoot = leftAnkle != null && leftAnkle.likelihood != null && leftAnkle.likelihood! > 0.3;
+    final hasRightFoot = rightAnkle != null && rightAnkle.likelihood != null && rightAnkle.likelihood! > 0.3;
 
     if (!hasHead || !hasLeftFoot || !hasRightFoot) {
       return (0, AppLocalizations.of(context)!.fullBodyNotShown);

@@ -1,13 +1,13 @@
 {
   "@@locale": "my",
 
-  "adminPanel": "အုပ်ချုပ်ရေး ပြား",
+  "adminPanel": "အက်ဒမင် ဘုတ်",
   "aiSportsTraining": "AI Sports Training",
   "dashboard": "ဒက်ရှ်ဘုတ်",
   "sportsManagement": "အားကစား စီမံခန့်ခွဲမှု",
   "exerciseStepImages": "လေ့ကျင့်ခန်း အဆင့် ပုံများ",
   "users": "သုံးစွဲသူများ",
-  "admin": "အုပ်ချုပ်ရေးမှူး",
+  "admin": "အက်ဒမင်",
   "confirmLogout": "ထွက်မှု အတည်ပြုရန်",
   "areYouSureSignOut": "ထွက်မည်မှာ သေချာပါသလား?",
   "cancel": "ပယ်ဖျက်ရန်",
@@ -23,7 +23,7 @@
   "signIn": "ဝင်ရောက်ရန်",
 
   "myProfile": "ကျွန်ုပ်၏ ပရိုဖိုင်",
-  "manageAdminAccount": "သင်၏ အုပ်ချုပ်ရေးမှူး အကောင့်ကို စီမံခန့်ခွဲပါ",
+  "manageAdminAccount": "သင်၏ အက်ဒမင် အကောင့်ကို စီမံခန့်ခွဲပါ",
   "editProfile": "ပရိုဖိုင် ပြင်ဆင်ရန်",
   "displayName": "ပြသမည့် အမည်",
   "profilePhotoUrl": "ပရိုဖိုင် ဓာတ်ပုံ URL (ရွေးချယ်နိုင်)",
@@ -116,7 +116,7 @@
   "noPostsYet": "ပို့စ် မရှိသေးပါ",
   "createFirstPost": "သင်၏ ပထမအကြိမ် လေ့ကျင့်ခန်း အဆင့် ပုံ ပို့စ်ကို ဖန်တီးပါ",
   "type": "အမျိုးအစား",
-  "items": "ခုတင်များ",
+  "items": "အချက်များ",
   "imageCount": "ပုံ {count} ပုံ{plural}",
   "viewEdit": "ကြည့်ရန် / ပြင်ဆင်ရန်",
   "deletePost": "ပို့စ် ဖျက်ရန်",
