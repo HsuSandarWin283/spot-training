@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AdminColors {
-  static const Color background = Color(0xFF0F0F1A);
-  static const Color surface = Color(0xFF1A1A2E);
-  static const Color card = Color(0xFF1E1E32);
+  static const Color background = Color(0xFFFFFFFF);
+  static const Color surface = Color(0xFFF5F5F5);
+  static const Color card = Color(0xFFFFFFFF);
   static const Color primary = Color(0xFF7C7CFF);
   static const Color secondary = Color(0xFF00E5B8);
   static const Color accent = Color(0xFFFF6B6B);
-  static const Color border = Color(0xFF2D2D44);
-  static const Color textPrimary = Color(0xFFF1F1F5);
-  static const Color textSecondary = Color(0xFFB0B3C0);
-  static const Color textMuted = Color(0xFF6B7084);
+  static const Color border = Color(0xFFE0E0E0);
+  static const Color textPrimary = Color(0xFF000000);
+  static const Color textSecondary = Color(0xFF000000);
+  static const Color textMuted = Color(0xFF000000);
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
   static const Color error = Color(0xFFEF4444);
@@ -43,19 +43,19 @@ class AdminColors {
 }
 
 class AdminTheme {
-  static ThemeData get darkTheme {
+  static ThemeData get lightTheme {
     return ThemeData(
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       scaffoldBackgroundColor: AdminColors.background,
       primaryColor: AdminColors.primary,
-      colorScheme: const ColorScheme.dark(
+      colorScheme: const ColorScheme.light(
         primary: AdminColors.primary,
         secondary: AdminColors.secondary,
         surface: AdminColors.surface,
         error: AdminColors.error,
       ),
-      textTheme: GoogleFonts.notoSansTextTheme(ThemeData.dark().textTheme),
-      iconTheme: const IconThemeData(color: Colors.white),
+      textTheme: GoogleFonts.notoSansTextTheme(ThemeData.light().textTheme),
+      iconTheme: const IconThemeData(color: Colors.black),
       appBarTheme: const AppBarTheme(
         backgroundColor: AdminColors.surface,
         elevation: 0,
