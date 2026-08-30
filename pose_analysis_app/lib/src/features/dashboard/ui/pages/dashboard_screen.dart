@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ai_sports_training/src/core/theme/app_theme.dart';
 import 'package:ai_sports_training/src/core/widgets/app_widgets.dart';
 import 'package:ai_sports_training/src/core/l10n/app_localizations.dart';
@@ -22,6 +23,8 @@ class DashboardScreen extends ConsumerWidget {
     final userProfile = ref.watch(userProfileStreamProvider);
     final assessmentAsync = ref.watch(latestAssessmentProvider);
     final completionsAsync = ref.watch(completionsByTypeProvider);
+    final completedAsync = ref.watch(completedExercisesProvider);
+    final incompleteAsync = ref.watch(incompleteExercisesProvider);
 
     final displayName =
         userProfile.whenOrNull(data: (u) => u?.fullName) ??
@@ -52,9 +55,11 @@ class DashboardScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                         _buildCompletionBarChart(context, completionsAsync),
+                         _buildCompletedExercises(context, completedAsync),
                          const SizedBox(height: 20),
-                         _buildTrainingInsight(context, completionsAsync, assessmentAsync),
+                         _buildIncompleteExercises(context, incompleteAsync),
+                         const SizedBox(height: 20),
+                          _buildTrainingInsight(context, completionsAsync, assessmentAsync),
                       ],
                     ),
                   ),
@@ -171,7 +176,39 @@ class DashboardScreen extends ConsumerWidget {
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
       data: (completions) {
-        if (completions.isEmpty) return const SizedBox.shrink();
+        if (completions.isEmpty) {
+          final l10n = AppLocalizations.of(context)!;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionHeader(title: l10n.trainingInsight),
+              const SizedBox(height: 12),
+              GlassCard(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Icon(Icons.fitness_center, size: 48, color: AppColors.primary),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.noCompletedExercises,
+                          style: TextStyle(color: AppColors.txtPrimary(context), fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.completeExercisesToSee,
+                          style: TextStyle(color: AppColors.txtSecondary(context), fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
 
         final topType = completions.first.typeName;
         final topCount = completions.first.count;
@@ -207,7 +244,28 @@ class DashboardScreen extends ConsumerWidget {
             goalName = langCode == 'my' ? 'ယေဘုယျ ကျန်းမာရေး' : 'General Fitness';
             goalAdvice = l10n.goalGeneralFitnessAdvice;
           }
+         }
+
+        String? tip;
+        if (typeLower.contains('weight loss') || typeLower.contains('weight_gain')) {
+          tip = typeLower.contains('weight loss')
+              ? l10n.weightLossTip
+              : l10n.weightGainTip;
+        } else if (typeLower.contains('football')) {
+          tip = l10n.sportTipFootball;
+        } else if (typeLower.contains('basketball')) {
+          tip = l10n.sportTipBasketball;
+        } else if (typeLower.contains('volleyball')) {
+          tip = l10n.sportTipVolleyball;
+        } else if (typeLower.contains('badminton')) {
+          tip = l10n.sportTipBadminton;
+        } else if (typeLower.contains('yoga')) {
+          tip = l10n.sportTipYoga;
+        } else if (typeLower.contains('stretching')) {
+          tip = l10n.sportTipStretching;
         }
+
+        final recommendation = l10n.practiceRecommendation(recommendedSessions, topType);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,20 +294,20 @@ class DashboardScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              topType,
-                              style: TextStyle(
-                                color: AppColors.txtPrimary(context),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              l10n.completedExercisesRecently(topCount, topType),
-                              style: TextStyle(
-                                color: AppColors.txtSecondary(context),
-                                fontSize: 13,
+                             Text(
+                               topType,
+                               style: TextStyle(
+                                 color: AppColors.txtPrimary(context),
+                                 fontSize: 18,
+                                 fontWeight: FontWeight.bold,
+                               ),
+                             ),
+                             const SizedBox(height: 2),
+                             Text(
+                               l10n.mostExercisingType(topType),
+                               style: TextStyle(
+                                 color: AppColors.txtSecondary(context),
+                                 fontSize: 13,
                               ),
                             ),
                           ],
@@ -267,43 +325,43 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.primary.withOpacity(0.15)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.fitness_center,
-                                color: AppColors.primary, size: 16),
-                            const SizedBox(width: 8),
-                            Text(
-                              l10n.recommendedTraining,
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          l10n.trainSessionsPerWeek(recommendedSessions),
-                          style: TextStyle(
-                            color: AppColors.txtSecondary(context),
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 14),
+                  // Container(
+                  //   padding: const EdgeInsets.all(12),
+                  //   decoration: BoxDecoration(
+                  //     color: AppColors.primary.withOpacity(0.08),
+                  //     borderRadius: BorderRadius.circular(10),
+                  //     border: Border.all(color: AppColors.primary.withOpacity(0.15)),
+                  //   ),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Row(
+                  //         children: [
+                  //           Icon(Icons.fitness_center,
+                  //               color: AppColors.primary, size: 16),
+                  //           const SizedBox(width: 8),
+                  //           Text(
+                  //             l10n.recommendedTraining,
+                  //             style: TextStyle(
+                  //               color: AppColors.primary,
+                  //               fontSize: 13,
+                  //               fontWeight: FontWeight.w600,
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //       const SizedBox(height: 8),
+                  //       Text(
+                  //         l10n.trainSessionsPerWeek(recommendedSessions),
+                  //         style: TextStyle(
+                  //           color: AppColors.txtSecondary(context),
+                  //           fontSize: 13,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 14),
                   Text(
                     l10n.focusAreas,
                     style: TextStyle(
@@ -372,18 +430,68 @@ class DashboardScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            goalAdvice,
-                            style: TextStyle(
-                              color: AppColors.txtSecondary(context),
-                              fontSize: 13,
-                              height: 1.4,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                          goalAdvice,
+                             style: TextStyle(
+                               color: AppColors.txtSecondary(context),
+                               fontSize: 13,
+                               height: 1.4,
+                             ),
+                           ),
+                         ],
+                       ),
+                     ),
+                   ],
+                   if (tip != null) ...[
+                     const SizedBox(height: 16),
+                     Container(
+                       padding: const EdgeInsets.all(12),
+                       decoration: BoxDecoration(
+                         color: AppColors.primary.withOpacity(0.08),
+                         borderRadius: BorderRadius.circular(10),
+                         border: Border.all(color: AppColors.primary.withOpacity(0.15)),
+                       ),
+                       child: Column(
+                         crossAxisAlignment: CrossAxisAlignment.start,
+                         children: [
+                           Row(
+                             children: [
+                               Icon(Icons.lightbulb_outline,
+                                   color: AppColors.primary, size: 18),
+                               const SizedBox(width: 8),
+                               Text(
+                                 l10n.recommendedTraining,
+                                 style: TextStyle(
+                                   color: AppColors.primary,
+                                   fontSize: 13,
+                                   fontWeight: FontWeight.w600,
+                                 ),
+                               ),
+                             ],
+                           ),
+                           const SizedBox(height: 8),
+                           Text(
+                             recommendation,
+                             style: TextStyle(
+                               color: AppColors.txtSecondary(context),
+                               fontSize: 13,
+                               height: 1.5,
+                             ),
+                           ),
+                           const SizedBox(height: 8),
+                           Text(
+                             tip,
+                             style: TextStyle(
+                               color: AppColors.txtSecondary(context),
+                               fontSize: 13,
+                               height: 1.5,
+                               fontStyle: FontStyle.italic,
+                             ),
+                           ),
+                         ],
+                       ),
+                     ),
+                    ],
                   ],
-                ],
               ),
             ),
           ],
@@ -414,72 +522,121 @@ class DashboardScreen extends ConsumerWidget {
     }
   }
 
-  // ── Completion Bar Chart ──
+  // ── Completed Exercises ──
 
-  Widget _buildCompletionBarChart(
-      BuildContext context, AsyncValue<List<TypeCompletionCount>> completionsAsync) {
-    return completionsAsync.when(
+  Widget _buildCompletedExercises(
+      BuildContext context, AsyncValue<List<IncompleteExercise>> completedAsync) {
+    return completedAsync.when(
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
-      data: (completions) {
-        if (completions.isEmpty) return const SizedBox.shrink();
+      data: (completed) {
+        final l10n = AppLocalizations.of(context)!;
+        final langCode = Localizations.localeOf(context).languageCode;
 
-        final maxCount = completions.first.count.toDouble();
+        if (completed.isEmpty) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionHeader(title: l10n.exerciseCompletions),
+              const SizedBox(height: 12),
+              GlassCard(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Text(
+                          l10n.noCompletedExercisesYet,
+                          style: TextStyle(color: AppColors.txtSecondary(context), fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SectionHeader(title: AppLocalizations.of(context)!.exerciseCompletions),
+            SectionHeader(title: l10n.exerciseCompletions),
             const SizedBox(height: 12),
             GlassCard(
               child: Column(
-                children: completions.map((item) {
-                  final ratio = maxCount > 0 ? item.count / maxCount : 0.0;
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: completed.map((exercise) {
+                  final displayCount = exercise.completedItems >= exercise.totalItems
+                      ? exercise.totalItems
+                      : exercise.completedItems;
                   return Padding(
-                    padding: EdgeInsets.only(bottom: 14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: Row(
                       children: [
-                        Row(
-                          children: [
-                            Text(
-                              _getGoalEmoji(item.typeName),
-                              style: TextStyle(fontSize: 18),
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: AppColors.success.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.check_circle,
+                              color: AppColors.success,
+                              size: 22,
                             ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                item.typeName,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                exercise.localizedTitle(langCode),
                                 style: TextStyle(
                                   color: AppColors.txtPrimary(context),
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
+                              const SizedBox(height: 4),
+                              Text(
+                                l10n.itemsCompletedCount(displayCount, exercise.totalItems),
+                                style: TextStyle(
+                                  color: AppColors.txtMuted(context),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () {
+                            context.push('/exercise-step-pose/${exercise.postId}');
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                  color: AppColors.primary.withOpacity(0.3)),
                             ),
-                            Text(
-                              '${item.count}',
+                            child: Text(
+                              l10n.practiceAgain,
                               style: TextStyle(
                                 color: AppColors.primary,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
-                          child: LinearProgressIndicator(
-                            value: ratio,
-                            minHeight: 10,
-                            backgroundColor: AppColors.bdr(context),
-                            valueColor: AlwaysStoppedAnimation(
-                              item.count >= 10
-                                  ? AppColors.success
-                                  : item.count >= 5
-                                      ? AppColors.warning
-                                      : AppColors.primary,
                             ),
                           ),
                         ),
@@ -495,161 +652,139 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPersonalizedFeedback(
-      BuildContext context, AsyncValue<List<TypeCompletionCount>> completionsAsync) {
-    return completionsAsync.when(
+  Widget _buildIncompleteExercises(
+      BuildContext context, AsyncValue<List<IncompleteExercise>> incompleteAsync) {
+    return incompleteAsync.when(
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
-      data: (completions) {
-        if (completions.isEmpty) return const SizedBox.shrink();
-
-        final topType = completions.first.typeName;
-        final topCount = completions.first.count;
+      data: (incomplete) {
+        final l10n = AppLocalizations.of(context)!;
         final langCode = Localizations.localeOf(context).languageCode;
 
-        String message;
-        String? tip;
-
-        final typeLower = topType.toLowerCase();
-
-        if (typeLower.contains('weight loss') || typeLower.contains('weight_gain')) {
-          message = langCode == 'my'
-              ? '$topType အတွက် လေ့ကျင့်နေတယ်!'
-              : "You're training for $topType!";
-          tip = typeLower.contains('weight loss')
-              ? AppLocalizations.of(context)!.weightLossTip
-              : AppLocalizations.of(context)!.weightGainTip;
-        } else if (typeLower.contains('football')) {
-          message = langCode == 'my' ? 'ဘောလုံးအားကစားအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Football!";
-          tip = AppLocalizations.of(context)!.sportTipFootball;
-        } else if (typeLower.contains('basketball')) {
-          message = langCode == 'my' ? 'ဘက်စကလ်ဘောလုံးအားကစားအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Basketball!";
-          tip = AppLocalizations.of(context)!.sportTipBasketball;
-        } else if (typeLower.contains('volleyball')) {
-          message = langCode == 'my' ? 'ဗိုလ်ဘောလုံးအားကစားအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Volleyball!";
-          tip = AppLocalizations.of(context)!.sportTipVolleyball;
-        } else if (typeLower.contains('badminton')) {
-          message = langCode == 'my' ? 'ဘာတမ်းမက်အားကစားအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Badminton!";
-          tip = AppLocalizations.of(context)!.sportTipBadminton;
-        } else if (typeLower.contains('yoga')) {
-          message = langCode == 'my' ? 'ယိုဂါအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Yoga!";
-          tip = AppLocalizations.of(context)!.sportTipYoga;
-        } else if (typeLower.contains('stretching')) {
-          message = langCode == 'my' ? 'ဆန့်ကျင်မှုအတွက် လေ့ကျင့်နေတယ်!' : "You're training for Stretching!";
-          tip = AppLocalizations.of(context)!.sportTipStretching;
-        } else {
-          message = langCode == 'my'
-              ? '$topType အတွက် လေ့ကျင့်နေတယ်!'
-              : "You're training for $topType!";
+        if (incomplete.isEmpty) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionHeader(title: l10n.incompleteExercises),
+              const SizedBox(height: 12),
+              GlassCard(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Icon(Icons.check_circle, size: 48, color: AppColors.success),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.noIncompleteExercises,
+                          style: TextStyle(color: AppColors.txtSecondary(context), fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
         }
-
-        final recommendedSessions = topCount < 3 ? 3 : (topCount < 5 ? 4 : 5);
-        final recommendation = langCode == 'my'
-            ? AppLocalizations.of(context)!.practiceRecommendation(topType, recommendedSessions)
-            : AppLocalizations.of(context)!.practiceRecommendation(topType, recommendedSessions);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SectionHeader(title: AppLocalizations.of(context)!.yourTrainingFocus),
+            SectionHeader(title: l10n.incompleteExercises),
             const SizedBox(height: 12),
             GlassCard(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          gradient: AppColors.primaryGradient,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Text(
-                            _getGoalEmoji(topType),
-                            style: const TextStyle(fontSize: 20),
+                children: incomplete.map((exercise) {
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.pending_outlined,
+                              color: AppColors.warning,
+                              size: 22,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              message,
-                              style: TextStyle(
-                                color: AppColors.txtPrimary(context),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                exercise.localizedTitle(langCode),
+                                style: TextStyle(
+                                  color: AppColors.txtPrimary(context),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '$topCount sessions completed',
-                              style: TextStyle(
-                                color: AppColors.txtMuted(context),
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                               const SizedBox(height: 4),
+                               Text(
+                                 l10n.itemsCompletedCount(exercise.completedItems, exercise.totalItems),
+                                 style: TextStyle(
+                                   color: AppColors.txtMuted(context),
+                                   fontSize: 12,
+                                 ),
+                               ),
+                               const SizedBox(height: 2),
+                               Container(
+                                 padding: EdgeInsets.symmetric(
+                                     horizontal: 6, vertical: 2),
+                                 decoration: BoxDecoration(
+                                   color: AppColors.warning.withOpacity(0.15),
+                                   borderRadius: BorderRadius.circular(6),
+                                 ),
+                                 child: Text(
+                                   l10n.stillIncomplete,
+                                   style: TextStyle(
+                                     color: AppColors.warning,
+                                     fontSize: 10,
+                                     fontWeight: FontWeight.w600,
+                                   ),
+                                 ),
+                               ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.primary.withOpacity(0.15)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.lightbulb_outline,
-                                color: AppColors.primary, size: 18),
-                            const SizedBox(width: 8),
-                            Text(
-                              langCode == 'my' ? 'အကြံပြုချက်' : 'Recommendation',
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () {
+                            context.push('/exercise-step-pose/${exercise.postId}');
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                            ),
+                            child: Text(
+                              l10n.continueExercise,
                               style: TextStyle(
                                 color: AppColors.primary,
-                                fontSize: 13,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          recommendation,
-                          style: TextStyle(
-                            color: AppColors.txtSecondary(context),
-                            fontSize: 13,
-                            height: 1.5,
                           ),
                         ),
-                        if (tip != null) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            tip,
-                            style: TextStyle(
-                              color: AppColors.txtSecondary(context),
-                              fontSize: 13,
-                              height: 1.5,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ],
                       ],
                     ),
-                  ),
-                ],
+                  );
+                }).toList(),
               ),
             ),
           ],
@@ -658,3 +793,4 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 }
+

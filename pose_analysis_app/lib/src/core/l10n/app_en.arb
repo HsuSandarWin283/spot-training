@@ -388,5 +388,16 @@
   "bmiGoalWeightGain": "Based on your BMI, consider adding strength training with calorie-surplus nutrition.",
   "goalFromAssessment": "Goal based on your fitness profile",
   "seeMore": "See more",
-  "seeLess": "See less"
+  "seeLess": "See less",
+
+  "incompleteExercises": "Incomplete Exercises",
+  "remainingImages": "Remaining Images",
+  "continueExercise": "Continue Exercise",
+  "stillIncomplete": "Still Incomplete",
+  "itemsCompletedCount": "{completed} of {total} items completed",
+  "@itemsCompletedCount": { "completed": { "description": "Number of completed items" }, "total": { "description": "Total number of items" } },
+  "mostExercisingType": "{type} is your most exercising",
+  "@mostExercisingType": { "type": { "description": "The most exercised type name" } },
+  "noIncompleteExercises": "No Incomplete Exercises",
+  "noCompletedExercisesYet": "Complete exercises to see your progress here."
 }

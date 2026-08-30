@@ -379,5 +379,16 @@
   "bmiGoalWeightGain": "သင်၏ BMI အရ၊ ကယ်လိုရီ ပိုမိုစားသုံးမှုနှင့် အားလေ့ကျင့်မှု ထည့်သွင်းပါ။",
   "goalFromAssessment": "သင်၏ ကျန်းမာရေး ပရိုဖိုင်အပေါ် အခြေခံသော ပန်းတိုင်",
   "seeMore": "ပိုမိုကြည့်ရန်",
-  "seeLess": "ပိုငယ်"
+  "seeLess": "ပိုငယ်",
+
+  "incompleteExercises": "မပြီးစီးသေးသော လေ့ကျင့်ခန်းများ",
+  "remainingImages": "ကျန်သော မျက်နှာပြင်ပါးများ",
+  "continueExercise": "ဆက်လေ့ကျင့်ရန်",
+  "stillIncomplete": "မပြီးသေးပါ",
+  "itemsCompletedCount": "{completed} / {total} ပြီးပါပြီ",
+  "@itemsCompletedCount": { "completed": { "description": "Number of completed items" }, "total": { "description": "Total number of items" } },
+  "mostExercisingType": "{type} သည် သင်အများဆုံး လေ့ကျင့်သော အမျိုးအစားဖြစ်သည်",
+  "@mostExercisingType": { "type": { "description": "The most exercised type name" } },
+  "noIncompleteExercises": "မပြီးစီးသေးသော လေ့ကျင့်ခန်းများ မရှိပါ",
+  "noCompletedExercisesYet": "လေ့ကျင့်ခန်းများ ပြီးမြောက်အောင်လုပ်ပြီး သင့်တိုးတက်မှုကို ဒီမှာ ကြည့်ပါ။"
 }

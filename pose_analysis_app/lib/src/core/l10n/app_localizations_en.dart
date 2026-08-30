@@ -1083,4 +1083,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get seeLess => 'See less';
+
+  @override
+  String get incompleteExercises => 'Incomplete Exercises';
+
+  @override
+  String get remainingImages => 'Remaining Images';
+
+  @override
+  String get continueExercise => 'Continue Exercise';
+
+  @override
+  String get stillIncomplete => 'Still Incomplete';
+
+  @override
+  String itemsCompletedCount(Object completed, Object total) {
+    return '$completed of $total items completed';
+  }
+
+  @override
+  String mostExercisingType(Object type) {
+    return '$type is your most exercising';
+  }
+
+  @override
+  String get noIncompleteExercises => 'No Incomplete Exercises';
+
+  @override
+  String get noCompletedExercisesYet =>
+      'Complete exercises to see your progress here.';
 }

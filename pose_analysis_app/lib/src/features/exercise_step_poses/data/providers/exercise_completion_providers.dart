@@ -12,3 +12,19 @@ final completionsByTypeProvider =
   final service = ref.read(exerciseCompletionServiceProvider);
   return service.watchCompletionsByType(user.uid);
 });
+
+final completedExercisesProvider =
+    StreamProvider<List<IncompleteExercise>>((ref) {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return Stream.value([]);
+  final service = ref.read(exerciseCompletionServiceProvider);
+  return service.watchCompletedExercises(user.uid);
+});
+
+final incompleteExercisesProvider =
+    StreamProvider<List<IncompleteExercise>>((ref) {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return Stream.value([]);
+  final service = ref.read(exerciseCompletionServiceProvider);
+  return service.watchIncompleteExercises(user.uid);
+});

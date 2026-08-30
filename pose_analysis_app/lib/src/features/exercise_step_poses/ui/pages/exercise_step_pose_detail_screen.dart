@@ -73,48 +73,44 @@ class ExerciseStepPoseDetailScreen extends ConsumerWidget {
                 ),
                 itemsAsync.when(
                   data: (items) {
-                    if (items.isEmpty) return const SizedBox.shrink();
-                    return Padding(
-                      padding: EdgeInsets.fromLTRB(20, 0, 20, 16),
-                      child: GradientButton(
-                        text: AppLocalizations.of(context)!.startPractice,
-                        icon: Icons.play_arrow,
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => PosePracticeScreen(
-                                items: items,
-                                postId: postId,
-                                langCode: langCode,
-                                onDone: () async {
-                                  final user = ref.read(currentUserProvider);
-                                  if (user != null) {
-                                    try {
-                                      final postDoc = await FirebaseFirestore.instance
-                                          .collection('exercise_step_image_posts')
-                                          .doc(postId)
-                                          .get();
-                                      String postType = '';
-                                      if (postDoc.exists) {
-                                        final data = postDoc.data();
-                                        if (data != null && data['type'] != null) {
-                                          postType = data['type'] as String;
-                                        }
-                                      }
-                                      await ExerciseCompletionService().saveCompletion(
-                                        userId: user.uid,
-                                        postId: postId,
-                                        postType: postType,
-                                      );
-                                    } catch (_) {}
+                        if (items.isEmpty) return const SizedBox.shrink();
+                        return Padding(
+                          padding: EdgeInsets.fromLTRB(20, 0, 20, 16),
+                          child: GradientButton(
+                            text: AppLocalizations.of(context)!.startPractice,
+                            icon: Icons.play_arrow,
+                            onPressed: () async {
+                              final user = ref.read(currentUserProvider);
+                              String postType = '';
+                              if (user != null) {
+                                try {
+                                  final postDoc = await FirebaseFirestore.instance
+                                      .collection('exercise_step_image_posts')
+                                      .doc(postId)
+                                      .get();
+                                  if (postDoc.exists) {
+                                    final data = postDoc.data();
+                                    if (data != null && data['type'] != null) {
+                                      postType = data['type'] as String;
+                                    }
                                   }
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
+                                } catch (_) {}
+                              }
+                              if (!context.mounted) return;
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => PosePracticeScreen(
+                                    items: items,
+                                    postId: postId,
+                                    langCode: langCode,
+                                    postType: postType,
+                                    userId: user?.uid,
+                                  ),
+                                ),
+                              );
+                             },
+                          ),
+                        );
                   },
                   loading: () => const SizedBox.shrink(),
                   error: (_, __) => const SizedBox.shrink(),
@@ -333,8 +329,10 @@ class PosePracticeScreen extends StatefulWidget {
   final String postId;
   final VoidCallback? onDone;
   final String langCode;
+  final String postType;
+  final String? userId;
 
-  const PosePracticeScreen({super.key, required this.items, required this.postId, this.onDone, this.langCode = 'en'});
+  const PosePracticeScreen({super.key, required this.items, required this.postId, this.onDone, this.langCode = 'en', this.postType = '', this.userId});
 
   @override
   State<PosePracticeScreen> createState() => _PosePracticeScreenState();
@@ -352,6 +350,8 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
   bool _autoAdvancing = false;
   Timer? _autoAdvanceTimer;
   int _retryCount = 0;
+  bool _completionSaved = false;
+  bool _progressStarted = false;
 
   late List<List<ExerciseStepImageItem>> _steps;
 
@@ -417,6 +417,7 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
             _feedback = '';
             _stepComplete = false;
             _autoAdvancing = false;
+            _completionSaved = false;
           });
         }
       });
@@ -433,8 +434,27 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
         _accuracy = 0;
         _stepComplete = false;
         _feedback = '';
+        _completionSaved = false;
       });
     }
+  }
+
+  Future<void> _handleCompletionSave() async {
+    if (widget.userId == null || widget.postType.isEmpty) return;
+
+    final service = ExerciseCompletionService();
+    if (!_progressStarted) {
+      _progressStarted = true;
+      await service.clearCompletionsForPost(
+        userId: widget.userId!,
+        postId: widget.postId,
+      );
+    }
+    await service.saveCompletion(
+      userId: widget.userId!,
+      postId: widget.postId,
+      postType: widget.postType,
+    );
   }
 
   @override
@@ -466,17 +486,25 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
              langCode: widget.langCode,
              description: _currentItem.localizedDescription(widget.langCode),
              isComplete: _stepComplete,
-             onResult: (accuracy, feedback) {
-              if (mounted && !_stepComplete) {
-                setState(() {
-                  _accuracy = accuracy;
-                  _feedback = feedback;
-                  if (accuracy >= 90) {
-                    _onItemMatched();
+              onResult: (accuracy, feedback) {
+                if (mounted && !_stepComplete) {
+                  bool shouldSave = false;
+                  setState(() {
+                    _accuracy = accuracy;
+                    _feedback = feedback;
+                    if (accuracy >= 90) {
+                      _onItemMatched();
+                      if (!_completionSaved && widget.userId != null && widget.postType.isNotEmpty) {
+                        _completionSaved = true;
+                        shouldSave = true;
+                      }
+                    }
+                  });
+                  if (shouldSave) {
+                    _handleCompletionSave();
                   }
-                });
-              }
-            },
+                }
+              },
           ),
           Positioned(
             top: 0,
@@ -923,6 +951,8 @@ class _PosePracticeScreenState extends State<PosePracticeScreen> {
                           _stepComplete = false;
                           _allDone = false;
                           _feedback = '';
+                          _completionSaved = false;
+                          _progressStarted = false;
                           _retryCount++;
                         });
                       },

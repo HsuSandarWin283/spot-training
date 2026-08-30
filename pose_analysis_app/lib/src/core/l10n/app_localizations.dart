@@ -2107,6 +2107,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'See less'**
   String get seeLess;
+
+  /// No description provided for @incompleteExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Incomplete Exercises'**
+  String get incompleteExercises;
+
+  /// No description provided for @remainingImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining Images'**
+  String get remainingImages;
+
+  /// No description provided for @continueExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue Exercise'**
+  String get continueExercise;
+
+  /// No description provided for @stillIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Still Incomplete'**
+  String get stillIncomplete;
+
+  /// No description provided for @itemsCompletedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} of {total} items completed'**
+  String itemsCompletedCount(Object completed, Object total);
+
+  /// No description provided for @mostExercisingType.
+  ///
+  /// In en, this message translates to:
+  /// **'{type} is your most exercising'**
+  String mostExercisingType(Object type);
+
+  /// No description provided for @noIncompleteExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'No Incomplete Exercises'**
+  String get noIncompleteExercises;
+
+  /// No description provided for @noCompletedExercisesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete exercises to see your progress here.'**
+  String get noCompletedExercisesYet;
 }
 
 class _AppLocalizationsDelegate

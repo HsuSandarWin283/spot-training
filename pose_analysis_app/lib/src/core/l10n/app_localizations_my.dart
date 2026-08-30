@@ -1101,4 +1101,33 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get seeLess => 'ပိုငယ်';
+
+  @override
+  String get incompleteExercises => 'မပြီးစီးသေးသော လေ့ကျင့်ခန်းများ';
+
+  @override
+  String get remainingImages => 'ကျန်သော မျက်နှာပြင်ပါးများ';
+
+  @override
+  String get continueExercise => 'ဆက်လေ့ကျင့်ရန်';
+
+  @override
+  String get stillIncomplete => 'မပြီးသေးပါ';
+
+  @override
+  String itemsCompletedCount(Object completed, Object total) {
+    return '$completed / $total ပြီးပါပြီ';
+  }
+
+  @override
+  String mostExercisingType(Object type) {
+    return '$type သည် သင်အများဆုံး လေ့ကျင့်သော အမျိုးအစားဖြစ်သည်';
+  }
+
+  @override
+  String get noIncompleteExercises => 'မပြီးစီးသေးသော လေ့ကျင့်ခန်းများ မရှိပါ';
+
+  @override
+  String get noCompletedExercisesYet =>
+      'လေ့ကျင့်ခန်းများ ပြီးမြောက်အောင်လုပ်ပြီး သင့်တိုးတက်မှုကို ဒီမှာ ကြည့်ပါ။';
 }
