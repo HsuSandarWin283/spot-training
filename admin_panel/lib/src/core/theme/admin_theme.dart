@@ -40,6 +40,12 @@ class AdminColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  static const LinearGradient backgroundGradient = LinearGradient(
+    colors: [Color(0xFFFFB6C1), Color(0xFF87CEEB)],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
 }
 
 class AdminTheme {

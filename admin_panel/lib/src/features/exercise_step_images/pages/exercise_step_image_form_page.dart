@@ -574,7 +574,7 @@ class _ExerciseStepImageFormPageState
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: AdminColors.background,
+              color: AdminColors.surface,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: AdminColors.border),
             ),

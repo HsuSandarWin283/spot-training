@@ -68,11 +68,7 @@ class _AdminLoginPageState extends ConsumerState<AdminLoginPage> {
         children: [
           Container(
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [AdminColors.background, AdminColors.surface],
-              ),
+              gradient: AdminColors.backgroundGradient,
             ),
           ),
           Positioned(

@@ -56,7 +56,9 @@ class AdminShellPage extends ConsumerWidget {
           _buildSidebar(context, ref, currentView, user?.email ?? 'Admin'),
           Expanded(
             child: Container(
-              color: AdminColors.background,
+              decoration: const BoxDecoration(
+                gradient: AdminColors.backgroundGradient,
+              ),
               child: _buildContent(ref, currentView),
             ),
           ),
@@ -111,7 +113,9 @@ class AdminShellPage extends ConsumerWidget {
       BuildContext context, WidgetRef ref, AdminView currentView, String email) {
     return Container(
       width: 260,
-      color: AdminColors.surface,
+      decoration: const BoxDecoration(
+        gradient: AdminColors.backgroundGradient,
+      ),
       child: Column(
         children: [
           Container(
